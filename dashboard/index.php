@@ -38,20 +38,7 @@ $tituloWeb = "Gestión: Talleres";
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 
-/////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
-$cabeceras 		= "	<th>Nro</th>
-					<th>Dueño</th>
-					<th>Vehiculo</th>
-					<th>Fecha</th>
-					<th>Reparación</th>
-					<th>Presup. Aprox.</th>
-					<th>Saldo</th>
-					<th>Estado</th>";
 
-//////////////////////////////////////////////  FIN de los opciones //////////////////////////
-
-$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenesActivos(),95);
-$lstCargadosMora 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenesMora(),94);
 
 ?>
 
@@ -66,7 +53,7 @@ $lstCargadosMora 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosRe
 
 
 
-<title>Gesti&oacute;n: Taller Mecanico</title>
+<title>Gesti&oacute;n: Sistema Cortinas Roller</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
@@ -125,33 +112,11 @@ $lstCargadosMora 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosRe
                 
                 </div>
             </div>
-    		<?php echo $lstCargados; ?>
+    		
     	</div>
     </div>
     
-    
-    <div class="boxInfoLargo tile-stats tile-white stat-tile">
-        <div id="headBoxInfo">
-        	<p style="color: #fff; font-size:18px; height:16px;">Mora</p>
-        	
-        </div>
-    	<div class="cuerpoBox">
-        	<div class='row' style="margin-left:25px; margin-right:25px;">
-                <div class='alert'>
-                
-                </div>
-                <div id='load'>
-                
-                </div>
-            </div>
-    		<?php echo $lstCargadosMora; ?>
-    	</div>
-    </div>
-    
-    
-    
-    
-    
+
    
 </div>
 

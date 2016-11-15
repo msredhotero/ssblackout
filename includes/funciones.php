@@ -238,7 +238,7 @@ class Servicios {
 		$label  = '';
 		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
 		
-		$geoposicionamiento = array("latitud","longitud");
+		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto");
 		
 		$camposEscondido = "";
 		/* Analizar para despues */
@@ -288,9 +288,9 @@ class Servicios {
 							<div class="form-group col-md-6" style="display:'.$lblOculta.'">
 								<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
 								<div class="input-group col-md-12">
-									<span class="input-group-addon"><span class="glyphicon glyphicon-map-marker"></span></span>
+									<span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
 									<input type="text" class="form-control" id="'.strtolower($row[0]).'" name="'.strtolower($row[0]).'" value="0" required>
-									
+									<span class="input-group-addon valorAdd"></span>
 								</div>
 							</div>
 							
@@ -558,6 +558,7 @@ class Servicios {
 		$res 	=	$this->query($sql,0);
 		
 		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto");
 		
 		$camposEscondido = "";
 		/* Analizar para despues */
@@ -600,18 +601,36 @@ class Servicios {
 				
 				if ($row[3] != 'PRI') {
 					if (strpos($row[1],"decimal") !== false) {
-						$form	=	$form.'
 						
-						<div class="form-group col-md-6" style="display:'.$lblOculta.'">
-							<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
-							<div class="input-group col-md-12">
-								<span class="input-group-addon">$</span>
-								<input type="text" class="form-control" id="'.strtolower($row[0]).'" name="'.strtolower($row[0]).'" value="'.mysql_result($resMod,0,$row[0]).'" required>
-								<span class="input-group-addon">.00</span>
+						if (in_array($row[0],$geoposicionamiento)) {
+							$form	=	$form.'
+							
+							<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+								<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
+								<div class="input-group col-md-12">
+									<span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
+									<input type="text" class="form-control" id="'.strtolower($row[0]).'" name="'.strtolower($row[0]).'" value="'.mysql_result($resMod,0,$row[0]).'" required>
+									<span class="input-group-addon valorAdd"></span>
+								</div>
 							</div>
-						</div>
+							
+							';
+
+						} else {
 						
-						';
+							$form	=	$form.'
+							
+							<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+								<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
+								<div class="input-group col-md-12">
+									<span class="input-group-addon">$</span>
+									<input type="text" class="form-control" id="'.strtolower($row[0]).'" name="'.strtolower($row[0]).'" value="'.mysql_result($resMod,0,$row[0]).'" required>
+									<span class="input-group-addon">.00</span>
+								</div>
+							</div>
+							
+							';
+						}
 					} else {
 						if ( in_array($row[0],$refCampo) ) {
 							

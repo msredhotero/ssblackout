@@ -19,7 +19,7 @@ session_destroy();
 
 
 
-<title>Sistema de Talleres</title>
+<title>Sistema Cortinas Roller</title>
 
 
 
