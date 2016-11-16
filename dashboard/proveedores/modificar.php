@@ -22,41 +22,40 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Telas",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Proveedores",$_SESSION['refroll_predio'],'');
 
 
 $id = $_GET['id'];
 
-$resResultado = $serviciosReferencias->traerTelasPorId($id);
+$resResultado = $serviciosReferencias->traerClientesPorId($id);
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Tela";
+$singular = "Proveedor";
 
-$plural = "Telas";
+$plural = "Proveedores";
 
-$eliminar = "eliminarTelas";
+$eliminar = "eliminarProveedores";
 
-$modificar = "modificarTelas";
+$modificar = "modificarProveedores";
 
-$idTabla = "idtela";
+$idTabla = "idproveedor";
 
-$tituloWeb = "Gestión: Sistema Cortinas Roller";
+$tituloWeb = "Gestión: Libreria";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbtelas";
+$tabla 			= "dbproveedores";
 
-$lblCambio	 	= array("reftipotramados","preciolista","preciocosto","preciocliente");
-$lblreemplazo	= array("Tipo Tramado","Precio Lista","Precio Costo","Precio Cliente");
+$lblCambio	 	= array("dni");
+$lblreemplazo	= array("Nro Documento");
 
 
-$resTipoTramado 	= $serviciosReferencias->traerTipotramados();
-$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resTipoTramado,array(1),'', mysql_result($resResultado,0,'reftipotramados'));
+$cadRef 	= '';
 
-$refdescripcion = array(0 => $cadRef);
-$refCampo 	=  array("reftipotramados");
+$refdescripcion = array();
+$refCampo 	=  array();
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
@@ -194,9 +193,7 @@ if ($_SESSION['refroll_predio'] != 1) {
 
 <script type="text/javascript">
 $(document).ready(function(){
-	
-	$('.valorAdd').html('mm');
-	
+
 	$('.volver').click(function(event){
 		 
 		url = "index.php";
