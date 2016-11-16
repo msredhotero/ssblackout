@@ -39,7 +39,7 @@ $eliminar = "eliminarPagos";
 
 $insertar = "insertarPagos";
 
-$tituloWeb = "Gestión: Talleres";
+$tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 

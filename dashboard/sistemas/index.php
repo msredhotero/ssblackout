@@ -22,27 +22,27 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Tipo Tramado",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Sistemas",$_SESSION['refroll_predio'],'');
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Tipo Tramado";
+$singular = "Sistema";
 
-$plural = "Tipo Tramados";
+$plural = "Sistemas";
 
-$eliminar = "eliminarTipotramados";
+$eliminar = "eliminarSistemas";
 
-$insertar = "insertarTipotramados";
+$insertar = "insertarSistemas";
 
 $tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "tbtipotramados";
+$tabla 			= "dbsistemas";
 
-$lblCambio	 	= array("tipotramado");
-$lblreemplazo	= array("Tipo Tramado");
+$lblCambio	 	= array("refroller","preciocosto","preciocliente");
+$lblreemplazo	= array("Roller","Precio Costo","Precio Cliente");
 
 
 $cadRef 	= '';

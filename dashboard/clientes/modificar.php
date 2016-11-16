@@ -41,15 +41,15 @@ $modificar = "modificarClientes";
 
 $idTabla = "idcliente";
 
-$tituloWeb = "Gestión: Talleres";
+$tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbclientes";
 
-$lblCambio	 	= array("nrodocumento","fechanaciomiento","telefono");
-$lblreemplazo	= array("Nro Documento","Fecha Nacimiento","Teléfono");
+$lblCambio	 	= array("nrodocumento","fechanacimiento","telefono","direccion","nombrecompleto");
+$lblreemplazo	= array("Nro Documento","Fecha Nacimiento","Teléfono","dirección","Nombre Completo");
 
 
 $cadRef 	= '';

@@ -34,7 +34,7 @@ $eliminar = "eliminarProveedores";
 
 $insertar = "insertarProveedores";
 
-$tituloWeb = "Gestión: Libreria";
+$tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
