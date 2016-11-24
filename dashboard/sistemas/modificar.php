@@ -22,51 +22,45 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Tipo Tramado",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Sistemas",$_SESSION['refroll_predio'],'');
 
 
 $id = $_GET['id'];
 
-$resResultado = $serviciosReferencias->traerTipotramadosPorId($id);
+$resResultado = $serviciosReferencias->traerSistemasPorId($id);
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Tipo Tramado";
+$singular = "Sistema";
 
-$plural = "Tipo Tramados";
+$plural = "Sistemas";
 
-$eliminar = "eliminarTipotramados";
+$eliminar = "eliminarSistemas";
 
-$modificar = "modificarTipotramados";
+$modificar = "modificarSistemas";
 
-$idTabla = "idtipotramado";
+$idTabla = "idsistema";
 
 $tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "tbtipotramados";
+$tabla 			= "dbsistemas";
 
-$lblCambio	 	= array("tipotramado");
-$lblreemplazo	= array("Tipo Tramado");
+$lblCambio	 	= array("refroller","preciocosto","preciocliente");
+$lblreemplazo	= array("Roller","Precio Costo","Precio Cliente");
 
+$resRoller	=	$serviciosReferencias->traerRoller();
+$cadRef 	= 	$serviciosFunciones->devolverSelectBoxActivo($resRoller,array(1),'',mysql_result($resResultado,0,'refroller'));
 
-$cadRef 	= '';
-
-$refdescripcion = array();
-$refCampo 	=  array();
+$refdescripcion = array(0=>$cadRef);
+$refCampo 	=  array("refroller");
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
 $formulario 	= $serviciosFunciones->camposTablaModificar($id, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
-
-if (mysql_result($resResultado,0,'activo') == 1) {
-	$activo = 'true';
-}else {
-	$activo = 'false';
-}
 
 if ($_SESSION['refroll_predio'] != 1) {
 
@@ -200,7 +194,7 @@ if ($_SESSION['refroll_predio'] != 1) {
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	$('#activo').prop('checked',<?php echo $activo; ?>);
+	$('.valorAdd').html('mtrs');
 	
 	$('.volver').click(function(event){
 		 

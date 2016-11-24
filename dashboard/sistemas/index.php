@@ -44,19 +44,23 @@ $tabla 			= "dbsistemas";
 $lblCambio	 	= array("refroller","preciocosto","preciocliente");
 $lblreemplazo	= array("Roller","Precio Costo","Precio Cliente");
 
+$resRoller	=	$serviciosReferencias->traerRoller();
+$cadRef 	= 	$serviciosFunciones->devolverSelectBox($resRoller,array(1),'');
 
-$cadRef 	= '';
-
-$refdescripcion = array();
-$refCampo 	=  array();
+$refdescripcion = array(0=>$cadRef);
+$refCampo 	=  array("refroller");
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
 
 
 /////////////////////// Opciones para la creacion del view  apellido,nombre,nrodocumento,fechanacimiento,direccion,telefono,email/////////////////////
-$cabeceras 		= "	<th>Tipo Tramado</th>
-					<th>Activo</th>";
+$cabeceras 		= "	<th>Nombre</th>
+					<th>Roller</th>
+					<th>Desde</th>
+					<th>Hasta</th>
+					<th>Precio Costo</th>
+					<th>Precio Cliente</th>";
 
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
@@ -65,7 +69,7 @@ $cabeceras 		= "	<th>Tipo Tramado</th>
 
 $formulario 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
-$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerTipotramados(),2);
+$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerSistemas(),6);
 
 
 
@@ -142,13 +146,19 @@ if ($_SESSION['refroll_predio'] != 1) {
         	
         </div>
     	<div class="cuerpoBox">
+        	
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+            	<div class="alert alert-info">
+                	<p><span class="glyphicon glyphicon-info-sign"></span> Recuerde que las medidas seran expresadas en metros</p>
+                </div>
+            </div>
         	<form class="form-inline formulario" role="form">
         	<div class="row">
 			<?php echo $formulario; ?>
             </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
-                <div class='alert'>
+                <div class='alert alertSistemas'>
                 
                 </div>
                 <div id='load'>
@@ -205,7 +215,7 @@ if ($_SESSION['refroll_predio'] != 1) {
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	$('#activo').prop('checked',true);
+	$('.valorAdd').html('mtrs');
 	
 	$('#example').dataTable({
 		"order": [[ 0, "asc" ]],
@@ -333,31 +343,26 @@ $(document).ready(function(){
 				success: function(data){
 
 					if (data == '') {
-                                            $(".alert").removeClass("alert-danger");
-											$(".alert").removeClass("alert-info");
-                                            $(".alert").addClass("alert-success");
-                                            $(".alert").html('<strong>Ok!</strong> Se cargo exitosamente el <strong><?php echo $singular; ?></strong>. ');
-											$(".alert").delay(3000).queue(function(){
-												/*aca lo que quiero hacer 
-												  después de los 2 segundos de retraso*/
-												$(this).dequeue(); //continúo con el siguiente ítem en la cola
-												
-											});
+                                            $(".alertSistemas").removeClass("alert-danger");
+											$(".alertSistemas").removeClass("alert-info");
+                                            $(".alertSistemas").addClass("alert-success");
+                                            $(".alertSistemas").html('<strong>Ok!</strong> Se cargo exitosamente el <strong><?php echo $singular; ?></strong>. ');
+											
 											$("#load").html('');
 											url = "index.php";
 											$(location).attr('href',url);
                                             
 											
                                         } else {
-                                        	$(".alert").removeClass("alert-danger");
-                                            $(".alert").addClass("alert-danger");
-                                            $(".alert").html('<strong>Error!</strong> '+data);
+                                        	$(".alertSistemas").removeClass("alert-danger");
+                                            $(".alertSistemas").addClass("alert-danger");
+                                            $(".alertSistemas").html('<strong>Error!</strong> '+data);
                                             $("#load").html('');
                                         }
 				},
 				//si ha ocurrido un error
 				error: function(){
-					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+					$(".alertSistemas").html('<strong>Error!</strong> Actualice la pagina');
                     $("#load").html('');
 				}
 			});

@@ -238,7 +238,7 @@ class Servicios {
 		$label  = '';
 		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
 		
-		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto");
+		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto","desde","hasta");
 		
 		$camposEscondido = "";
 		/* Analizar para despues */

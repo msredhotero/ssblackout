@@ -163,11 +163,12 @@ function traerSistemas() {
 $sql = "select
 s.idsistema,
 s.nombre,
-s.refroller,
+rol.diametro as roller,
 s.desde,
 s.hasta,
 s.preciocosto,
-s.preciocliente
+s.preciocliente,
+s.refroller
 from dbsistemas s
 inner join tbroller rol ON rol.idroller = s.refroller
 order by 1";
