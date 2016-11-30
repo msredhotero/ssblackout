@@ -38,7 +38,7 @@ $tituloWeb = "Gestión: Talleres";
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 
-
+$resTelas	=	$serviciosReferencias->traerTelas();
 
 ?>
 
@@ -73,7 +73,47 @@ $tituloWeb = "Gestión: Talleres";
     <script src="../bootstrap/js/bootstrap.min.js"></script>
 
 
-
+	<style>
+		.cartel {
+			background: #0090D3;
+			color: #FFF;
+			display: inline-block;
+			padding: 6px 12px;
+			position: relative;
+			margin-bottom: 15px;
+			-webkit-box-shadow: 0 0 12px 0 rgba(0,0,0,0.5);
+			box-shadow: 0 0 12px 0 rgba(0,0,0,0.5);
+		}
+		h2 {
+			font-size: 16px;
+			color: #0090D3;
+		}
+		*, *::after, *::before {
+			-webkit-box-sizing: border-box !important;
+			-moz-box-sizing: border-box !important;
+			box-sizing: border-box !important;
+			padding: 0;
+			margin: 0;
+		}
+		
+		.cartel_chico::after {
+			background-image: url('../imagenes/tip4.png');
+		}
+		.cartel::after {
+			content: '';
+			clear: both;
+			width: 15px;
+			height: 16px;
+			background-image: url('../imagenes/tip.png');
+			background-repeat: no-repeat;
+			background-position: center top;
+			display: inline-block;
+			position: absolute;
+			bottom: -15px;
+			left: 10px;
+		}
+	
+	</style>
 
     
    
@@ -100,11 +140,34 @@ $tituloWeb = "Gestión: Talleres";
 
     <div class="boxInfoLargo tile-stats tile-white stat-tile">
         <div id="headBoxInfo">
-        	<p style="color: #fff; font-size:18px; height:16px;">Ordenes Cargadas</p>
+        	<p style="color: #fff; font-size:18px; height:16px;"><span class="glyphicon glyphicon-usd"></span> Cotizador</p>
         	
         </div>
     	<div class="cuerpoBox">
+        	<form class="form-inline formulario" role="form">
         	<div class='row' style="margin-left:25px; margin-right:25px;">
+                <h4>Elegí el material de tu producto, completá las medidas y obtené el precio al instante!</h4>
+                <hr>
+            </div>
+            <div class='row' style="margin-left:25px; margin-right:25px;">   
+                <h2 class="cartel cartel_chico" style="margin-top:5px;">Material<br></h2>
+            </div>
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+                <?php
+					while ($row = mysql_fetch_array($resTelas)) {
+				?>
+                    <div class="col-md-4" style="margin-bottom:7px;">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                            <input type="checkbox" aria-label="..." id="tela<?php echo $row[0]; ?>" name="tela<?php echo $row[0]; ?>">
+                            </span>
+                            <input type="text" class="form-control" aria-label="..." value="<?php echo $row[1]; ?>">
+                            
+                        </div><!-- /input-group -->
+                    </div><!-- /.col-lg-6 -->
+                <?php
+					}
+				?>
                 <div class='alert'>
                 
                 </div>
@@ -112,8 +175,78 @@ $tituloWeb = "Gestión: Talleres";
                 
                 </div>
             </div>
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+                <hr>
+            </div>
+            <div class='row' style="margin-left:25px; margin-right:25px;">   
+                <h2 class="cartel cartel_chico" style="margin-top:5px;">Medidas<br></h2>
+            </div>
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+            	<div class="form-group col-md-6" style="display:block">
+                    <label for="desde" class="control-label" style="text-align:left">Alto</label>
+                    <div class="input-group col-md-12">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
+                        <input class="form-control" id="desde" name="desde" value="0" required="" type="text">
+                        <span class="input-group-addon valorAdd">cm</span>
+                    </div>
+                </div>
+                
+                <div class="form-group col-md-6" style="display:block">
+                    <label for="desde" class="control-label" style="text-align:left">Ancho</label>
+                    <div class="input-group col-md-12">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
+                        <input class="form-control" id="desde" name="desde" value="0" required="" type="text">
+                        <span class="input-group-addon valorAdd">cm</span>
+                    </div>
+                </div>
+            </div>
     		
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+                <hr>
+            </div>
+            <div class='row' style="margin-left:25px; margin-right:25px;">   
+                <h2 class="cartel cartel_chico" style="margin-top:5px;">Sistema<br></h2>
+            </div>
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;"> 
+            	<div class="col-md-4" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                        <input type="checkbox" aria-label="..." id="normal" name="normal">
+                        </span>
+                        <input type="text" class="form-control" aria-label="..." value="Normal">
+                        
+                    </div><!-- /input-group -->
+                </div>
+                    
+            	<div class="col-md-4" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                        <input type="checkbox" aria-label="..." id="doble" name="doble">
+                        </span>
+                        <input type="text" class="form-control" aria-label="..." value="Doble (Blackout + Screen)">
+                        
+                    </div><!-- /input-group -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                <ul class="list-inline" style="margin-top:15px;">
+                    <li>
+                        <button type="button" class="btn btn-primary" id="cotizar" style="margin-left:0px;">Cotizar</button>
+                    </li>
+                    <li style="font-weight:bold; color:#F00; font-size:1.2em; margin-right:10%;" class="pull-right">
+                    	Precio: <span class="glyphicon glyphicon-usd" id="total"></span>
+                    </li>
+                </ul>
+                </div>
+            </div>
+            <input type="hidden" name="accion" id="accion" value="cotizar"/>
+            </form>
     	</div>
+        
+        
     </div>
     
 
@@ -336,7 +469,41 @@ $(document).ready(function(){
 	 		}); //fin del dialogo para eliminar
 
 	
+	$('#cargar').click(function(){
+		
+		if (validador() == "")
+        {
+			//información del formulario
+			var formData = new FormData($(".formulario")[0]);
+			var message = "";
+			//hacemos la petición ajax  
+			$.ajax({
+				url: '../../ajax/ajax.php',  
+				type: 'POST',
+				// Form data
+				//datos del formulario
+				data: formData,
+				//necesario para subir archivos via ajax
+				cache: false,
+				contentType: false,
+				processData: false,
+				//mientras enviamos el archivo
+				beforeSend: function(){
+					$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
+				},
+				//una vez finalizado correctamente
+				success: function(data){
 
+					$('#total').val(data);
+				},
+				//si ha ocurrido un error
+				error: function(){
+					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+                    $("#load").html('');
+				}
+			});
+		}
+    });
 
 });
 </script>
