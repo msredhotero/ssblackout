@@ -40,6 +40,8 @@ $tituloWeb = "Gestión: Talleres";
 
 $resTelas	=	$serviciosReferencias->traerTelas();
 
+$resResiduo =	$serviciosReferencias->traerResiduos();
+
 ?>
 
 <!DOCTYPE HTML>
@@ -168,12 +170,7 @@ $resTelas	=	$serviciosReferencias->traerTelas();
                 <?php
 					}
 				?>
-                <div class='alert'>
                 
-                </div>
-                <div id='load'>
-                
-                </div>
             </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
@@ -187,7 +184,7 @@ $resTelas	=	$serviciosReferencias->traerTelas();
                     <label for="desde" class="control-label" style="text-align:left">Alto</label>
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
-                        <input class="form-control" id="desde" name="desde" value="0" required="" type="text">
+                        <input class="form-control" id="alto" name="alto" value="0" required type="text">
                         <span class="input-group-addon valorAdd">cm</span>
                     </div>
                 </div>
@@ -196,7 +193,7 @@ $resTelas	=	$serviciosReferencias->traerTelas();
                     <label for="desde" class="control-label" style="text-align:left">Ancho</label>
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
-                        <input class="form-control" id="desde" name="desde" value="0" required="" type="text">
+                        <input class="form-control" id="ancho" name="ancho" value="0" required type="text">
                         <span class="input-group-addon valorAdd">cm</span>
                     </div>
                 </div>
@@ -230,18 +227,51 @@ $resTelas	=	$serviciosReferencias->traerTelas();
                     </div><!-- /input-group -->
                 </div>
             </div>
+            
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+                <hr>
+            </div>
+            <div class='row' style="margin-left:25px; margin-right:25px;">   
+                <h2 class="cartel cartel_chico" style="margin-top:5px;">Residuo<br></h2>
+            </div>
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;"> 
+            	<?php
+					while ($row = mysql_fetch_array($resResiduo)) {
+				?>
+                    <div class="col-md-4" style="margin-bottom:7px;">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                            <input type="checkbox" aria-label="..." id="resi<?php echo $row[0]; ?>" name="resi<?php echo $row[0]; ?>">
+                            </span>
+                            <input type="text" class="form-control" aria-label="..." value="<?php echo $row[1]; ?>">
+                            
+                        </div><!-- /input-group -->
+                    </div><!-- /.col-lg-6 -->
+                <?php
+					}
+				?>
+            </div>
+            
             <div class="row">
                 <div class="col-md-12">
                 <ul class="list-inline" style="margin-top:15px;">
                     <li>
                         <button type="button" class="btn btn-primary" id="cotizar" style="margin-left:0px;">Cotizar</button>
                     </li>
-                    <li style="font-weight:bold; color:#F00; font-size:1.2em; margin-right:10%;" class="pull-right">
-                    	Precio: <span class="glyphicon glyphicon-usd" id="total"></span>
+                    <li style="font-weight:bold; color:#F00; font-size:1.6em; margin-right:10%;" class="pull-right">
+                    	Precio: <span class="glyphicon glyphicon-usd"></span><span style="font-weight:bold; color:#F00; font-size:1.6em;" id="total"></span>
                     </li>
                 </ul>
                 </div>
             </div>
+            <div class='alert'>
+                
+                </div>
+                <div id='load'>
+                
+                </div>
             <input type="hidden" name="accion" id="accion" value="cotizar"/>
             </form>
     	</div>
@@ -493,8 +523,9 @@ $(document).ready(function(){
 				},
 				//una vez finalizado correctamente
 				success: function(data){
-
-					$('#total').val(data);
+					
+					$('#total').html(data);
+					$("#load").html('');
 				},
 				//si ha ocurrido un error
 				error: function(){
@@ -503,6 +534,42 @@ $(document).ready(function(){
 				}
 			});
 		}
+    });
+	
+	
+	$('#cotizar').click(function(){
+		
+		//información del formulario
+		var formData = new FormData($(".formulario")[0]);
+		var message = "";
+		//hacemos la petición ajax  
+		$.ajax({
+			url: '../ajax/ajax.php',  
+			type: 'POST',
+			// Form data
+			//datos del formulario
+			data: formData,
+			//necesario para subir archivos via ajax
+			cache: false,
+			contentType: false,
+			processData: false,
+			//mientras enviamos el archivo
+			beforeSend: function(){
+				$("#load").html('<img src="../imagenes/load13.gif" width="50" height="50" />');       
+			},
+			//una vez finalizado correctamente
+			success: function(data){
+
+				$('#total').html(data);
+				$("#load").html('');
+			},
+			//si ha ocurrido un error
+			error: function(){
+				$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+				$("#load").html('');
+			}
+		});
+		
     });
 
 });

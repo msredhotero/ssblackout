@@ -163,10 +163,48 @@ case 'eliminarTipotramados':
 eliminarTipotramados($serviciosReferencias);
 break; 
 
+case 'cotizar':
+	cotizar($serviciosReferencias);
+	break;
+
 }
 
 /* Fin */
 /*
+
+/********* cotizador *******************/
+
+function cotizar($serviciosReferencias) {
+	$resTelas = $serviciosReferencias->traerTelas();
+	
+	$cad = 'tela';
+	
+	while ($rowFS = mysql_fetch_array($resTelas)) {
+		if (isset($_POST[$cad.$rowFS[0]])) {
+			$idTela = $rowFS[0];
+		}
+	}	
+	
+	$resResiduos = $serviciosReferencias->traerResiduos();
+	
+	$cad1 = 'resi';
+	
+	while ($rowFS1 = mysql_fetch_array($resResiduos)) {
+		if (isset($_POST[$cad1.$rowFS1[0]])) {
+			$idResiduo = $rowFS1[0];
+		}
+	}
+	
+	$ancho	=	$_POST['ancho'];
+	$alto	=	$_POST['alto'];
+	
+	$total = $serviciosReferencias->cotizar(1, $idTela, $idResiduo, $ancho, $alto, 0);
+	
+	echo $total;
+}
+
+/********* fin cotizador ***************/
+
 
 /* PARA Tipotramados */
 

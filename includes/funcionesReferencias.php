@@ -19,8 +19,70 @@ function GUID()
     return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 }
 
+function convertidorMilimetros($medida, $valor) {
+	switch ($medida) {
+		case 'm':
+			$valor = $valor * 1000;
+			break;
+		case 'dm':
+			$valor = $valor * 100;
+			break;
+		case 'cm':
+			$valor = $valor * 10;
+			break;	
+	}
+	return $valor;
+}
 
-
+function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
+	//primero traigo el valor de la tela
+	if ($esRevendedor == 1) {
+		$valorTela = mysql_result($this->traerTelasPorId($tela),0,'preciocliente');
+	} else {
+		$valorTela = mysql_result($this->traerTelasPorId($tela),0,'preciocosto');
+	}
+	
+	/****************************************/
+	
+	//el residuo que voy a utilizar
+	$resResiduo	=	$this->traerResiduosPorId($residuo);
+	
+	$rollerResiduo	= mysql_result($resResiduo,0,'roller');
+	$anchoResiduo	= mysql_result($resResiduo,0,'telaancho');
+	$altoResiduo	= mysql_result($resResiduo,0,'telaalto');
+	$zocaloResiduo	= mysql_result($resResiduo,0,'zocalo');
+	
+	/****************************************/
+	
+	
+	//el sistema que voy a utilizar
+	// busca medidas en "metros"
+	$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+	
+	if ($esRevendedor == 1) {
+		$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+	} else {
+		$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+	}
+	
+	/****************************************/
+	
+	//Valores finales en "cm"
+	$telaAltoFinal	= ($alto * 10) - $altoResiduo;
+	$telaAnchoFinal	= ($ancho * 10) - $anchoResiduo;
+	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
+	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
+	
+	/****************************************/
+	
+	$calculoSistema	= $valorSistema;
+	$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
+	
+	$total = $calculoSistema + $calculoTela;
+	
+	return $total;
+	
+}
 
 
 /* PARA Clientes */
@@ -179,6 +241,12 @@ return $res;
 
 function traerSistemasPorId($id) {
 $sql = "select idsistema,nombre,refroller,desde,hasta,preciocosto,preciocliente from dbsistemas where idsistema =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+function traerSistemasPorMedida($ancho) {
+$sql = "select idsistema,nombre,refroller,desde,hasta,preciocosto,preciocliente from dbsistemas where ".$ancho." between desde and hasta";
 $res = $this->query($sql,0);
 return $res;
 }
