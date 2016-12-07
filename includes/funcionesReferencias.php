@@ -36,10 +36,42 @@ function convertidorMilimetros($medida, $valor) {
 
 function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	//primero traigo el valor de la tela
-	if ($esRevendedor == 1) {
-		$valorTela = mysql_result($this->traerTelasPorId($tela),0,'preciocliente');
-	} else {
-		$valorTela = mysql_result($this->traerTelasPorId($tela),0,'preciocosto');
+	
+	if ($sistema == 1) {
+		$resTelas	=	$this->traerTelasPorId($tela[0]);
+		if (mysql_num_rows($resTelas)>0) {
+			if ($esRevendedor == 1) {
+				$valorTela = mysql_result($resTelas,0,'preciocliente');
+			} else {
+				$valorTela = mysql_result($resTelas,0,'preciocosto');
+			}
+		} else {
+			$valorTela = 0;		
+		}
+	}
+	
+	if ($sistema == 2) {
+		$resTelas	=	$this->traerTelasPorId($tela[0]);
+		if (mysql_num_rows($resTelas)>0) {
+			if ($esRevendedor == 1) {
+				$valorTela = mysql_result($resTelas,0,'preciocliente');
+			} else {
+				$valorTela = mysql_result($resTelas,0,'preciocosto');
+			}
+		} else {
+			$valorTela = 0;		
+		}
+		
+		$resTelas2	=	$this->traerTelasPorId($tela[1]);
+		if (mysql_num_rows($resTelas2)>0) {
+			if ($esRevendedor == 1) {
+				$valorTela2 = mysql_result($resTelas2,0,'preciocliente');
+			} else {
+				$valorTela2 = mysql_result($resTelas2,0,'preciocosto');
+			}
+		} else {
+			$valorTela2 = 0;		
+		}
 	}
 	
 	/****************************************/
@@ -59,10 +91,14 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	// busca medidas en "metros"
 	$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
 	
-	if ($esRevendedor == 1) {
-		$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+	if (mysql_num_rows($resSistema)>0) {
+		if ($esRevendedor == 1) {
+			$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+		} else {
+			$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+		}
 	} else {
-		$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+		$valorSistema = 0;		
 	}
 	
 	/****************************************/
@@ -76,8 +112,11 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	/****************************************/
 	
 	$calculoSistema	= $valorSistema;
-	$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
-	
+	if ($sistema == 2) {
+		$calculoTela	= (((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela) + ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela2));
+	} else {
+		$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
+	}
 	$total = $calculoSistema + $calculoTela;
 	
 	return $total;

@@ -151,6 +151,40 @@ $resResiduo =	$serviciosReferencias->traerResiduos();
                 <h4>Elegí el material de tu producto, completá las medidas y obtené el precio al instante!</h4>
                 <hr>
             </div>
+            
+            
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;">   
+                <h2 class="cartel cartel_chico" style="margin-top:5px;">Sistema<br></h2>
+            </div>
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;"> 
+            	<div class="col-md-4" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                        <input type="checkbox" aria-label="..." id="normal" name="normal">
+                        </span>
+                        <input type="text" class="form-control" aria-label="..." value="Normal">
+                        
+                    </div><!-- /input-group -->
+                </div>
+                    
+            	<div class="col-md-4" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                        <input type="checkbox" aria-label="..." id="doble" name="doble">
+                        </span>
+                        <input type="text" class="form-control" aria-label="..." value="Doble (Blackout + Screen)">
+                        
+                    </div><!-- /input-group -->
+                </div>
+            </div>
+            
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+                <hr>
+            </div>
+            
             <div class='row' style="margin-left:25px; margin-right:25px;">   
                 <h2 class="cartel cartel_chico" style="margin-top:5px;">Material<br></h2>
             </div>
@@ -198,36 +232,7 @@ $resResiduo =	$serviciosReferencias->traerResiduos();
                     </div>
                 </div>
             </div>
-    		
-            <div class='row' style="margin-left:25px; margin-right:25px;">
-                <hr>
-            </div>
-            <div class='row' style="margin-left:25px; margin-right:25px;">   
-                <h2 class="cartel cartel_chico" style="margin-top:5px;">Sistema<br></h2>
-            </div>
-            
-            <div class='row' style="margin-left:25px; margin-right:25px;"> 
-            	<div class="col-md-4" style="margin-bottom:7px;">
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                        <input type="checkbox" aria-label="..." id="normal" name="normal">
-                        </span>
-                        <input type="text" class="form-control" aria-label="..." value="Normal">
-                        
-                    </div><!-- /input-group -->
-                </div>
-                    
-            	<div class="col-md-4" style="margin-bottom:7px;">
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                        <input type="checkbox" aria-label="..." id="doble" name="doble">
-                        </span>
-                        <input type="text" class="form-control" aria-label="..." value="Doble (Blackout + Screen)">
-                        
-                    </div><!-- /input-group -->
-                </div>
-            </div>
-            
+
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
                 <hr>
@@ -259,6 +264,9 @@ $resResiduo =	$serviciosReferencias->traerResiduos();
                 <ul class="list-inline" style="margin-top:15px;">
                     <li>
                         <button type="button" class="btn btn-primary" id="cotizar" style="margin-left:0px;">Cotizar</button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-success" id="orden" style="margin-left:0px; display:none;">Crear Orden</button>
                     </li>
                     <li style="font-weight:bold; color:#F00; font-size:1.6em; margin-right:10%;" class="pull-right">
                     	Precio: <span class="glyphicon glyphicon-usd"></span><span style="font-weight:bold; color:#F00; font-size:1.6em;" id="total"></span>
@@ -559,9 +567,22 @@ $(document).ready(function(){
 			},
 			//una vez finalizado correctamente
 			success: function(data){
+				
+				if (parseFloat(data)>0) {
+					$('#total').html(data);
+					$(".alert").removeClass("alert-danger");
+					$(".alert").removeClass("alert-info");
+					$(".alert").html('');
+					$("#load").html('');
+					$('#orden').show();
+				} else {
+					$(".alert").removeClass("alert-danger");
+					$(".alert").addClass("alert-danger");
+					$(".alert").html('<strong>Error!</strong> '+data);
+					$("#load").html('');
+					$('#total').html('');
 
-				$('#total').html(data);
-				$("#load").html('');
+				}
 			},
 			//si ha ocurrido un error
 			error: function(){
