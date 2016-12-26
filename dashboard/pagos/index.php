@@ -41,15 +41,15 @@ $tituloWeb = "Gestión: Sistema Cortinas Roller";
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbpagos";
 
-$lblCambio	 	= array("refordenes","fechapago");
-$lblreemplazo	= array("Orden","Fecha Pago");
+$lblCambio	 	= array("refclientes","fechapago");
+$lblreemplazo	= array("Cliente","Fecha Pago");
 
 
-$resOrden 	= $serviciosReferencias->traerOrdenes();
-$cadRef 	= $serviciosFunciones->devolverSelectBox($resOrden,array(1,2,3),' - ');
+$resClientes 	= $serviciosReferencias->traerClientes();
+$cadRef 	= $serviciosFunciones->devolverSelectBox($resClientes,array(1),'');
 
 $refdescripcion = array(0 => $cadRef);
-$refCampo 	=  array("refordenes");
+$refCampo 	=  array("refclientes");
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
@@ -57,11 +57,8 @@ $refCampo 	=  array("refordenes");
 
 /////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
 $cabeceras 		= "	<th>Cliente</th>
-					<th>Vehiculo</th>
-					<th>Orden</th>
 					<th>Pago</th>
-					<th>Fecha</th>
-					<th>Estado</th>";
+					<th>Fecha</th>";
 
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
@@ -70,7 +67,7 @@ $cabeceras 		= "	<th>Cliente</th>
 
 $formulario 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
-$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerPagos(),6);
+$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerPagos(),3);
 
 
 
@@ -146,6 +143,7 @@ if ($_SESSION['refroll_predio'] != 1) {
     <div class="boxInfoLargo">
         <div id="headBoxInfo">
         	<p style="color: #fff; font-size:18px; height:16px;">Carga de <?php echo $plural; ?></p>
+
         	
         </div>
     	<div class="cuerpoBox">
@@ -153,7 +151,10 @@ if ($_SESSION['refroll_predio'] != 1) {
         	<div class="row">
 			<?php echo $formulario; ?>
             </div>
-
+			
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+            	<h4>Saldo: <span class="glyphicon glyphicon-usd"></span> <span class="cuenta">0</span></h4>
+            </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
                 <div class='alert'>
@@ -265,7 +266,35 @@ $(document).ready(function(){
 			alert("Error, vuelva a realizar la acción.");	
 		  }
 	});//fin del boton modificar
-
+	
+	
+	function traerSaldo(id) {
+		$.ajax({
+			data:  {id: id, 
+					accion: 'traerPagosPorCliente'},
+			url:   '../../ajax/ajax.php',
+			type:  'post',
+			beforeSend: function () {
+					
+			},
+			success:  function (response) {
+					$('.cuenta').html(response);
+					if (response < 0) {
+						$('.cuenta').css({'color' : '#F00'});
+					} else {
+						$('.cuenta').css({'color' : '#000'});
+					}
+					
+			}
+		});	
+	}
+	
+	traerSaldo($('#refclientes').val());
+	
+	$('#refclientes').change(function() {
+		traerSaldo($('#refclientes').val());
+	});
+	
 	 $( "#dialog2" ).dialog({
 		 	
 			    autoOpen: false,

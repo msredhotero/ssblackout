@@ -33,6 +33,16 @@ switch ($accion) {
         break;
 
 
+case 'insertarConfiguracion':
+insertarConfiguracion($serviciosReferencias);
+break;
+case 'modificarConfiguracion':
+modificarConfiguracion($serviciosReferencias);
+break;
+case 'eliminarConfiguracion':
+eliminarConfiguracion($serviciosReferencias);
+break; 
+
 
 /* PARA Tipovehiculo */
 
@@ -163,6 +173,28 @@ case 'eliminarTipotramados':
 eliminarTipotramados($serviciosReferencias);
 break; 
 
+case 'insertarPagos':
+insertarPagos($serviciosReferencias);
+break;
+case 'modificarPagos':
+modificarPagos($serviciosReferencias);
+break;
+case 'eliminarPagos':
+eliminarPagos($serviciosReferencias);
+break; 
+
+
+case 'insertarVentas':
+insertarVentas($serviciosReferencias);
+break;
+case 'modificarVentas':
+modificarVentas($serviciosReferencias);
+break;
+case 'eliminarVentas':
+eliminarVentas($serviciosReferencias);
+break; 
+
+
 case 'cotizar':
 	cotizar($serviciosReferencias);
 	break;
@@ -184,6 +216,8 @@ function cotizar($serviciosReferencias) {
 	$sistemaDoble = 0;
 	$sistema = 1;
 	$idResiduo = 0;
+	
+	$idTela = array();
 	
 	$resTelas = $serviciosReferencias->traerTelas();
 	$resResiduos = $serviciosReferencias->traerResiduos();
@@ -240,6 +274,18 @@ function cotizar($serviciosReferencias) {
 		$cadErrores .= "_ Debe seleccionar un Residuo<br>"; 
 	}
 	
+	if (sizeof($idTela) < 1) {
+		$cadErrores .= "_ Debe seleccionar un Material<br>"; 
+	}
+	
+	if (($ancho == '') || ($ancho < 20)) {
+		$cadErrores .= "_ Debe cargar un acnho o el ancho a menor a las 10 centimetros<br>"; 
+	}
+	
+	if (($alto == '') || ($alto < 20)) {
+		$cadErrores .= "_ Debe cargar un alto o el alto a menor a las 10 centimetros<br>"; 
+	}
+	
 	
 	if ($cadErrores == '') {
 		$total = $serviciosReferencias->cotizar($sistema, $idTela, $idResiduo, $ancho, $alto, 0);
@@ -251,6 +297,162 @@ function cotizar($serviciosReferencias) {
 
 /********* fin cotizador ***************/
 
+
+//******************  VENTAS  *****************************************************/
+
+function insertarVentas($serviciosReferencias) {
+	
+	$cadErrores = '';
+	$cad = 'tela';
+	$cad1 = 'resi';
+	$sistemaNormal = 0;
+	$sistemaDoble = 0;
+	$sistema = 1;
+	$idResiduo = 0;
+	
+	$idTela = array();
+	
+	$resTelas = $serviciosReferencias->traerTelas();
+	$resResiduos = $serviciosReferencias->traerResiduos();
+	
+	while ($rowFS1 = mysql_fetch_array($resResiduos)) {
+		if (isset($_POST[$cad1.$rowFS1[0]])) {
+			$idResiduo = $rowFS1[0];
+		}
+	}
+	
+	if (isset($_POST['normal'])) {
+		$esDoble = 0;
+		$sistema = 1;
+	}
+	
+	if (isset($_POST['doble'])) {
+		$esDoble = 1;
+		$sistema = 2;
+	}
+	
+	
+	
+	while ($rowFS = mysql_fetch_array($resTelas)) {
+		if (isset($_POST[$cad.$rowFS[0]])) {
+			$idTela[] = $rowFS[0];
+		}
+	}
+	
+	
+	////********************* del cotizar  *****************/
+	if ($sistema == 1) {
+		$resTelas	=	$this->traerTelasPorId($tela[0]);
+		if (mysql_num_rows($resTelas)>0) {
+			$refTelasA = mysql_result($resTelas,0,0);
+			$nombreTela = mysql_result($resTelas,0,'tela');
+			$tramado = mysql_result($resTelas,0,'tipotramado');
+			if ($esRevendedor == 1) {
+				$valorTela = mysql_result($resTelas,0,'preciocliente');
+			} else {
+				$valorTela = mysql_result($resTelas,0,'preciocosto');
+			}
+		} else {
+			$valorTela = 0;		
+		}
+	}
+	
+	if ($sistema == 2) {
+		$resTelasA	=	$this->traerTelasPorId($tela[0]);
+		$resTelasB	=	$this->traerTelasPorId($tela[1]);
+		if (mysql_num_rows($resTelasA)>0) {
+			$refTelasA = mysql_result($resTelasA,0,0);
+			$refTelasB = mysql_result($resTelasB,0,0);
+			$nombreTela = mysql_result($resTelasA,0,'tela').' - '.mysql_result($resTelasB,0,'tela');
+			$tramado = mysql_result($resTelasA,0,'tipotramado').' - '.mysql_result($resTelasB,0,'tipotramado');
+			if ($esRevendedor == 1) {
+				$valorTela = mysql_result($resTelasA,0,'preciocliente') + mysql_result($resTelasB,0,'preciocliente');
+			} else {
+				$valorTela = mysql_result($resTelasA,0,'preciocosto') + mysql_result($resTelasB,0,'preciocosto');
+			}
+		} else {
+			$valorTela = 0;		
+		}
+		
+	}
+	
+	/****************************************/
+	
+	//el residuo que voy a utilizar
+	$resResiduo	=	$this->traerResiduosPorId($residuo);
+	
+	$refResiduo		= mysql_result($resResiduo,0,0);
+	$rollerResiduo	= mysql_result($resResiduo,0,'roller');
+	$anchoResiduo	= mysql_result($resResiduo,0,'telaancho');
+	$altoResiduo	= mysql_result($resResiduo,0,'telaalto');
+	$zocaloResiduo	= mysql_result($resResiduo,0,'zocalo');
+	
+	/****************************************/
+	
+	
+	//el sistema que voy a utilizar
+	// busca medidas en "metros"
+	$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+	
+	if (mysql_num_rows($resSistema)>0) {
+		$refSistema		= mysql_result($resSistema,0,0);
+		$nombreSistema	= mysql_result($resSistema,0,'nombre');
+		$roller			= mysql_result($resSistema,0,'diametro');
+		if ($esRevendedor == 1) {
+			$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+		} else {
+			$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+		}
+	} else {
+		$valorSistema = 0;		
+	}
+	
+	/****************************************/
+	
+	//Valores finales en "cm"
+	$telaAltoFinal	= ($alto * 10) - $altoResiduo;
+	$telaAnchoFinal	= ($ancho * 10) - $anchoResiduo;
+	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
+	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
+	
+	/****************************************/
+	
+	$calculoSistema	= $valorSistema;
+	/*if ($sistema == 2) {
+		$calculoTela	= (((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela) + ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela2));
+	} else {*/
+	$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
+	//}
+	$total = $calculoSistema + $calculoTela;
+	
+	////*********************   fin  ************************/
+	
+	$ancho	=	$_POST['ancho'];
+	$alto	=	$_POST['alto'];
+	
+	$numero = $serviciosReferencias->generarNroVenta();
+	$tela = $_POST['tela'];
+	$total = $_POST['total'];
+	$refclientes = $_POST['refclientes'];
+	$reftipopago = $_POST['reftipopago'];
+	
+	if (isset($_POST['cancelada'])) {
+		$cancelada = 1;
+	} else {
+		$cancelada = 0;
+	}
+	
+	$res = $serviciosReferencias->insertarVentas($numero,$nombreSistema,$nombreTela,$total,$refclientes,$reftipopago,$cancelada);
+	
+	if ((integer)$res > 0) {
+		echo '';
+	} else {
+		echo 'Huvo un error al insertar datos';
+	}
+}
+
+
+/******************   FIN   *******************************************************/
 
 /* PARA Tipotramados */
 
@@ -430,48 +632,43 @@ $id = $_POST['id'];
 $res = $serviciosReferencias->eliminarUsuarios($id);
 echo $res;
 }
-function insertarVentas($serviciosReferencias) {
-$refsistemas = $_POST['refsistemas'];
-$reftelas = $_POST['reftelas'];
-$ancho = $_POST['ancho'];
-$alto = $_POST['alto'];
-$total = $_POST['total'];
-$refestados = $_POST['refestados'];
-$sistema = $_POST['sistema'];
-$tela = $_POST['tela'];
-$trama = $_POST['trama'];
-$refclientes = $_POST['refclientes'];
-$res = $serviciosReferencias->insertarVentas($refsistemas,$reftelas,$ancho,$alto,$total,$refestados,$sistema,$tela,$trama,$refclientes);
-if ((integer)$res > 0) {
-echo '';
-} else {
-echo 'Huvo un error al insertar datos';
-}
-}
+
+
+
+
+
 function modificarVentas($serviciosReferencias) {
-$id = $_POST['id'];
-$refsistemas = $_POST['refsistemas'];
-$reftelas = $_POST['reftelas'];
-$ancho = $_POST['ancho'];
-$alto = $_POST['alto'];
-$total = $_POST['total'];
-$refestados = $_POST['refestados'];
-$sistema = $_POST['sistema'];
-$tela = $_POST['tela'];
-$trama = $_POST['trama'];
-$refclientes = $_POST['refclientes'];
-$res = $serviciosReferencias->modificarVentas($id,$refsistemas,$reftelas,$ancho,$alto,$total,$refestados,$sistema,$tela,$trama,$refclientes);
-if ($res == true) {
-echo '';
-} else {
-echo 'Huvo un error al modificar datos';
+	$id = $_POST['id'];
+	$numero = $_POST['numero'];
+	$sistema = $_POST['sistema'];
+	$tela = $_POST['tela'];
+	$total = $_POST['total'];
+	$refclientes = $_POST['refclientes'];
+	$reftipopago = $_POST['reftipopago'];
+	if (isset($_POST['cancelada'])) {
+		$cancelada = 1;
+	} else {
+		$cancelada = 0;
+	}
+	
+	$res = $serviciosReferencias->modificarVentas($id,$numero,$sistema,$tela,$total,$refclientes,$reftipopago,$cancelada);
+	
+	if ($res == true) {
+		echo '';
+	} else {
+		echo 'Huvo un error al modificar datos';
+	}
 }
-}
+
+
 function eliminarVentas($serviciosReferencias) {
 $id = $_POST['id'];
 $res = $serviciosReferencias->eliminarVentas($id);
 echo $res;
-}
+} 
+
+
+
 function insertarImages($serviciosReferencias) {
 $refproyecto = $_POST['refproyecto'];
 $refuser = $_POST['refuser'];
@@ -732,6 +929,86 @@ echo $res;
 }
 
 /* Fin */
+
+
+
+function insertarPagos($serviciosReferencias) {
+$refclientes = $_POST['refclientes'];
+$pago = $_POST['pago'];
+$fechapago = $_POST['fechapago'];
+$observaciones = $_POST['observaciones'];
+$res = $serviciosReferencias->insertarPagos($refclientes,$pago,$fechapago,$observaciones);
+if ((integer)$res > 0) {
+echo '';
+} else {
+echo 'Huvo un error al insertar datos';
+}
+}
+function modificarPagos($serviciosReferencias) {
+$id = $_POST['id'];
+$refclientes = $_POST['refclientes'];
+$pago = $_POST['pago'];
+$fechapago = $_POST['fechapago'];
+$observaciones = $_POST['observaciones'];
+$res = $serviciosReferencias->modificarPagos($id,$refclientes,$pago,$fechapago,$observaciones);
+if ($res == true) {
+echo '';
+} else {
+echo 'Huvo un error al modificar datos';
+}
+}
+function eliminarPagos($serviciosReferencias) {
+$id = $_POST['id'];
+$res = $serviciosReferencias->eliminarPagos($id);
+echo $res;
+} 
+
+
+
+
+
+
+
+
+
+
+
+function insertarConfiguracion($serviciosReferencias) {
+$empresa = $_POST['empresa'];
+$cuit = $_POST['cuit'];
+$direccion = $_POST['direccion'];
+$telefono = $_POST['telefono'];
+$email = $_POST['email'];
+$localidad = $_POST['localidad'];
+$codigopostal = $_POST['codigopostal'];
+$res = $serviciosReferencias->insertarConfiguracion($empresa,$cuit,$direccion,$telefono,$email,$localidad,$codigopostal);
+if ((integer)$res > 0) {
+echo '';
+} else {
+echo 'Huvo un error al insertar datos';
+}
+}
+function modificarConfiguracion($serviciosReferencias) {
+$id = $_POST['id'];
+$empresa = $_POST['empresa'];
+$cuit = $_POST['cuit'];
+$direccion = $_POST['direccion'];
+$telefono = $_POST['telefono'];
+$email = $_POST['email'];
+$localidad = $_POST['localidad'];
+$codigopostal = $_POST['codigopostal'];
+$res = $serviciosReferencias->modificarConfiguracion($id,$empresa,$cuit,$direccion,$telefono,$email,$localidad,$codigopostal);
+if ($res == true) {
+echo '';
+} else {
+echo 'Huvo un error al modificar datos';
+}
+}
+function eliminarConfiguracion($serviciosReferencias) {
+$id = $_POST['id'];
+$res = $serviciosReferencias->eliminarConfiguracion($id);
+echo $res;
+} 
 
 ////////////////////////// FIN DE TRAER DATOS ////////////////////////////////////////////////////////////
 

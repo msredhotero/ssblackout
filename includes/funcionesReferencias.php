@@ -51,27 +51,18 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	}
 	
 	if ($sistema == 2) {
-		$resTelas	=	$this->traerTelasPorId($tela[0]);
-		if (mysql_num_rows($resTelas)>0) {
+		$resTelasA	=	$this->traerTelasPorId($tela[0]);
+		$resTelasB	=	$this->traerTelasPorId($tela[1]);
+		if (mysql_num_rows($resTelasA)>0) {
 			if ($esRevendedor == 1) {
-				$valorTela = mysql_result($resTelas,0,'preciocliente');
+				$valorTela = mysql_result($resTelasA,0,'preciocliente') + mysql_result($resTelasB,0,'preciocliente');
 			} else {
-				$valorTela = mysql_result($resTelas,0,'preciocosto');
+				$valorTela = mysql_result($resTelasA,0,'preciocosto') + mysql_result($resTelasB,0,'preciocosto');
 			}
 		} else {
 			$valorTela = 0;		
 		}
 		
-		$resTelas2	=	$this->traerTelasPorId($tela[1]);
-		if (mysql_num_rows($resTelas2)>0) {
-			if ($esRevendedor == 1) {
-				$valorTela2 = mysql_result($resTelas2,0,'preciocliente');
-			} else {
-				$valorTela2 = mysql_result($resTelas2,0,'preciocosto');
-			}
-		} else {
-			$valorTela2 = 0;		
-		}
 	}
 	
 	/****************************************/
@@ -112,11 +103,11 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	/****************************************/
 	
 	$calculoSistema	= $valorSistema;
-	if ($sistema == 2) {
+	/*if ($sistema == 2) {
 		$calculoTela	= (((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela) + ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela2));
-	} else {
-		$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
-	}
+	} else {*/
+	$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
+	//}
 	$total = $calculoSistema + $calculoTela;
 	
 	return $total;
@@ -285,7 +276,10 @@ return $res;
 }
 
 function traerSistemasPorMedida($ancho) {
-$sql = "select idsistema,nombre,refroller,desde,hasta,preciocosto,preciocliente from dbsistemas where ".$ancho." between desde and hasta";
+$sql = "select s.idsistema,s.nombre,s.refroller,s.desde,s.hasta,s.preciocosto,s.preciocliente , rol.diametro
+			from dbsistemas s
+			inner join tbroller rol ON rol.idroller = s.refroller 
+			where ".$ancho." between desde and hasta";
 $res = $this->query($sql,0);
 return $res;
 }
@@ -340,7 +334,10 @@ return $res;
 
 
 function traerTelasPorId($id) {
-$sql = "select idtela,tela,reftipotramados,ancho,alto,preciolista,preciocosto,preciocliente from dbtelas where idtela =".$id;
+$sql = "select t.idtela,t.tela,t.reftipotramados,t.ancho,t.alto,t.preciolista,t.preciocosto,t.preciocliente , tip.tipotramado
+			from dbtelas t
+			inner join tbtipotramados tip ON tip.idtipotramado = t.reftipotramados 
+			where idtela =".$id;
 $res = $this->query($sql,0);
 return $res;
 }
@@ -404,18 +401,33 @@ return $res;
 
 /* PARA Ventas */
 
-function insertarVentas($refsistemas,$reftelas,$ancho,$alto,$total,$refestados,$sistema,$tela,$trama,$refclientes) {
-$sql = "insert into dbventas(idventa,refsistemas,reftelas,ancho,alto,total,refestados,sistema,tela,trama,refclientes)
-values ('',".$refsistemas.",".$reftelas.",".$ancho.",".$alto.",".$total.",".$refestados.",'".utf8_decode($sistema)."','".utf8_decode($tela)."','".utf8_decode($trama)."',".$refclientes.")";
+
+function generarNroVenta() {
+	$sql = "select max(idventa) as id from dbventas";	
+	$res = $this->query($sql,0);
+	
+	if (mysql_num_rows($res)>0) {
+		$nro = 'CC'.str_pad(mysql_result($res,0,0)+1, 8, "0", STR_PAD_LEFT);
+	} else {
+		$nro = 'CC00000001';
+	}
+	
+	return $nro;
+}
+
+
+function insertarVentas($numero,$sistema,$tela,$total,$refclientes,$reftipopago,$cancelada) {
+$sql = "insert into dbventas(idventa,numero,sistema,tela,total,refclientes,reftipopago,cancelada)
+values ('','".utf8_decode($numero)."','".utf8_decode($sistema)."','".utf8_decode($tela)."',".$total.",".$refclientes.",".$reftipopago.",".$cancelada.")";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarVentas($id,$refsistemas,$reftelas,$ancho,$alto,$total,$refestados,$sistema,$tela,$trama,$refclientes) {
+function modificarVentas($id,$numero,$sistema,$tela,$total,$refclientes,$reftipopago,$cancelada) {
 $sql = "update dbventas
 set
-refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",ancho = ".$ancho.",alto = ".$alto.",total = ".$total.",refestados = ".$refestados.",sistema = '".utf8_decode($sistema)."',tela = '".utf8_decode($tela)."',trama = '".utf8_decode($trama)."',refclientes = ".$refclientes."
+numero = '".utf8_decode($numero)."',sistema = '".utf8_decode($sistema)."',tela = '".utf8_decode($tela)."',total = ".$total.",refclientes = ".$refclientes.",reftipopago = ".$reftipopago.",cancelada = ".$cancelada."
 where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -423,8 +435,12 @@ return $res;
 
 
 function eliminarVentas($id) {
-$sql = "delete from dbventas where idventa =".$id;
+$sql = "update dbventas set cancelada = 1 where idventa =".$id;
 $res = $this->query($sql,0);
+
+$sql = "update dbordenes set refestados = 5 where refventas =".$id;
+$res = $this->query($sql,0);
+
 return $res;
 }
 
@@ -432,17 +448,16 @@ return $res;
 function traerVentas() {
 $sql = "select
 v.idventa,
-v.refsistemas,
-v.reftelas,
-v.ancho,
-v.alto,
-v.total,
-v.refestados,
+v.numero,
 v.sistema,
 v.tela,
-v.trama,
-v.refclientes
+v.total,
+v.refclientes,
+v.reftipopago,
+v.cancelada
 from dbventas v
+inner join dbclientes cli ON cli.idcliente = v.refclientes
+inner join tbtipopago tip ON tip.idtipopago = v.reftipopago
 order by 1";
 $res = $this->query($sql,0);
 return $res;
@@ -450,7 +465,7 @@ return $res;
 
 
 function traerVentasPorId($id) {
-$sql = "select idventa,refsistemas,reftelas,ancho,alto,total,refestados,sistema,tela,trama,refclientes from dbventas where idventa =".$id;
+$sql = "select idventa,numero,sistema,tela,total,refclientes,reftipopago,cancelada from dbventas where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
 }
@@ -858,6 +873,186 @@ return $res;
 
 /* Fin */
 /* /* Fin de la Tabla: tbtipotramados*/
+
+
+
+
+/* PARA Ordenes */
+
+function generarNroOrden() {
+	$sql = "select max(idorden) as id from dbordenes";	
+	$res = $this->query($sql,0);
+	
+	if (mysql_num_rows($res)>0) {
+		$nro = 'ORD'.str_pad(mysql_result($res,0,0)+1, 7, "0", STR_PAD_LEFT);
+	} else {
+		$nro = 'ORD0000001';
+	}
+	
+	return $nro;
+}
+
+
+
+function insertarOrdenes($numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble) {
+$sql = "insert into dbordenes(idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble)
+values ('','".utf8_decode($numero)."',".$refventas.",'".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.")";
+$res = $this->query($sql,1);
+return $res;
+}
+
+
+function modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble) {
+$sql = "update dbordenes
+set
+numero = '".utf8_decode($numero)."',refventas = ".$refventas.",fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble."
+where idorden =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function eliminarOrdenes($id) {
+$sql = "delete from dbordenes where idorden =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerOrdenes() {
+$sql = "select
+o.idorden,
+o.numero,
+o.refventas,
+o.fechacrea,
+o.fechamodi,
+o.usuacrea,
+o.usuamodi,
+o.refestados,
+o.refsistemas,
+o.reftelas,
+o.refresiduos,
+o.roller,
+o.tramado,
+o.ancho,
+o.alto,
+o.reftelaopcional,
+o.esdoble
+from dbordenes o
+inner join dbventas ven ON ven.idventa = o.refventas
+inner join dbclientes cl ON cl.idcliente = ven.refclientes
+inner join tbtipopago ti ON ti.idtipopago = ven.reftipopago
+inner join tbestados est ON est.idestado = o.refestados
+inner join dbsistemas sis ON sis.idsistema = o.refsistemas
+inner join tbroller ro ON ro.idroller = sis.refroller
+inner join dbtelas tel ON tel.idtela = o.reftelas
+inner join tbtipotramados ti ON ti.idtipotramado = tel.reftipotramados
+inner join tbresiduos res ON res.idresiduo = o.refresiduos
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerOrdenesPorId($id) {
+$sql = "select idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble from dbordenes where idorden =".$id;
+$res = $this->query($sql,0);
+return $res;
+} 
+
+/* Fin */
+/* /* Fin de la Tabla: dbordenes*/
+
+/* PARA Pagos */
+
+function insertarPagos($refclientes,$pago,$fechapago,$observaciones) {
+$sql = "insert into dbpagos(idpago,refclientes,pago,fechapago,observaciones)
+values ('',".$refclientes.",".$pago.",'".utf8_decode($fechapago)."','".utf8_decode($observaciones)."')";
+$res = $this->query($sql,1);
+return $res;
+}
+
+
+function modificarPagos($id,$refclientes,$pago,$fechapago,$observaciones) {
+$sql = "update dbpagos
+set
+refclientes = ".$refclientes.",pago = ".$pago.",fechapago = '".utf8_decode($fechapago)."',observaciones = '".utf8_decode($observaciones)."'
+where idpago =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function eliminarPagos($id) {
+$sql = "delete from dbpagos where idpago =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerPagos() {
+$sql = "select
+p.idpago,
+cli.nombrecompleto,
+p.pago,
+p.fechapago,
+p.observaciones,
+p.refclientes
+from dbpagos p
+inner join dbclientes cli ON cli.idcliente = p.refclientes
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerDetallePagosPorCliente($idCliente) {
+$sql = "select
+p.idpago,
+cli.nombrecompleto,
+p.pago,
+p.fechapago,
+p.observaciones,
+p.refclientes
+from dbpagos p
+inner join dbclientes cli ON cli.idcliente = p.refclientes
+where cli.idcliente = ".$idCliente."
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerPagosPorCliente($idCliente) {
+$sql = "select
+coalesce(coalesce(sum(p.pago),0) - coalesce(sum(v.total),0),0) as cuenta
+from dbventas v
+inner join dbclientes cli ON v.refclientes = cli.idcliente
+left join dbpagos p ON cli.idcliente = p.refclientes
+where v.reftipopago = 5 and cli.idcliente = ".$idCliente."
+order by 1";
+$res = $this->query($sql,0);
+
+	if (mysql_num_rows($res)>0) {
+		return mysql_result($res,0,0);
+	}
+	
+	return 0;
+}
+
+
+function traerPagosPorId($id) {
+$sql = "select idpago,refclientes,pago,fechapago,observaciones from dbpagos where idpago =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+/* Fin */
+/* /* Fin de la Tabla: dbpagos*/
+
+
+
+
 
 function query($sql,$accion) {
 		

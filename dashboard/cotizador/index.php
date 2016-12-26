@@ -281,6 +281,7 @@ $resResiduo =	$serviciosReferencias->traerResiduos();
                 
                 </div>
             <input type="hidden" name="accion" id="accion" value="cotizar"/>
+            <input type="hidden" name="usuario" id="usuario" value="<?php echo $_SESSION['nombre_predio']; ?>" />
             </form>
     	</div>
         
@@ -507,46 +508,47 @@ $(document).ready(function(){
 	 		}); //fin del dialogo para eliminar
 
 	
-	$('#cargar').click(function(){
+	$('#orden').click(function(){
 		
-		if (validador() == "")
-        {
-			//información del formulario
-			var formData = new FormData($(".formulario")[0]);
-			var message = "";
-			//hacemos la petición ajax  
-			$.ajax({
-				url: '../../ajax/ajax.php',  
-				type: 'POST',
-				// Form data
-				//datos del formulario
-				data: formData,
-				//necesario para subir archivos via ajax
-				cache: false,
-				contentType: false,
-				processData: false,
-				//mientras enviamos el archivo
-				beforeSend: function(){
-					$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
-				},
-				//una vez finalizado correctamente
-				success: function(data){
-					
-					$('#total').html(data);
-					$("#load").html('');
-				},
-				//si ha ocurrido un error
-				error: function(){
-					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
-                    $("#load").html('');
-				}
-			});
-		}
+		$('#accion').val('orden');
+		//información del formulario
+		var formData = new FormData($(".formulario")[0]);
+		var message = "";
+		//hacemos la petición ajax  
+		$.ajax({
+			url: '../../ajax/ajax.php',  
+			type: 'POST',
+			// Form data
+			//datos del formulario
+			data: formData,
+			//necesario para subir archivos via ajax
+			cache: false,
+			contentType: false,
+			processData: false,
+			//mientras enviamos el archivo
+			beforeSend: function(){
+				$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
+			},
+			//una vez finalizado correctamente
+			success: function(data){
+				
+				$('#total').html(data);
+				$("#load").html('');
+			},
+			//si ha ocurrido un error
+			error: function(){
+				$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+				$("#load").html('');
+			}
+		});
+
     });
+	
 	
 	
 	$('#cotizar').click(function(){
 		
+		$('#accion').val('cotizar');
 		//información del formulario
 		var formData = new FormData($(".formulario")[0]);
 		var message = "";
@@ -581,6 +583,7 @@ $(document).ready(function(){
 					$(".alert").html('<strong>Error!</strong> '+data);
 					$("#load").html('');
 					$('#total').html('');
+					$('#orden').hide();
 
 				}
 			},
