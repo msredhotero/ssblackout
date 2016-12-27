@@ -32,61 +32,36 @@ $plural = "Ordenes";
 
 $eliminar = "eliminarOrdenes";
 
-$insertar = "insertarOrdenes";
-
-$tituloWeb = "Gestión: Talleres";
+$tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbordenes";
 
-$lblCambio	 	= array("refclientevehiculos","fechacrea","usuacrea","detallereparacion","refestados","precio");
-$lblreemplazo	= array("Cliente - Vehiculo", "Fecha Crea", "Usuario Crea","Detalle Reparación","Estado","Presupuesto Aproximado");
-
-
-$resEstado 	= $serviciosReferencias->traerEstados();
-$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resEstado,array(1),'',5);
-
-$resVehiculos 	= $serviciosReferencias->traerClientevehiculos();
-$cadRef2 	= $serviciosFunciones->devolverSelectBox($resVehiculos,array(1,2),' - ');
-
-$nroOrden	= $serviciosReferencias->generarNroOrden();
-
-$resEmp 	= $serviciosReferencias->traerEmpleados();
-
-$cadRefR = '<ul class="list-inline">';
-while ($rowFS = mysql_fetch_array($resEmp)) {
-	$cadRefR = $cadRefR."<li>".'<input id="user'.$rowFS[0].'" class="form-control" type="checkbox" required="" style="width:50px;" name="user'.$rowFS[0].'"><p>'.utf8_encode($rowFS[1]).'</p>'."</li>";
-}
-$cadRefR = $cadRefR."</ul>";
-
-
-$refdescripcion = array(0 => $cadRef,1 => $cadRef2);
-$refCampo 	=  array("refestados","refclientevehiculos");
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
 
 
 /////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
-$cabeceras 		= "	<th>Nro</th>
-					<th>Dueño</th>
-					<th>Vehiculo</th>
-					<th>Año</th>
+$cabeceras 		= "	<th>Nro Orden</th>
+					<th>Nro Venta</th>
+					<th>Clientes</th>
 					<th>Fecha</th>
-					<th>Reparación</th>
-					<th>Presup. Aprox.</th>
-					<th>Anticipo</th>
-					<th>Estado</th>";
+					<th>Usua. Crea</th>
+					<th>Sistema</th>
+					<th>Tela</th>
+					<th>Roller</th>
+					<th>Tramado</th>
+					<th>Ancho</th>
+					<th>Alto</th>
+					<th>Es Doble</th>
+					<th>Tela Sec.</th>";
 
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
-
-
-
-$formulario 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
-
+//nroorden, nroventa, cliente, fecha, usuario, sistema, tela, roller, tramado, ancho, alto, esdoble, tela aux
 $lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenes(),96);
 
 
@@ -158,49 +133,8 @@ if ($_SESSION['refroll_predio'] != 1) {
 
 <h3><?php echo $plural; ?></h3>
 
-    <div class="boxInfoLargo">
-        <div id="headBoxInfo">
-        	<p style="color: #fff; font-size:18px; height:16px;">Carga de <?php echo $plural; ?></p>
-        	
-        </div>
-    	<div class="cuerpoBox">
-        	<form class="form-inline formulario" role="form">
-        	<div class="row">
-			<?php echo $formulario; ?>
-            </div>
-			
-            <div class="row">
-            	<div class="form-group col-md-12">
-                	<label class="control-label" style="text-align:left" for="fechas">Seleccione los Responsables</label>
-                    <div class="input-group col-md-12">
-                    	<?php echo $cadRefR; ?>
-                    </div>
-                </div>
-            </div>
-            
-            <div class='row' style="margin-left:25px; margin-right:25px;">
-                <div class='alert'>
-                
-                </div>
-                <div id='load'>
-                
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-12">
-                <ul class="list-inline" style="margin-top:15px;">
-                    <li>
-                        <button type="button" class="btn btn-primary" id="cargar" style="margin-left:0px;">Guardar</button>
-                    </li>
-                </ul>
-                </div>
-            </div>
-            </form>
-    	</div>
-    </div>
     
-    <div class="boxInfoLargo">
+    <div class="boxInfoSuperLargo">
         <div id="headBoxInfo">
         	<p style="color: #fff; font-size:18px; height:16px;"><?php echo $plural; ?> Cargados</p>
         	
@@ -252,15 +186,10 @@ if ($_SESSION['refroll_predio'] != 1) {
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	$('#usuacrea').attr('value','<?php echo utf8_encode($_SESSION['nombre_predio']); ?>');
-	$('#usuamodi').attr('value','<?php echo utf8_encode($_SESSION['nombre_predio']); ?>');
-	
-	$('#numero').attr('value','<?php echo $nroOrden; ?>');
-	$('#numero').attr('readonly', true);
 	
 	
 	$('#example').dataTable({
-		"order": [[ 0, "asc" ]],
+		"order": [[ 3, "asc" ]],
 		"language": {
 			"emptyTable":     "No hay datos cargados",
 			"info":           "Mostrar _START_ hasta _END_ del total de _TOTAL_ filas",
@@ -374,87 +303,14 @@ $(document).ready(function(){
 		 
 	 		}); //fin del dialogo para eliminar
 			
-	<?php 
-		echo $serviciosHTML->validacion($tabla);
-	
-	?>
-	
 
 	
-	
-	//al enviar el formulario
-    $('#cargar').click(function(){
-		
-		if (validador() == "")
-        {
-			//información del formulario
-			var formData = new FormData($(".formulario")[0]);
-			var message = "";
-			//hacemos la petición ajax  
-			$.ajax({
-				url: '../../ajax/ajax.php',  
-				type: 'POST',
-				// Form data
-				//datos del formulario
-				data: formData,
-				//necesario para subir archivos via ajax
-				cache: false,
-				contentType: false,
-				processData: false,
-				//mientras enviamos el archivo
-				beforeSend: function(){
-					$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
-				},
-				//una vez finalizado correctamente
-				success: function(data){
 
-					if (data == '') {
-                                            $(".alert").removeClass("alert-danger");
-											$(".alert").removeClass("alert-info");
-                                            $(".alert").addClass("alert-success");
-                                            $(".alert").html('<strong>Ok!</strong> Se cargo exitosamente el <strong><?php echo $singular; ?></strong>. ');
-											$(".alert").delay(3000).queue(function(){
-												/*aca lo que quiero hacer 
-												  después de los 2 segundos de retraso*/
-												$(this).dequeue(); //continúo con el siguiente ítem en la cola
-												
-											});
-											$("#load").html('');
-											url = "index.php";
-											$(location).attr('href',url);
-                                            
-											
-                                        } else {
-                                        	$(".alert").removeClass("alert-danger");
-                                            $(".alert").addClass("alert-danger");
-                                            $(".alert").html('<strong>Error!</strong> '+data);
-                                            $("#load").html('');
-                                        }
-				},
-				//si ha ocurrido un error
-				error: function(){
-					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
-                    $("#load").html('');
-				}
-			});
-		}
-    });
+
 
 });
 </script>
-<script src="../../js/chosen.jquery.js" type="text/javascript"></script>
-<script type="text/javascript">
-    var config = {
-      '.chosen-select'           : {},
-      '.chosen-select-deselect'  : {allow_single_deselect:true},
-      '.chosen-select-no-single' : {disable_search_threshold:10},
-      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
-      '.chosen-select-width'     : {width:"95%"}
-    }
-    for (var selector in config) {
-      $(selector).chosen(config[selector]);
-    }
-  </script>
+
 <?php } ?>
 </body>
 </html>

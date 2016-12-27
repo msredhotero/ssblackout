@@ -67,7 +67,7 @@ class Servicios {
 				$idresultados = "resultadosprincipal";
 				break;
 			case 96:
-				$cantidad = 9;
+				$cantidad = 13;
 				$classMod = 'varmodificar';
 				$classVer = 'varver';
 				$lblVer	  = 'Responsables';
@@ -236,7 +236,11 @@ class Servicios {
 		$sql	=	"show columns from ".$tabla;
 		$res 	=	$this->query($sql,0);
 		$label  = '';
-		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+		if ($tabla == 'dbordenes') {
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","tramado","roller","refventas");
+		} else {
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+		}
 		
 		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto","desde","hasta");
 		
@@ -557,7 +561,11 @@ class Servicios {
 		$sql	=	"show columns from ".$tabla;
 		$res 	=	$this->query($sql,0);
 		
-		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+		if ($tabla == 'dbordenes') {
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","tramado","roller","refventas","refresiduos","refsistemas");
+		} else {
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+		}
 		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto");
 		
 		$camposEscondido = "";

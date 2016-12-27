@@ -41,59 +41,45 @@ $modificar = "modificarOrdenes";
 
 $idTabla = "idorden";
 
-$tituloWeb = "Gestión: Talleres";
+$tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbordenes";
 
-$lblCambio	 	= array("refclientevehiculos","fechacrea","usuacrea","detallereparacion","refestados");
-$lblreemplazo	= array("Cliente - Vehiculo", "Fecha Crea", "Usuario Crea","Detalle Reparación","Estado");
+$lblCambio	 	= array("esdoble","refsistemas","reftelas","reftelaopcional","refestados");
+$lblreemplazo	= array("Es Doble", "Sistema", "Telas","Segunda Tela","Estado");
 
+$esDoble	= mysql_result($resResultado,0,'esdoble');
+$segTela	= mysql_result($resResultado,0,'reftelaopcional');
 
 $resEstado 	= $serviciosReferencias->traerEstados();
 $cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resEstado,array(1),'',mysql_result($resResultado,0,'refestados'));
 
-$resVehiculos 	= $serviciosReferencias->traerClientevehiculos();
-$cadRef2 	= $serviciosFunciones->devolverSelectBoxActivo($resVehiculos,array(1,2),' - ',mysql_result($resResultado,0,'refclientevehiculos'));
+$resSistemas= $serviciosReferencias->traerSistemas();
+$cadRef2 	= $serviciosFunciones->devolverSelectBoxActivo($resSistemas,array(1),'',mysql_result($resResultado,0,'refsistemas'));
 
+$resTelas	= $serviciosReferencias->traerTelas();
+$cadRef3 	= $serviciosFunciones->devolverSelectBoxActivo($resTelas,array(1),'',mysql_result($resResultado,0,'reftelas'));
+
+if ($esDoble == 'Si') {
+	$resTelasAux= $serviciosReferencias->traerTelas();
+	$cadRef4 	= '<option value="">-- Seleccionar --</option>';
+	$cadRef4 	.= $serviciosFunciones->devolverSelectBoxActivo($resTelasAux,array(1),'', $segTela);
+} else {
+	$resTelasAux= $serviciosReferencias->traerTelas();
+	$cadRef4 	= '<option value="">-- Seleccionar --</option>';
+	$cadRef4 	.= $serviciosFunciones->devolverSelectBox($resTelasAux,array(1),'');
+}
 $nroOrden	= mysql_result($resResultado,0,'numero');
 
-$refdescripcion = array(0 => $cadRef,1 => $cadRef2);
-$refCampo 	=  array("refestados","refclientevehiculos");
+
+$refdescripcion = array(0 => $cadRef,1 => $cadRef2,2 => $cadRef3,3 => $cadRef4);
+$refCampo 	=  array("refestados","refsistemas","reftelas","reftelaopcional");
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
-$resUser = $serviciosReferencias->traerEmpleados();
-
-$resUserProyect = $serviciosReferencias->traerResponsablesPorOrden($id);
-
-
-	while ($subrow = mysql_fetch_array($resUserProyect)) {
-			$arrayFS[] = $subrow;
-	}
-
-
-
-$cadUser = '<ul class="list-inline">';
-while ($rowFS = mysql_fetch_array($resUser)) {
-	$check = '';
-	if (mysql_num_rows($resUserProyect)>0) {
-		foreach ($arrayFS as $item) {
-			if (stripslashes($item['refempleados']) == $rowFS[0]) {
-				$check = 'checked';	
-			}
-		}
-	}
-	$cadUser = $cadUser."<li style='width:120px;'>".'<input id="user'.$rowFS[0].'" '.$check.' class="form-control" type="checkbox" required="" style="width:50px;" name="user'.$rowFS[0].'"><p>'.utf8_encode($rowFS['apellido']).", ".utf8_encode($rowFS['nombre']).'</p>'."</li>";
-
-
-}
-
-
-
-$cadUser = $cadUser."</ul>";
 
 
 
@@ -140,6 +126,7 @@ if ($_SESSION['idroll_predio'] != 1) {
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="../../css/chosen.css">
+    <script src="../../js/jquery.number.min.js"></script>
 	<style type="text/css">
 		
   
@@ -179,14 +166,6 @@ if ($_SESSION['idroll_predio'] != 1) {
 			<?php echo $formulario; ?>
             </div>
             
-            <div class="row">
-            	<div class="form-group col-md-12">
-                	<label class="control-label" style="text-align:left" for="fechas">Select Users</label>
-                    <div class="input-group col-md-12">
-                    	<?php echo $cadUser; ?>
-                    </div>
-                </div>
-            </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
                 <div class='alert'>
@@ -242,6 +221,48 @@ $(document).ready(function(){
 	
 	$('#numero').attr('value','<?php echo $nroOrden; ?>');
 	$('#numero').attr('readonly', true);
+	
+	$('.valorAdd').html('cm');
+	
+	$('#ancho').number( true, 2 );
+	$('#alto').number( true, 2,'.','' );
+	
+	function validar() {
+		var ancho = $('#ancho').val();
+		var alto = $('#alto').val();	
+		var error = '';
+		
+		if ((ancho == '') || (ancho < 20))  {
+			error = '_ Debe cargar un acnho o el ancho a menor a las 20 centimetros<br>';
+		}
+		
+		if ((alto == '') || (alto < 20))  {
+			error += '_ Debe cargar un alto o el alto a menor a las 20 centimetros<br>';
+		}
+		
+		if ($('#esdoble').prop('checked')) {
+			if ($('#reftelaopcional').val()	== '') {
+				error += '_ Debe seleccionar otra tela para el sistema doble<br>';
+			}
+		}
+		
+		return error;
+	}
+	
+	if (<?php echo $esDoble; ?> == 0) {
+		$('#reftelaopcional').attr('disabled', true);
+	}
+	
+	$('#esdoble').click(function() {
+		if ($(this).prop('checked')) {
+			$('#reftelaopcional').attr('disabled', false);
+		} else {
+			$('#reftelaopcional').attr('disabled', true);
+			$('#reftelaopcional > option[value=""]').attr('selected', 'selected');	
+		}
+	});
+		
+	
 	
 	
 	$('.volver').click(function(event){
@@ -314,7 +335,9 @@ $(document).ready(function(){
 	//al enviar el formulario
     $('#cargar').click(function(){
 		
-		if (validador() == "")
+		var error = validar();
+		
+		if (error == "")
         {
 			//información del formulario
 			var formData = new FormData($(".formulario")[0]);
@@ -366,6 +389,11 @@ $(document).ready(function(){
                     $("#load").html('');
 				}
 			});
+		} else {
+			$(".alert").removeClass("alert-danger");
+			$(".alert").addClass("alert-danger");
+			$(".alert").html('<strong>Error!</strong> '+error);
+			$("#load").html('');
 		}
     });
 

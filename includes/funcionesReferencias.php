@@ -896,7 +896,7 @@ function generarNroOrden() {
 
 function insertarOrdenes($numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble) {
 $sql = "insert into dbordenes(idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble)
-values ('','".utf8_decode($numero)."',".$refventas.",'".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.")";
+values ('','".utf8_decode($numero)."',".$refventas.",'".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".($reftelaopcional == '' ? 0 : $reftelaopcional).",".$esdoble.")";
 $res = $this->query($sql,1);
 return $res;
 }
@@ -920,35 +920,55 @@ return $res;
 
 
 function traerOrdenes() {
-$sql = "select
-o.idorden,
-o.numero,
-o.refventas,
-o.fechacrea,
-o.fechamodi,
-o.usuacrea,
-o.usuamodi,
-o.refestados,
-o.refsistemas,
-o.reftelas,
-o.refresiduos,
-o.roller,
-o.tramado,
-o.ancho,
-o.alto,
-o.reftelaopcional,
-o.esdoble
-from dbordenes o
-inner join dbventas ven ON ven.idventa = o.refventas
-inner join dbclientes cl ON cl.idcliente = ven.refclientes
-inner join tbtipopago ti ON ti.idtipopago = ven.reftipopago
-inner join tbestados est ON est.idestado = o.refestados
-inner join dbsistemas sis ON sis.idsistema = o.refsistemas
-inner join tbroller ro ON ro.idroller = sis.refroller
-inner join dbtelas tel ON tel.idtela = o.reftelas
-inner join tbtipotramados ti ON ti.idtipotramado = tel.reftipotramados
-inner join tbresiduos res ON res.idresiduo = o.refresiduos
-order by 1";
+$sql = "select 
+			o.idorden,
+			o.numero as nroorden,
+			ven.numero as nroventa,
+			cl.nombrecompleto,
+			o.fechacrea,
+			o.usuacrea,
+			sis.nombre as sistema,
+			tel.tela,
+			o.roller,
+			o.tramado,
+			o.ancho,
+			o.alto,
+			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			o.fechamodi,
+			o.usuamodi,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			o.refventas,
+			o.refestados,
+			o.refsistemas,
+			o.reftelas,
+			o.refresiduos,
+			o.reftelaopcional
+			
+		from
+			dbordenes o
+				inner join
+			dbventas ven ON ven.idventa = o.refventas
+				inner join
+			dbclientes cl ON cl.idcliente = ven.refclientes
+				inner join
+			tbtipopago ti ON ti.idtipopago = ven.reftipopago
+				inner join
+			tbestados est ON est.idestado = o.refestados
+				inner join
+			dbsistemas sis ON sis.idsistema = o.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = o.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = o.refresiduos		
+		order by 1";
 $res = $this->query($sql,0);
 return $res;
 }

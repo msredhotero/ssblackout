@@ -184,7 +184,7 @@ eliminarPagos($serviciosReferencias);
 break; 
 
 
-case 'insertarVentas':
+case 'orden':
 insertarVentas($serviciosReferencias);
 break;
 case 'modificarVentas':
@@ -279,11 +279,11 @@ function cotizar($serviciosReferencias) {
 	}
 	
 	if (($ancho == '') || ($ancho < 20)) {
-		$cadErrores .= "_ Debe cargar un acnho o el ancho a menor a las 10 centimetros<br>"; 
+		$cadErrores .= "_ Debe cargar un acnho o el ancho a menor a las 20 centimetros<br>"; 
 	}
 	
 	if (($alto == '') || ($alto < 20)) {
-		$cadErrores .= "_ Debe cargar un alto o el alto a menor a las 10 centimetros<br>"; 
+		$cadErrores .= "_ Debe cargar un alto o el alto a menor a las 20 centimetros<br>"; 
 	}
 	
 	
@@ -309,6 +309,9 @@ function insertarVentas($serviciosReferencias) {
 	$sistemaDoble = 0;
 	$sistema = 1;
 	$idResiduo = 0;
+	
+	//esta variable por ahora es asi
+	$esRevendedor = 0;
 	
 	$idTela = array();
 	
@@ -339,10 +342,12 @@ function insertarVentas($serviciosReferencias) {
 		}
 	}
 	
+	$ancho	=	$_POST['ancho'];
+	$alto	=	$_POST['alto'];
 	
 	////********************* del cotizar  *****************/
 	if ($sistema == 1) {
-		$resTelas	=	$this->traerTelasPorId($tela[0]);
+		$resTelas	=	$serviciosReferencias->traerTelasPorId($idTela[0]);
 		if (mysql_num_rows($resTelas)>0) {
 			$refTelasA = mysql_result($resTelas,0,0);
 			$nombreTela = mysql_result($resTelas,0,'tela');
@@ -358,8 +363,8 @@ function insertarVentas($serviciosReferencias) {
 	}
 	
 	if ($sistema == 2) {
-		$resTelasA	=	$this->traerTelasPorId($tela[0]);
-		$resTelasB	=	$this->traerTelasPorId($tela[1]);
+		$resTelasA	=	$serviciosReferencias->traerTelasPorId($idTela[0]);
+		$resTelasB	=	$serviciosReferencias->traerTelasPorId($idTela[1]);
 		if (mysql_num_rows($resTelasA)>0) {
 			$refTelasA = mysql_result($resTelasA,0,0);
 			$refTelasB = mysql_result($resTelasB,0,0);
@@ -379,7 +384,7 @@ function insertarVentas($serviciosReferencias) {
 	/****************************************/
 	
 	//el residuo que voy a utilizar
-	$resResiduo	=	$this->traerResiduosPorId($residuo);
+	$resResiduo	=	$serviciosReferencias->traerResiduosPorId($idResiduo);
 	
 	$refResiduo		= mysql_result($resResiduo,0,0);
 	$rollerResiduo	= mysql_result($resResiduo,0,'roller');
@@ -392,7 +397,7 @@ function insertarVentas($serviciosReferencias) {
 	
 	//el sistema que voy a utilizar
 	// busca medidas en "metros"
-	$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+	$resSistema		=	$serviciosReferencias->traerSistemasPorMedida($ancho / 100);
 	
 	if (mysql_num_rows($resSistema)>0) {
 		$refSistema		= mysql_result($resSistema,0,0);
@@ -427,24 +432,31 @@ function insertarVentas($serviciosReferencias) {
 	
 	////*********************   fin  ************************/
 	
+	/****** basico para la venta  ***************************/
 	$ancho	=	$_POST['ancho'];
 	$alto	=	$_POST['alto'];
 	
 	$numero = $serviciosReferencias->generarNroVenta();
-	$tela = $_POST['tela'];
-	$total = $_POST['total'];
+	$total = $_POST['totalgral'];
 	$refclientes = $_POST['refclientes'];
 	$reftipopago = $_POST['reftipopago'];
+	$cancelada = 1;
+	/*************  fin de la venta ************************/
 	
-	if (isset($_POST['cancelada'])) {
-		$cancelada = 1;
-	} else {
-		$cancelada = 0;
-	}
+	/********  basico para la orden ************************/
+	$numeroOrdenes  = $serviciosReferencias->generarNroOrden();
+	$usuacrea		= $_POST['usuario'];
+	
+	/*******   fin    **************************************/
 	
 	$res = $serviciosReferencias->insertarVentas($numero,$nombreSistema,$nombreTela,$total,$refclientes,$reftipopago,$cancelada);
 	
 	if ((integer)$res > 0) {
+		if ($sistema == 2) {
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,$refTelasB,1);
+		} else {
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,'',0);	
+		}
 		echo '';
 	} else {
 		echo 'Huvo un error al insertar datos';

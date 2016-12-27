@@ -32,7 +32,7 @@ $eliminar = "eliminarOrdenes";
 
 $insertar = "insertarOrdenes";
 
-$tituloWeb = "Gestión: Talleres";
+$tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
@@ -41,6 +41,11 @@ $tituloWeb = "Gestión: Talleres";
 $resTelas	=	$serviciosReferencias->traerTelas();
 
 $resResiduo =	$serviciosReferencias->traerResiduos();
+
+$lstClientes = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->traerClientes(),array(1),'');
+
+$lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->traerTipopago(),array(1),'');
+
 
 ?>
 
@@ -73,7 +78,7 @@ $resResiduo =	$serviciosReferencias->traerResiduos();
 	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
-
+	<link rel="stylesheet" href="../../css/chosen.css">
 
 	<style>
 		.cartel {
@@ -259,6 +264,29 @@ $resResiduo =	$serviciosReferencias->traerResiduos();
 				?>
             </div>
             
+            <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
+            	<div class="form-group col-md-6" style="display:block">
+                	<label class="control-label" for="codigobarra" style="text-align:left">Seleccione el Cliente</label>
+                    <div class="input-group col-md-12">
+	                    <select data-placeholder="selecione el Cliente..." id="refclientes" name="refclientes" class="chosen-select" tabindex="2" style="width:100%;">
+                            
+                            <?php echo $lstClientes; ?>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group col-md-6" style="display:block">
+                	<label class="control-label" for="codigobarra" style="text-align:left">Seleccione el Tipo Pago</label>
+                    <div class="input-group col-md-12">
+	                    <select data-placeholder="selecione el Tipo de Pago..." id="reftipopago" name="reftipopago" class="chosen-select" tabindex="2" style="width:100%;">
+                            
+                            <?php echo $lstTipoPago; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            
             <div class="row">
                 <div class="col-md-12">
                 <ul class="list-inline" style="margin-top:15px;">
@@ -274,15 +302,23 @@ $resResiduo =	$serviciosReferencias->traerResiduos();
                 </ul>
                 </div>
             </div>
-            <div class='alert'>
-                
+
+            
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+                <div class='alert'>
+                    
                 </div>
                 <div id='load'>
                 
                 </div>
+            </div>
             <input type="hidden" name="accion" id="accion" value="cotizar"/>
+            <input type="hidden" name="totalgral" id="totalgral" value="0"/>
             <input type="hidden" name="usuario" id="usuario" value="<?php echo $_SESSION['nombre_predio']; ?>" />
             </form>
+            <div style="height:70px;">
+            </div>
     	</div>
         
         
@@ -532,8 +568,13 @@ $(document).ready(function(){
 			//una vez finalizado correctamente
 			success: function(data){
 				
-				$('#total').html(data);
+				$('#total').html('');
+				$('#accion').val('cotizar');
 				$("#load").html('');
+				$(".alert").removeClass("alert-danger");
+				$(".alert").removeClass("alert-info");
+				$(".alert").addClass("alert-success");
+				$(".alert").html('<strong>Ok!</strong> Se cargo exitosamente la <strong>Orden y la Venta</strong>. ');
 			},
 			//si ha ocurrido un error
 			error: function(){
@@ -577,6 +618,8 @@ $(document).ready(function(){
 					$(".alert").html('');
 					$("#load").html('');
 					$('#orden').show();
+					$('#datosFacturacion').show();
+					$('#totalgral').val(data);
 				} else {
 					$(".alert").removeClass("alert-danger");
 					$(".alert").addClass("alert-danger");
@@ -584,6 +627,8 @@ $(document).ready(function(){
 					$("#load").html('');
 					$('#total').html('');
 					$('#orden').hide();
+					$('#datosFacturacion').hide();
+					$('#totalgral').val(0);
 
 				}
 			},
@@ -595,9 +640,24 @@ $(document).ready(function(){
 		});
 		
     });
+	
+	$('#datosFacturacion').hide();
 
 });
 </script>
+<script src="../../js/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+      '.chosen-select'           : {},
+      '.chosen-select-deselect'  : {allow_single_deselect:true},
+      '.chosen-select-no-single' : {disable_search_threshold:10},
+      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
+      '.chosen-select-width'     : {width:"95%"}
+    }
+    for (var selector in config) {
+      $(selector).chosen(config[selector]);
+    }
+  </script>
 <?php } ?>
 </body>
 </html>
