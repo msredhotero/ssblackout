@@ -418,7 +418,7 @@ function generarNroVenta() {
 
 function insertarVentas($numero,$sistema,$tela,$total,$refclientes,$reftipopago,$cancelada) {
 $sql = "insert into dbventas(idventa,numero,sistema,tela,total,refclientes,reftipopago,cancelada)
-values ('','".utf8_decode($numero)."','".utf8_decode($sistema)."','".utf8_decode($tela)."',".$total.",".$refclientes.",".$reftipopago.",".$cancelada.")";
+values ('','".utf8_decode($numero)."','".utf8_decode($sistema)."','".utf8_decode($tela)."',".$total.",".$refclientes.",".$reftipopago.",0)";
 $res = $this->query($sql,1);
 return $res;
 }
@@ -428,6 +428,16 @@ function modificarVentas($id,$numero,$sistema,$tela,$total,$refclientes,$reftipo
 $sql = "update dbventas
 set
 numero = '".utf8_decode($numero)."',sistema = '".utf8_decode($sistema)."',tela = '".utf8_decode($tela)."',total = ".$total.",refclientes = ".$refclientes.",reftipopago = ".$reftipopago.",cancelada = ".$cancelada."
+where idventa =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function modificarVentasValor($id,$sistema,$tela,$total) {
+$sql = "update dbventas
+set
+sistema = '".utf8_decode($sistema)."',tela = '".utf8_decode($tela)."',total = ".$total."
 where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -449,15 +459,19 @@ function traerVentas() {
 $sql = "select
 v.idventa,
 v.numero,
+cli.nombrecompleto,
 v.sistema,
 v.tela,
 v.total,
+ord.fechacrea,
+tip.descripcion,
+(case when v.cancelada = 1 then 'Si' else 'No' end) as cancelada,
 v.refclientes,
-v.reftipopago,
-v.cancelada
+v.reftipopago
 from dbventas v
 inner join dbclientes cli ON cli.idcliente = v.refclientes
 inner join tbtipopago tip ON tip.idtipopago = v.reftipopago
+inner join dbordenes ord ON v.idventa = ord.refventas
 order by 1";
 $res = $this->query($sql,0);
 return $res;
@@ -469,6 +483,7 @@ $sql = "select idventa,numero,sistema,tela,total,refclientes,reftipopago,cancela
 $res = $this->query($sql,0);
 return $res;
 }
+
 
 /* Fin */
 /* /* Fin de la Tabla: dbventas*/
@@ -905,7 +920,7 @@ return $res;
 function modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble) {
 $sql = "update dbordenes
 set
-numero = '".utf8_decode($numero)."',refventas = ".$refventas.",fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble."
+numero = '".utf8_decode($numero)."',refventas = ".$refventas.",fechamodi = '".date('Y-m-d')."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".($reftelaopcional == '' ? 0 : $reftelaopcional).",esdoble = ".$esdoble."
 where idorden =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -913,8 +928,16 @@ return $res;
 
 
 function eliminarOrdenes($id) {
-$sql = "delete from dbordenes where idorden =".$id;
+
+$resOrd = $this->traerOrdenesPorId($id);	
+$idVenta= mysql_result($resOrd,0,'refventas');
+	
+$sql = "update dbventas set cancelada = 1 where idventa =".$idVenta;
 $res = $this->query($sql,0);
+
+$sql = "update dbordenes set refestados = 5 where refventas =".$idVenta;
+$res = $this->query($sql,0);
+
 return $res;
 }
 
@@ -979,6 +1002,62 @@ $sql = "select idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,re
 $res = $this->query($sql,0);
 return $res;
 } 
+
+
+function traerOrdenesPorVenta($idVenta) {
+$sql = "select 
+			o.idorden,
+			o.numero as nroorden,
+			ven.numero as nroventa,
+			cl.nombrecompleto,
+			o.fechacrea,
+			o.usuacrea,
+			sis.nombre as sistema,
+			tel.tela,
+			o.roller,
+			o.tramado,
+			o.ancho,
+			o.alto,
+			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			o.fechamodi,
+			o.usuamodi,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			o.refventas,
+			o.refestados,
+			o.refsistemas,
+			o.reftelas,
+			o.refresiduos,
+			o.reftelaopcional
+			
+		from
+			dbordenes o
+				inner join
+			dbventas ven ON ven.idventa = o.refventas
+				inner join
+			dbclientes cl ON cl.idcliente = ven.refclientes
+				inner join
+			tbtipopago ti ON ti.idtipopago = ven.reftipopago
+				inner join
+			tbestados est ON est.idestado = o.refestados
+				inner join
+			dbsistemas sis ON sis.idsistema = o.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = o.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = o.refresiduos		
+			where ven.idventa = ".$idVenta."
+		order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
 
 /* Fin */
 /* /* Fin de la Tabla: dbordenes*/

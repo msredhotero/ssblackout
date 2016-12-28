@@ -194,6 +194,15 @@ case 'eliminarVentas':
 eliminarVentas($serviciosReferencias);
 break; 
 
+case 'insertarOrdenes':
+insertarOrdenes($serviciosReferencias);
+break;
+case 'modificarOrdenes':
+modificarOrdenes($serviciosReferencias);
+break;
+case 'eliminarOrdenes':
+eliminarOrdenes($serviciosReferencias);
+break; 
 
 case 'cotizar':
 	cotizar($serviciosReferencias);
@@ -465,6 +474,144 @@ function insertarVentas($serviciosReferencias) {
 
 
 /******************   FIN   *******************************************************/
+
+
+
+/********************    ORDENES   ************************************************/
+
+function modificarOrdenes($serviciosReferencias) {
+	$id = $_POST['id'];
+	$numero = $_POST['numero'];
+	$refventas = $_POST['refventas'];
+	$fechacrea = '';
+	$fechamodi = $_POST['fechamodi'];
+	$usuacrea = $_POST['usuacrea'];
+	$usuamodi = $_POST['usuamodi'];
+	$refestados = $_POST['refestados'];
+	//$refsistemas = $_POST['refsistemas'];
+	$reftelas = $_POST['reftelas'];
+	$refresiduos = $_POST['refresiduos'];
+	$roller = $_POST['roller'];
+	$tramado = $_POST['tramado'];
+	$ancho = $_POST['ancho'];
+	$alto = $_POST['alto'];
+	
+	
+	// POR AHORA LO SETEO EN 0
+	$esRevendedor = 0;
+	
+	if (isset($_POST['esdoble'])) {
+		$esdoble = 1;
+		$reftelaopcional = $_POST['reftelaopcional'];
+		// SI ES DOBLE SISTEMA CALCULO EL VALOR DE AMBAS TELAS
+		$resTelasA	=	$serviciosReferencias->traerTelasPorId($reftelas);
+		$resTelasB	=	$serviciosReferencias->traerTelasPorId($reftelaopcional);
+		if (mysql_num_rows($resTelasA)>0) {
+			$refTelasA = mysql_result($resTelasA,0,0);
+			$refTelasB = mysql_result($resTelasB,0,0);
+			$nombreTela = mysql_result($resTelasA,0,'tela').' - '.mysql_result($resTelasB,0,'tela');
+			$tramado = mysql_result($resTelasA,0,'tipotramado').' - '.mysql_result($resTelasB,0,'tipotramado');
+			if ($esRevendedor == 1) {
+				$valorTela = mysql_result($resTelasA,0,'preciocliente') + mysql_result($resTelasB,0,'preciocliente');
+			} else {
+				$valorTela = mysql_result($resTelasA,0,'preciocosto') + mysql_result($resTelasB,0,'preciocosto');
+			}
+		} else {
+			$valorTela = 0;		
+		}
+		
+	} else {
+		$esdoble = 0;
+		$reftelaopcional = '';
+		// SOLO CALCULO EL VALOR DE UNA TELA
+		$resTelas	=	$serviciosReferencias->traerTelasPorId($reftelas);
+		if (mysql_num_rows($resTelas)>0) {
+			$refTelasA = mysql_result($resTelas,0,0);
+			$nombreTela = mysql_result($resTelas,0,'tela');
+			$tramado = mysql_result($resTelas,0,'tipotramado');
+			if ($esRevendedor == 1) {
+				$valorTela = mysql_result($resTelas,0,'preciocliente');
+			} else {
+				$valorTela = mysql_result($resTelas,0,'preciocosto');
+			}
+		} else {
+			$valorTela = 0;		
+		}
+	}
+	
+	/****************************************/
+	
+	//el residuo que voy a utilizar
+	$resResiduo	=	$serviciosReferencias->traerResiduosPorId($refresiduos);
+	
+	$refResiduo		= mysql_result($resResiduo,0,0);
+	$rollerResiduo	= mysql_result($resResiduo,0,'roller');
+	$anchoResiduo	= mysql_result($resResiduo,0,'telaancho');
+	$altoResiduo	= mysql_result($resResiduo,0,'telaalto');
+	$zocaloResiduo	= mysql_result($resResiduo,0,'zocalo');
+	
+	/****************************************/
+	
+	
+	//el sistema que voy a utilizar
+	// busca medidas en "metros"
+	$resSistema		=	$serviciosReferencias->traerSistemasPorMedida($ancho / 100);
+	
+	if (mysql_num_rows($resSistema)>0) {
+		$refSistema		= mysql_result($resSistema,0,0);
+		$nombreSistema	= mysql_result($resSistema,0,'nombre');
+		$roller			= mysql_result($resSistema,0,'diametro');
+		if ($esRevendedor == 1) {
+			$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+		} else {
+			$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+		}
+	} else {
+		$valorSistema = 0;		
+	}
+	
+	/****************************************/
+	
+	/****************************************/
+	
+	//Valores finales en "cm"
+	$telaAltoFinal	= ($alto * 10) - $altoResiduo;
+	$telaAnchoFinal	= ($ancho * 10) - $anchoResiduo;
+	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
+	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
+	
+	/****************************************/
+	
+	/*****************     CALCULOS     ***********************************/
+	$calculoSistema	= $valorSistema;
+	/*if ($sistema == 2) {
+		$calculoTela	= (((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela) + ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela2));
+	} else {*/
+	$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
+	//}
+	$total = $calculoSistema + $calculoTela;
+	
+	/********************   FIN     ******************************************/
+	
+	$res = $serviciosReferencias->modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refSistema,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble);
+	
+	if ($res == true) {
+		$serviciosReferencias->modificarVentasValor($refventas,$nombreSistema, $nombreTela, $total);
+		echo '';
+	} else {
+		echo 'Huvo un error al modificar datos';
+	}
+}
+
+function eliminarOrdenes($serviciosReferencias) {
+	$id = $_POST['id'];
+	$res = $serviciosReferencias->eliminarOrdenes($id);
+	echo $res;
+} 
+
+
+
+/********************    FIN        ************************************************/
 
 /* PARA Tipotramados */
 

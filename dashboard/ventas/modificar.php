@@ -22,65 +22,64 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Ordenes",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Ventas",$_SESSION['refroll_predio'],'');
 
 
 $id = $_GET['id'];
 
-$resResultado = $serviciosReferencias->traerOrdenesPorId($id);
-
+$resResultado = $serviciosReferencias->traerVentasPorId($id);
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Orden";
+$singular = "Venta";
 
-$plural = "Ordenes";
+$plural = "Ventas";
 
-$eliminar = "eliminarOrdenes";
+$eliminar = "eliminarVentas";
 
-$modificar = "modificarOrdenes";
+$modificar = "modificarVentas";
 
-$idTabla = "idorden";
+$idTabla = "idventa";
 
 $tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbordenes";
+$tabla 			= "dbventas";
 
-$lblCambio	 	= array("esdoble","refsistemas","reftelas","reftelaopcional","refestados");
-$lblreemplazo	= array("Es Doble", "Sistema", "Telas","Segunda Tela","Estado");
-
-$esDoble	= mysql_result($resResultado,0,'esdoble');
-$segTela	= mysql_result($resResultado,0,'reftelaopcional');
-
-$resEstado 	= $serviciosReferencias->traerEstados();
-$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resEstado,array(1),'',mysql_result($resResultado,0,'refestados'));
-
-$resSistemas= $serviciosReferencias->traerSistemas();
-$cadRef2 	= $serviciosFunciones->devolverSelectBoxActivo($resSistemas,array(1),'',mysql_result($resResultado,0,'refsistemas'));
-
-$resTelas	= $serviciosReferencias->traerTelas();
-$cadRef3 	= $serviciosFunciones->devolverSelectBoxActivo($resTelas,array(1),'',mysql_result($resResultado,0,'reftelas'));
-
-if ($esDoble == 1) {
-	$resTelasAux= $serviciosReferencias->traerTelas();
-	$cadRef4 	= '<option value="">-- Seleccionar --</option>';
-	$cadRef4 	.= $serviciosFunciones->devolverSelectBoxActivo($resTelasAux,array(1),'', $segTela);
-} else {
-	$resTelasAux= $serviciosReferencias->traerTelas();
-	$cadRef4 	= '<option value="">-- Seleccionar --</option>';
-	$cadRef4 	.= $serviciosFunciones->devolverSelectBox($resTelasAux,array(1),'');
-}
-$nroOrden	= mysql_result($resResultado,0,'numero');
+$lblCambio	 	= array("reftipopago","refclientes");
+$lblreemplazo	= array("Tipo Pago","Cliente");
 
 
-$refdescripcion = array(0 => $cadRef,1 => $cadRef2,2 => $cadRef3,3 => $cadRef4);
-$refCampo 	=  array("refestados","refsistemas","reftelas","reftelaopcional");
+$resTipoPago 	= $serviciosReferencias->traerTipopago();
+$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resTipoPago,array(1),'',mysql_result($resResultado,0,'reftipopago'));
+    
+$resClientes 	= $serviciosReferencias->traerClientesPorId(mysql_result($resResultado,0,'refclientes'));
+$cadRef2 	= $serviciosFunciones->devolverSelectBoxActivo($resClientes,array(1),'',mysql_result($resResultado,0,'refclientes'));
+   
+	
+$refdescripcion = array(0 => $cadRef,1=>$cadRef2);
+$refCampo 	=  array("reftipopago","refclientes");
+//////////////////////////////////////////////  FIN de los opciones //////////////////////////
+/////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
+$cabeceras 		= "	<th>Nro Orden</th>
+					<th>Nro Venta</th>
+					<th>Clientes</th>
+					<th>Fecha</th>
+					<th>Usua. Crea</th>
+					<th>Sistema</th>
+					<th>Tela</th>
+					<th>Roller</th>
+					<th>Tramado</th>
+					<th>Ancho</th>
+					<th>Alto</th>
+					<th>Es Doble</th>
+					<th>Tela Sec.</th>";
+
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
-
-
+//nroorden, nroventa, cliente, fecha, usuario, sistema, tela, roller, tramado, ancho, alto, esdoble, tela aux
+$lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($id),13);
 
 
 $formulario 	= $serviciosFunciones->camposTablaModificar($id, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
@@ -125,8 +124,7 @@ if ($_SESSION['idroll_predio'] != 1) {
 	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="../../css/chosen.css">
-    <script src="../../js/jquery.number.min.js"></script>
+
 	<style type="text/css">
 		
   
@@ -166,6 +164,20 @@ if ($_SESSION['idroll_predio'] != 1) {
 			<?php echo $formulario; ?>
             </div>
             
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+            	
+                <div class="col-md-12">
+                	<div class="panel panel-info">
+                    	<div class="panel-heading">Detalle de la Venta</div>
+                        <div class="panel-body">
+							<?php echo $lstCargados; ?>
+                        </div>
+                        <div class="panel-footer" style="color: #D00;">
+                        	* Importante: Si cancela la venta, la orden se dara por cancelada.
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
                 <div class='alert'>
@@ -210,60 +222,39 @@ if ($_SESSION['idroll_predio'] != 1) {
         <p><strong>Importante: </strong>Si elimina el equipo se perderan todos los datos de este</p>
         <input type="hidden" value="" id="idEliminar" name="idEliminar">
 </div>
+
+<div id="dialog3" title="Borrar imagen">
+    	<p>
+        	<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+            ¿Esta seguro de desea eliminar esta imagen?.
+        </p>
+        <div id="auxImg">
+        
+        </div>
+        <input type="hidden" value="" id="idAgente" name="idAgente">
+</div>
 <script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
 <script src="../../bootstrap/js/dataTables.bootstrap.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	$('#usuacrea').attr('value','<?php echo mysql_result($resResultado,0,'usuacrea'); ?>');
-	$('#usuamodi').attr('value','<?php echo utf8_encode($_SESSION['nombre_predio']); ?>');
-	
-	$('#numero').attr('value','<?php echo $nroOrden; ?>');
-	$('#numero').attr('readonly', true);
-	
-	$('.valorAdd').html('cm');
-	
-	$('#ancho').number( true, 2,'.','' );
-	$('#alto').number( true, 2,'.','' );
-	
-	function validar() {
-		var ancho = $('#ancho').val();
-		var alto = $('#alto').val();	
-		var error = '';
-		
-		if ((ancho == '') || (ancho < 20))  {
-			error = '_ Debe cargar un acnho o el ancho a menor a las 20 centimetros<br>';
-		}
-		
-		if ((alto == '') || (alto < 20))  {
-			error += '_ Debe cargar un alto o el alto a menor a las 20 centimetros<br>';
-		}
-		
-		if ($('#esdoble').prop('checked')) {
-			if ($('#reftelaopcional').val()	== '') {
-				error += '_ Debe seleccionar otra tela para el sistema doble<br>';
-			}
-		}
-		
-		return error;
+	if (<?php echo mysql_result($resResultado,0,'cancelada'); ?> == 1) {
+		$('#cancelado').prop('checked',true);	
+		$('#cancelado').prop('disabled',true);
+	} else {
+		$('#cancelado').prop('checked',false);	
 	}
 	
-	if (<?php echo $esDoble; ?> == 0) {
-		$('#reftelaopcional').attr('disabled', true);
-	}
-	
-	$('#esdoble').click(function() {
-		if ($(this).prop('checked')) {
-			$('#reftelaopcional').attr('disabled', false);
-		} else {
-			$('#reftelaopcional').attr('disabled', true);
-			$('#reftelaopcional > option[value=""]').attr('selected', 'selected');	
-		}
-	});
-		
 	
 	
+	$('#total').prop('readonly', true);
+	
+	$('#sistema').prop('readonly', true);
+	
+	$('#tela').prop('readonly', true);
+	
+	$('#numero').prop('readonly', true);
 	
 	$('.volver').click(function(event){
 		 
@@ -329,15 +320,68 @@ $(document).ready(function(){
 	
 	?>
 	
+	$('.eliminar').click(function(event){
+                
+			  usersid =  $(this).attr("id");
+			  imagenId = 'img'+usersid;
+			  
+			  if (!isNaN(usersid)) {
+				$("#idAgente").val(usersid);
+                                //$('#vistaPrevia30').attr('src', e.target.result);
+				$("#auxImg").html($('#'+imagenId).html());
+				$("#dialog3").dialog("open");
+				//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
+				//$(location).attr('href',url);
+			  } else {
+				alert("Error, vuelva a realizar la acción.");	
+			  }
+			  
+			  //post code
+	});
+	
+	$( "#dialog3" ).dialog({
+		 	
+		autoOpen: false,
+		resizable: false,
+		width:600,
+		height:340,
+		modal: true,
+		buttons: {
+			"Eliminar": function() {
 
+				$.ajax({
+							data:  {id: $("#idAgente").val(), accion: 'eliminarFoto'},
+							url:   '../../ajax/ajax.php',
+							type:  'post',
+							beforeSend: function () {
+									
+							},
+							success:  function (response) {
+									url = "modificar.php?id=<?php echo $id; ?>";
+									$(location).attr('href',url);
+									
+							}
+					});
+				$( this ).dialog( "close" );
+				$( this ).dialog( "close" );
+					$('html, body').animate({
+						scrollTop: '1000px'
+					},
+					1500);
+			},
+			Cancelar: function() {
+				$( this ).dialog( "close" );
+			}
+		}
+ 
+ 
+	});
 	
 	
 	//al enviar el formulario
     $('#cargar').click(function(){
 		
-		var error = validar();
-		
-		if (error == "")
+		if (validador() == "")
         {
 			//información del formulario
 			var formData = new FormData($(".formulario")[0]);
@@ -372,8 +416,8 @@ $(document).ready(function(){
 												
 											});
 											$("#load").html('');
-											//url = "index.php";
-											//$(location).attr('href',url);
+											url = "modificar.php?id=<?php echo $id; ?>";
+											$(location).attr('href',url);
                                             
 											
                                         } else {
@@ -389,29 +433,27 @@ $(document).ready(function(){
                     $("#load").html('');
 				}
 			});
-		} else {
-			$(".alert").removeClass("alert-danger");
-			$(".alert").addClass("alert-danger");
-			$(".alert").html('<strong>Error!</strong> '+error);
-			$("#load").html('');
 		}
     });
+	
+	$('#imagen1').on('change', function(e) {
+	  var Lector,
+		  oFileInput = this;
+	 
+	  if (oFileInput.files.length === 0) {
+		return;
+	  };
+	 
+	  Lector = new FileReader();
+	  Lector.onloadend = function(e) {
+		$('#vistaPrevia1').attr('src', e.target.result);         
+	  };
+	  Lector.readAsDataURL(oFileInput.files[0]);
+	 
+	});
 
 });
 </script>
-<script src="../../js/chosen.jquery.js" type="text/javascript"></script>
-<script type="text/javascript">
-    var config = {
-      '.chosen-select'           : {},
-      '.chosen-select-deselect'  : {allow_single_deselect:true},
-      '.chosen-select-no-single' : {disable_search_threshold:10},
-      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
-      '.chosen-select-width'     : {width:"95%"}
-    }
-    for (var selector in config) {
-      $(selector).chosen(config[selector]);
-    }
-  </script>
 <?php } ?>
 </body>
 </html>

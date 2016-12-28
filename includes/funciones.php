@@ -61,10 +61,13 @@ class Servicios {
 				$idresultados = "resultadospredio";
 				break;
 			case 97:
-				$cantidad = 3;
-				$classMod = 'varmodificarprincipal';
-				$classEli = 'varborrarprincipal';
-				$idresultados = "resultadosprincipal";
+				$cantidad = 8;
+				$classMod = 'varmodificar';
+				$classEditar = 'varpdf';
+				$iconoEditar = 'glyphicon glyphicon-barcode';
+				$lblEditar	  = 'Factura';
+				$classEli = 'varborrar';
+				$idresultados = "resultados";
 				break;
 			case 96:
 				$cantidad = 13;
@@ -77,12 +80,11 @@ class Servicios {
 			case 95:
 				$cantidad = 8;
 				$classMod = 'varmodificar';
-				$classTask	  = 'varpagos';
-				$classFinalizar = 'varfinalizar';
+				$classEditar = 'varpdf';
+				$iconoEditar = 'glyphicon glyphicon-barcode';
+				$lblEditar	  = 'Factura';
 				$classEli = 'varborrar';
-				$classPagar = 'varpagar';
 				$idresultados = "resultados";
-				$lblTask = 'Pagos';
 				break;
 			case 94:
 				$cantidad = 8;
@@ -166,7 +168,7 @@ class Servicios {
 				
 				if ($classEditar != '') {
 					$cadRows = $cadRows.'		<li>
-											<a href="javascript:void(0)" class="'.$classEditar.'" id="'.$row[0].'" >'.$lblEditar.'</a>
+											<a href="javascript:void(0)" class="'.$classEditar.'" id="'.$row[0].'" ><span class="'.$iconoEditar.'"></span> '.$lblEditar.'</a>
 											</li>';	
 				}
 										
@@ -230,6 +232,52 @@ class Servicios {
 		return $cadView;
 	}
 	
+	
+	function camposTablaViewSinAction($cabeceras,$datos,$cantidad) {
+		$cadRows = '';
+		$cadsubRows = '';
+		$idresultados = 'resultados';
+		$cadView = '';
+		
+		while ($row = mysql_fetch_array($datos)) {
+			$cadsubRows = '';
+			$cadRows = $cadRows.'
+			
+					<tr class="'.$row[0].'">
+                        	';
+			
+			
+			for ($i=1;$i<=$cantidad;$i++) {
+				
+				$cadsubRows = $cadsubRows.'<td><div style="height:60px;overflow:auto;">'.$row[$i].'</div></td>';	
+			}
+			
+			$cadRows = '</tr>'.$cadsubRows.$cadRows;
+			
+		}
+		
+		//'.utf8_encode($cadRows).' verificar al subir al servidor
+		
+		$cadView = $cadView.'
+			<table class="table table-striped table-responsive" id="example">
+            	<thead>
+                	<tr>
+                    	'.$cabeceras.'
+                        
+                    </tr>
+                </thead>
+                <tbody id="'.$idresultados.'">
+
+                	'.($cadRows).'
+                </tbody>
+            </table>
+			<div style="margin-bottom:85px; margin-right:60px;"></div>
+		
+		';	
+		
+		
+		return $cadView;
+	}
 	
 	
 	function camposTabla($accion,$tabla,$lblcambio,$lblreemplazo,$refdescripcion,$refCampo) {

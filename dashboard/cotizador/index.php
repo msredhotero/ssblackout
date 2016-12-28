@@ -123,7 +123,7 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
 	</style>
 
     
-   
+   <script src="../../js/jquery.number.min.js"></script>
    <link href="../../css/perfect-scrollbar.css" rel="stylesheet">
       <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
       <script src="../../js/jquery.mousewheel.js"></script>
@@ -364,7 +364,8 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	
+	$('#ancho').number( true, 2,'.','' );
+	$('#alto').number( true, 2,'.','' );
 	
 	$('table.table').dataTable({
 		"order": [[ 0, "asc" ]],
