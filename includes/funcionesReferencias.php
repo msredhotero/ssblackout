@@ -402,6 +402,25 @@ return $res;
 /* PARA Ventas */
 
 
+function traerCantidadOrdenes() {
+	$sql = "select count(*) from dbordenes where refestados in (1,2)";
+	$res = $this->query($sql,0); 
+	return $res; 	
+}
+
+function traerCantidadClientes() {
+	$sql = "select count(*) from dbclientes";
+	$res = $this->query($sql,0); 
+	return $res; 	
+}
+
+
+function traerCantidadVentas($fecha) {
+	$sql = "select count(*) from dbventas v inner join dbordenes o ON v.idventa = o.refventas where o.fechacrea = '".$fecha."'";
+	$res = $this->query($sql,0); 
+	return $res; 	
+}
+
 function generarNroVenta() {
 	$sql = "select max(idventa) as id from dbventas";	
 	$res = $this->query($sql,0);
@@ -480,6 +499,28 @@ return $res;
 
 function traerVentasPorId($id) {
 $sql = "select idventa,numero,sistema,tela,total,refclientes,reftipopago,cancelada from dbventas where idventa =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+function traerVentasPorDia($fecha) {
+	$sql = "select
+v.idventa,
+v.numero,
+ord.fechacrea,
+tip.descripcion,
+v.total,
+cli.nombrecompleto,
+(case when v.cancelada = 1 then 'Si' else 'No' end) as cancelado,
+v.reftipopago,
+ord.usuacrea,
+v.refclientes
+from dbventas v
+inner join tbtipopago tip ON tip.idtipopago = v.reftipopago
+inner join dbclientes cli ON cli.idcliente = v.refclientes
+inner join dbordenes ord ON v.idventa = ord.refventas
+where	ord.fechacrea = '".$fecha."'
+order by ord.fechacrea desc";
 $res = $this->query($sql,0);
 return $res;
 }
@@ -1054,6 +1095,63 @@ $sql = "select
 				inner join
 			tbresiduos res ON res.idresiduo = o.refresiduos		
 			where ven.idventa = ".$idVenta."
+		order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+
+function traerOrdenesActivas() {
+$sql = "select 
+			o.idorden,
+			o.numero as nroorden,
+			ven.numero as nroventa,
+			cl.nombrecompleto,
+			o.fechacrea,
+			o.usuacrea,
+			sis.nombre as sistema,
+			tel.tela,
+			o.roller,
+			o.tramado,
+			o.ancho,
+			o.alto,
+			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			o.fechamodi,
+			o.usuamodi,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			o.refventas,
+			o.refestados,
+			o.refsistemas,
+			o.reftelas,
+			o.refresiduos,
+			o.reftelaopcional
+			
+		from
+			dbordenes o
+				inner join
+			dbventas ven ON ven.idventa = o.refventas
+				inner join
+			dbclientes cl ON cl.idcliente = ven.refclientes
+				inner join
+			tbtipopago ti ON ti.idtipopago = ven.reftipopago
+				inner join
+			tbestados est ON est.idestado = o.refestados
+				inner join
+			dbsistemas sis ON sis.idsistema = o.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = o.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = o.refresiduos		
+			where est.idestado in (1,2)
 		order by 1";
 $res = $this->query($sql,0);
 return $res;
