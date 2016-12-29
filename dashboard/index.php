@@ -131,8 +131,6 @@ $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferen
 	<link rel="stylesheet" href="../css/chosen.css">
 
 
-
-    
    
    <link href="../css/perfect-scrollbar.css" rel="stylesheet">
       <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
@@ -221,10 +219,12 @@ $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferen
                         <div class="form-group col-md-6" style="display:block">
                         <label class="control-label" for="codigobarra" style="text-align:left">Seleccione el Cliente</label>
                         <div class="input-group col-md-12">
-                            <select data-placeholder="selecione el Cliente..." id="refclientes" name="refclientes" class="chosen-select" tabindex="2" style="width:100%;">
+                        	<div class="row">
+                            <select data-placeholder="selecione el Cliente..." id="refclientes" name="refclientes" class="chosen-select form-control" tabindex="2" style="width:100%;">
                                 
                                 <?php echo $lstClientes; ?>
                             </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -295,7 +295,7 @@ $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferen
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="1" style="z-index:500000;" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-lg" role="document" style="width:90%;">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

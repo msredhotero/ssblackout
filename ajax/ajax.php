@@ -194,6 +194,25 @@ case 'eliminarVentas':
 eliminarVentas($serviciosReferencias);
 break; 
 
+case 'traerDetalleVentaPorCliente':
+	traerDetalleVentaPorCliente($serviciosReferencias);
+	break;
+
+case 'traerPagosPorCliente':
+	traerPagosPorCliente($serviciosReferencias);
+	break;
+case 'traerVentasPorCliente':
+	traerVentasPorCliente($serviciosReferencias);
+	break;
+case 'traerVentasPorClienteACuenta':
+	traerVentasPorClienteACuenta($serviciosReferencias);
+	break;
+case 'traerDetallePagosPorCliente':
+	traerDetallePagosPorCliente($serviciosReferencias);
+	break;
+	
+	
+	
 case 'insertarOrdenes':
 insertarOrdenes($serviciosReferencias);
 break;
@@ -612,6 +631,232 @@ function eliminarOrdenes($serviciosReferencias) {
 
 
 /********************    FIN        ************************************************/
+
+
+/*****************        Datos del dashBoard  *************************************/
+
+function traerPagosPorCliente($serviciosReferencias) {
+	$id = $_POST['id'];
+	
+	$res = $serviciosReferencias->traerPagosPorCliente($id);
+	
+	echo $res;
+	
+}
+
+function traerVentasPorCliente($serviciosReferencias) {
+	$id = $_POST['id'];
+	
+	$res = $serviciosReferencias->traerVentasPorClientes($id);
+	
+	$cad3 = '';
+	//////////////////////////////////////////////////////busquedajugadores/////////////////////
+	$cad3 = $cad3.'
+				<div class="col-md-12">
+				<div class="panel panel-info">
+                                <div class="panel-heading">
+                                	<h3 class="panel-title">Resultado de la Busqueda</h3>
+                                	
+                                </div>
+                                <div class="panel-body-predio" style="padding:5px 20px;">
+                                	';
+	$cad3 = $cad3.'
+	<div class="row">
+                	<table id="example" class="table table-responsive table-striped" style=" padding:2px;">
+						<thead>
+                        <tr>
+                        	<th align="left">NºFactura</th>
+							<th align="left">Fecha</th>
+                            <th align="left">Total</th>
+							<th align="center">Detalle</th>
+							<th align="center">Factura</th>
+                        </tr>
+						</thead>
+						<tbody id="resultadosProd">';
+	while ($rowJ = mysql_fetch_array($res)) {
+		$cad3 .= '<tr>
+					<td>'.utf8_encode($rowJ['numero']).'</td>
+					<td>'.($rowJ['fechacrea']).'</td>
+					<td>'.$rowJ['total'].'</td>
+					<td><img src="../imagenes/verIco.png" style="cursor:pointer;" id="'.$rowJ[0].'" data-toggle="modal" data-target="#myModal" class="varVerDetalle"></td>
+					<td><img src="../imagenes/pdf.png" style="cursor:pointer;" id="'.$rowJ[0].'" class="varGenerarFactura"></td>
+				 </tr>';
+	}
+	
+	$cad3 = $cad3.'</tbody>
+                                </table></div>
+                            </div>
+						</div>';
+						
+	echo $cad3;
+}
+
+
+function traerVentasPorClienteACuenta($serviciosReferencias) {
+	$id = $_POST['id'];
+	
+	$res = $serviciosReferencias->traerVentasPorClientesACuenta($id);
+	
+	$cad3 = '';
+	//////////////////////////////////////////////////////busquedajugadores/////////////////////
+	$cad3 = $cad3.'
+				<div class="col-md-12">
+				<div class="panel panel-info">
+                                <div class="panel-heading">
+                                	<h3 class="panel-title">Resultado de la Busqueda</h3>
+                                	
+                                </div>
+                                <div class="panel-body-predio" style="padding:5px 20px;">
+                                	';
+	$cad3 = $cad3.'
+	<div class="row">
+                	<table id="example" class="table table-responsive table-striped" style=" padding:2px;">
+						<thead>
+                        <tr>
+                        	<th align="left">NºFactura</th>
+							<th align="left">Fecha</th>
+                            <th align="left">Total</th>
+							<th align="center">Detalle</th>
+							<th align="center">Factura</th>
+                        </tr>
+						</thead>
+						<tbody id="resultadosProd">';
+	while ($rowJ = mysql_fetch_array($res)) {
+		$cad3 .= '<tr>
+					<td>'.utf8_encode($rowJ['numero']).'</td>
+					<td>'.($rowJ['fechacrea']).'</td>
+					<td>'.$rowJ['total'].'</td>
+					<td><img src="../imagenes/verIco.png" style="cursor:pointer;" id="'.$rowJ[0].'" data-toggle="modal" data-target="#myModal" class="varVerDetalle"></td>
+					<td><img src="../imagenes/pdf.png" style="cursor:pointer;" id="'.$rowJ[0].'" class="varGenerarFactura"></td>
+				 </tr>';
+	}
+	
+	$cad3 = $cad3.'</tbody>
+                                </table></div>
+                            </div>
+						</div>';
+						
+	echo $cad3;
+}
+
+
+
+function traerDetallePagosPorCliente($serviciosReferencias) {
+	$id = $_POST['id'];
+	
+	$res = $serviciosReferencias->traerDetallePagosPorCliente($id);
+	
+	$cad3 = '';
+	//////////////////////////////////////////////////////busquedajugadores/////////////////////
+	$cad3 = $cad3.'
+				<div class="col-md-12">
+				<div class="panel panel-info">
+                                <div class="panel-heading">
+                                	<h3 class="panel-title">Resultado de la Busqueda</h3>
+                                	
+                                </div>
+                                <div class="panel-body-predio" style="padding:5px 20px;">
+                                	';
+	$cad3 = $cad3.'
+	<div class="row">
+                	<table id="example" class="table table-responsive table-striped" style=" padding:2px;">
+						<thead>
+                        <tr>
+                        	<th align="left">Fecha Pago</th>
+							<th align="left">Pago</th>
+                            <th align="left">Observaciones</th>
+                        </tr>
+						</thead>
+						<tbody id="resultadosProd">';
+	while ($rowJ = mysql_fetch_array($res)) {
+		$cad3 .= '<tr>
+					<td>'.$rowJ['fechapago'].'</td>
+					<td>'.$rowJ['pago'].'</td>
+					<td>'.utf8_encode($rowJ['observaciones']).'</td>
+				 </tr>';
+	}
+	
+	$cad3 = $cad3.'</tbody>
+                                </table></div>
+                            </div>
+						</div>';
+						
+	echo $cad3;
+}
+
+
+
+function traerDetalleVentaPorCliente($serviciosReferencias) {
+	$id	=	$_POST['id'];
+	$res	=	$serviciosReferencias->traerOrdenesPorVenta($id);
+	
+	$total = 0;
+	$cad3 = '';
+	//////////////////////////////////////////////////////busquedajugadores/////////////////////
+	$cad3 = $cad3.'
+				<div class="col-md-12">
+				<div class="panel panel-info">
+                                <div class="panel-heading">
+                                	<h3 class="panel-title">Resultado de la Busqueda</h3>
+                                	
+                                </div>
+                                <div class="panel-body-predio" style="padding:5px 20px;">
+                                	';
+	$cad3 = $cad3.'
+	<div class="row">
+                	<table id="example" class="table table-responsive table-striped" style="padding:2px;">
+						<thead>
+                        <tr>
+                        	<th>Nro Orden</th>
+							<th>Nro Venta</th>
+							<th>Clientes</th>
+							<th>Fecha</th>
+							<th>Usua. Crea</th>
+							<th>Sistema</th>
+							<th>Tela</th>
+							<th>Roller</th>
+							<th>Tramado</th>
+							<th>Ancho</th>
+							<th>Alto</th>
+							<th>Es Doble</th>
+							<th>Tela Sec.</th>
+                        </tr>
+						</thead>
+						<tbody id="resultadosProd">';
+	while ($rowJ = mysql_fetch_array($res)) {
+		$total += $rowJ['total'];
+		$cad3 .= '<tr>
+					<td>'.$rowJ[1].'</td>
+					<td>'.$rowJ[2].'</td>
+					<td>'.utf8_encode($rowJ[3]).'</td>
+					<td>'.$rowJ[4].'</td>
+					<td>'.$rowJ[5].'</td>
+					<td>'.$rowJ[6].'</td>
+					<td>'.$rowJ[7].'</td>
+					<td>'.$rowJ[8].'</td>
+					<td>'.$rowJ[9].'</td>
+					<td>'.$rowJ[10].'</td>
+					<td>'.$rowJ[11].'</td>
+					<td>'.$rowJ[12].'</td>
+					<td>'.$rowJ[13].'</td>
+				 </tr>';
+	}
+	
+	$cad3 = $cad3.'</tbody>
+				   <tfoot>
+				   	  <td style="font-size: 1.4em;" colspan="12">Total: </td>
+					  <td style="color:#F00; font-size: 1.4em;">$ '.$total.'</td>
+				   </tfoot>
+                                </table></div>
+                            </div>
+						</div>';
+						
+	echo $cad3;
+}
+
+
+/*****************           fin de datos del dashBoard    *************************/
+
 
 /* PARA Tipotramados */
 

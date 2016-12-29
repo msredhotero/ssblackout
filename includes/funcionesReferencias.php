@@ -526,6 +526,56 @@ return $res;
 }
 
 
+
+function traerVentasPorClientesACuenta($idCliente) {
+	$sql = "select
+v.idventa,
+
+v.numero,
+ord.fechacrea,
+tip.descripcion,
+v.total,
+cli.nombrecompleto,
+(case when v.cancelada = 1 then 'Si' else 'No' end) as cancelado,
+v.reftipopago,
+ord.usuacrea,
+v.refclientes
+from dbventas v
+inner join tbtipopago tip ON tip.idtipopago = v.reftipopago
+inner join dbclientes cli ON cli.idcliente = v.refclientes
+inner join dbordenes ord ON v.idventa = ord.refventas
+where	v.refclientes = ".$idCliente." and tip.idtipopago = 5
+order by 1 desc";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerVentasPorClientes($idCliente) {
+	$sql = "select
+v.idventa,
+
+v.numero,
+ord.fechacrea,
+tip.descripcion,
+v.total,
+cli.nombrecompleto,
+(case when v.cancelada = 1 then 'Si' else 'No' end) as cancelado,
+v.reftipopago,
+ord.usuacrea,
+v.refclientes
+from dbventas v
+inner join tbtipopago tip ON tip.idtipopago = v.reftipopago
+inner join dbclientes cli ON cli.idcliente = v.refclientes
+inner join dbordenes ord ON v.idventa = ord.refventas
+where	v.refclientes = ".$idCliente." and tip.idtipopago <> 5
+order by 1 desc";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+
 /* Fin */
 /* /* Fin de la Tabla: dbventas*/
 
@@ -1072,7 +1122,8 @@ $sql = "select
 			o.refsistemas,
 			o.reftelas,
 			o.refresiduos,
-			o.reftelaopcional
+			o.reftelaopcional,
+			ven.total
 			
 		from
 			dbordenes o
@@ -1236,7 +1287,6 @@ $res = $this->query($sql,0);
 	
 	return 0;
 }
-
 
 function traerPagosPorId($id) {
 $sql = "select idpago,refclientes,pago,fechapago,observaciones from dbpagos where idpago =".$id;
