@@ -110,7 +110,7 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	//}
 	$total = $calculoSistema + $calculoTela;
 	
-	return $total;
+	return round($total,2,PHP_ROUND_HALF_UP);
 	
 }
 

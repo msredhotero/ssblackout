@@ -46,6 +46,8 @@ $lstClientes = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
 
 $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->traerTipopago(),array(1),'');
 
+$cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
+
 
 ?>
 
@@ -120,6 +122,30 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
 			left: 10px;
 		}
 	
+
+		#table-6 {
+			border:2px solid #C0C0C0;
+		}
+		
+		#table-6 thead {
+		text-align: left;
+		}
+		#table-6 thead th {
+		background: -moz-linear-gradient(top, #F0F0F0 0, #DBDBDB 100%);
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F0F0F0), color-stop(100%, #DBDBDB));
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F0F0F0', endColorstr='#DBDBDB', GradientType=0);
+		border: 1px solid #C0C0C0;
+		color: #444;
+		font-size: 16px;
+		font-weight: bold;
+		padding: 3px 10px;
+		}
+		
+		#table-6 tbody td .cent {
+			text-align:center;	
+		}
+  
+		
 	</style>
 
     
@@ -143,8 +169,6 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
 
 <div id="content">
 
-<h3>Cotizador</h3>
-
     <div class="boxInfoLargo tile-stats tile-white stat-tile">
         <div id="headBoxInfo">
         	<p style="color: #fff; font-size:18px; height:16px;"><span class="glyphicon glyphicon-usd"></span> Cotizador</p>
@@ -167,7 +191,7 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
             	<div class="col-md-4" style="margin-bottom:7px;">
                     <div class="input-group">
                         <span class="input-group-addon">
-                        <input type="checkbox" aria-label="..." id="normal" name="normal">
+                        <input type="radio" aria-label="..." id="normal" class="normal" name="normal" checked value="1">
                         </span>
                         <input type="text" class="form-control" aria-label="..." value="Normal">
                         
@@ -177,7 +201,7 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
             	<div class="col-md-4" style="margin-bottom:7px;">
                     <div class="input-group">
                         <span class="input-group-addon">
-                        <input type="checkbox" aria-label="..." id="doble" name="doble">
+                        <input type="radio" aria-label="..." id="doble" class="normal" name="normal" value="2">
                         </span>
                         <input type="text" class="form-control" aria-label="..." value="Doble (Blackout + Screen)">
                         
@@ -194,23 +218,33 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
                 <h2 class="cartel cartel_chico" style="margin-top:5px;">Material<br></h2>
             </div>
             <div class='row' style="margin-left:25px; margin-right:25px;">
-                <?php
-					while ($row = mysql_fetch_array($resTelas)) {
-				?>
+
+                <div class="col-md-3" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <select class="form-control" id="reftelas" name="reftelas">
+                        	<?php echo $cadTelas; ?>
+                        </select>
+                        
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+				
+                <div class="adicional" style="display:none;">
+                    <div class="col-md-2" style="margin-bottom:7px;">
+                        <h4>Tela Adicional:</h4>
+                    </div>
                     <div class="col-md-4" style="margin-bottom:7px;">
                         <div class="input-group">
-                            <span class="input-group-addon">
-                            <input type="checkbox" aria-label="..." id="tela<?php echo $row[0]; ?>" name="tela<?php echo $row[0]; ?>">
-                            </span>
-                            <input type="text" class="form-control" aria-label="..." value="<?php echo $row[1]; ?>">
+                            <select class="form-control" id="reftelaopcional" name="reftelaopcional">
+                                <option value="">-- Seleccione --</option>
+                                <?php echo $cadTelas; ?>
+                            </select>
                             
                         </div><!-- /input-group -->
                     </div><!-- /.col-lg-6 -->
-                <?php
-					}
-				?>
+                </div>
                 
             </div>
+
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
                 <hr>
@@ -224,7 +258,7 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
                         <input class="form-control" id="alto" name="alto" value="0" required type="text">
-                        <span class="input-group-addon valorAdd">cm</span>
+                        <span class="input-group-addon valorAdd">mtrs</span>
                     </div>
                 </div>
                 
@@ -233,7 +267,7 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
                         <input class="form-control" id="ancho" name="ancho" value="0" required type="text">
-                        <span class="input-group-addon valorAdd">cm</span>
+                        <span class="input-group-addon valorAdd">mtrs</span>
                     </div>
                 </div>
             </div>
@@ -291,10 +325,16 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
                 <div class="col-md-12">
                 <ul class="list-inline" style="margin-top:15px;">
                     <li>
-                        <button type="button" class="btn btn-primary" id="cotizar" style="margin-left:0px;">Cotizar</button>
+                        <button type="button" class="btn btn-primary" id="cotizar" style="margin-left:0px;"><span class="glyphicon glyphicon-usd"></span> Cotizar</button>
                     </li>
                     <li>
-                        <button type="button" class="btn btn-success" id="orden" style="margin-left:0px; display:none;">Crear Orden</button>
+                        <button type="button" class="btn btn-warning" id="agregarpresupuesto" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-plus"></span> Agregar Al Presupuesto</button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-success" id="presupuesto" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-shopping-cart"></span> Crear Presupuesto</button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-primary" id="orden" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-floppy-disk"></span> Crear Orden</button>
                     </li>
                     <li style="font-weight:bold; color:#F00; font-size:1.6em; margin-right:10%;" class="pull-right">
                     	Precio: <span class="glyphicon glyphicon-usd"></span><span style="font-weight:bold; color:#F00; font-size:1.6em;" id="total"></span>
@@ -302,6 +342,40 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
                 </ul>
                 </div>
             </div>
+            
+            <hr>
+         <div class='row' style="margin-left:25px; margin-right:25px;" id="tabla">
+         	<h4><span class="glyphicon glyphicon-list"></span> Presupuestos Cargados</h4>
+            <div class="col-md-12">
+            <table class="table table-striped" id="table-6">
+                <thead>
+                    <tr>
+                        <th class="text-center">Id</th>
+                        <th style="width:260px;" class="text-center">Sistema</th>
+                        <th class="text-center">Tela</th>
+                        <th class="text-center">Tela-Adicional</th>
+                        <th class="text-center">Alto</th>
+                        <th class="text-center">Ancho</th>
+                        <th class="text-center">Total</th>
+                        <th style="width:120px;" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="detalle">
+                	
+                </tbody>
+                <tfoot>
+                    <tr style="background-color:#CCC; font-weight:bold; font-size:18px;">
+                        <td colspan="7" align="right">
+                            Total $
+                        </td>
+                        <td>
+                            <input type="text" readonly name="total" id="total" value="0" style="border:none; background-color:#CCC;"/>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            </div>
+         </div>   
 
             
             
@@ -350,14 +424,7 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
   </div>
 </div>
 
-<div id="dialog2" title="Eliminar <?php echo $singular; ?>">
-    	<p>
-        	<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
-            ¿Esta seguro que desea eliminar el <?php echo $singular; ?>?.<span id="proveedorEli"></span>
-        </p>
-        <p><strong>Importante: </strong>Si elimina el <?php echo $singular; ?> se perderan todos los datos de este</p>
-        <input type="hidden" value="" id="idEliminar" name="idEliminar">
-</div>
+
 <script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
 <script src="../../bootstrap/js/dataTables.bootstrap.js"></script>
 
@@ -366,223 +433,233 @@ $(document).ready(function(){
 	
 	$('#ancho').number( true, 2,'.','' );
 	$('#alto').number( true, 2,'.','' );
-	
-	$('table.table').dataTable({
-		"order": [[ 0, "asc" ]],
-		"language": {
-			"emptyTable":     "No hay datos cargados",
-			"info":           "Mostrar _START_ hasta _END_ del total de _TOTAL_ filas",
-			"infoEmpty":      "Mostrar 0 hasta 0 del total de 0 filas",
-			"infoFiltered":   "(filtrados del total de _MAX_ filas)",
-			"infoPostFix":    "",
-			"thousands":      ",",
-			"lengthMenu":     "Mostrar _MENU_ filas",
-			"loadingRecords": "Cargando...",
-			"processing":     "Procesando...",
-			"search":         "Buscar:",
-			"zeroRecords":    "No se encontraron resultados",
-			"paginate": {
-				"first":      "Primero",
-				"last":       "Ultimo",
-				"next":       "Siguiente",
-				"previous":   "Anterior"
-			},
-			"aria": {
-				"sortAscending":  ": activate to sort column ascending",
-				"sortDescending": ": activate to sort column descending"
-			}
-		  }
-	} );
-	
 
-	$('table.table').on("click",'.varborrar', function(){
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-			$("#idEliminar").val(usersid);
-			$("#dialog2").dialog("open");
-
-			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
-		  } else {
-			alert("Error, vuelva a realizar la acción.");	
-		  }
-	});//fin del boton eliminar
 	
-	$('table.table').on("click",'.varmodificar', function(){
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-			
-			url = "../ordenes/modificar.php?id=" + usersid;
-			$(location).attr('href',url);
-		  } else {
-			alert("Error, vuelva a realizar la acción.");	
-		  }
-	});//fin del boton modificar
+	$('#doble').click(function() {
+		$('.adicional').show();
+	});
+	
+	$('#normal').click(function() {
+		$('.adicional').hide();
+		$('.adicional option[value=""]').attr("selected",true);
+	});
 	
 	
-	$('table.table').on("click",'.varpagar', function(){
-		
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-			
-			url = "../pagos/pagar.php?id="+usersid;
-			$(location).attr('href',url);
-		  } else {
-			alert("Error, vuelva a realizar la acción.");	
-		  }
-	});//fin del boton pagos
 	
-	
-	$('table.table').on("click",'.varpagos', function(){
-			
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-
-			$.ajax({
-					data:  {id: usersid, accion: 'traerPagosPorOrden'},
-					url:   '../../ajax/ajax.php',
-					type:  'post',
-					beforeSend: function () {
+	function insertarDetalleAux(idProducto, cantidad, precio, total, json) {
+		var id = 0;
+		$.ajax({
+				data:  {refproductos: idProducto, 
+						cantidad: cantidad, 
+						precio: precio, 
+						total: total, 
+						accion: 'insertarDetallepedidoaux'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+						
+				},
+				success:  function (response) {
+					setTimeout(function() {
+						$("#aviso").fadeOut(1500);
+					},3000);	
+					
+					$('#prodNombre').val(json[0].nombre);
+					$('#prodPrecio').val(json[0].precioventa);
+					
+					$('.detalle').prepend('<tr><td align="center"><input type="checkbox" name="prod'+idProducto+'" id="prod'+idProducto+'" checked /></td><td>'+json[0].nombre+'</td><td align="center">'+cantidad+'</td><td align="right">'+json[0].precioventa+'</td><td align="right">'+monto.toFixed(2)+'</td><td class="text-center"><button type="button" class="btn btn-danger eliminarfila" id="'+response+'" style="margin-left:0px;">Eliminar</button></td></tr>');
+					
+					$('#cantidadbuscar').val(1);
 							
-					},
-					success:  function (response) {
-							$('.userasignates').html(response);
+					$("#aviso").show();
 							
-					}
-			});
-			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
-		  } else {
-			alert("Error redo action.");	
-		  }
-	});//fin del boton eliminar
-	
-	
-	$('table.table').on("click",'.varfinalizar', function(){
-
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-
-			$.ajax({
-					data:  {id: usersid, usuario: '<?php echo $_SESSION['nombre_predio']; ?>', accion: 'finalizarOrden'},
-					url:   '../../ajax/ajax.php',
-					type:  'post',
-					beforeSend: function () {
-							
-					},
-					success:  function (response) {
-							if (response == '') {
-								$(".alert").removeClass("alert-danger");
-								$(".alert").removeClass("alert-info");
-								$(".alert").addClass("alert-success");
-								$(".alert").html('<strong>Ok!</strong> Se finalizo exitosamente la <strong>Orden</strong>. ');
-								$(".alert").delay(3000).queue(function(){
-									/*aca lo que quiero hacer 
-									  después de los 2 segundos de retraso*/
-									$(this).dequeue(); //continúo con el siguiente ítem en la cola
-									
-								});
-								$("#load").html('');
-								url = "index.php";
-								$(location).attr('href',url);
-								
-								
-							} else {
-								$(".alert").removeClass("alert-danger");
-								$(".alert").addClass("alert-danger");
-								$(".alert").html('<strong>Error!</strong> '+response);
-								$("#load").html('');
-							}
-							
-					}
-			});
-			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
-		  } else {
-			alert("Error redo action.");	
-		  }
-	});//fin del boton eliminar
-	
-	 $( "#dialog2" ).dialog({
-		 	
-			    autoOpen: false,
-			 	resizable: false,
-				width:600,
-				height:240,
-				modal: true,
-				buttons: {
-				    "Eliminar": function() {
-	
-						$.ajax({
-									data:  {id: $('#idEliminar').val(), accion: '<?php echo $eliminar; ?>'},
-									url:   '../../ajax/ajax.php',
-									type:  'post',
-									beforeSend: function () {
-											
-									},
-									success:  function (response) {
-											url = "index.php";
-											$(location).attr('href',url);
-											
-									}
-							});
-						$( this ).dialog( "close" );
-						$( this ).dialog( "close" );
-							$('html, body').animate({
-	           					scrollTop: '1000px'
-	       					},
-	       					1500);
-				    },
-				    Cancelar: function() {
-						$( this ).dialog( "close" );
-				    }
+					$('#total').val(SumarTabla());
 				}
-		 
-		 
-	 		}); //fin del dialogo para eliminar
+		});
+		
+		return id;
+	}
+	
+	function eliminarDetalleAux(idProducto) {
+		$.ajax({
+				data:  {id: idProducto, 
+						accion: 'eliminarDetallepedidoaux'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+						
+				},
+				success:  function (response) {
+					$('#total').val(SumarTabla());	
+				}
+		});
+	}
+	
+	function getProducto(idProd, cantidad, accion) {
+		$.ajax({
+					data:  {idproducto: idProd,
+							accion: accion},
+					url:   '../../ajax/ajax.php',
+					type:  'post',
+					beforeSend: function () {
+						$('#agregar').hide();
+						$('#agregarfila').hide();	
+						$('#codigobarrabuscar').val('');
+					},
+					success:  function (response) {
+						if(response){
+							//idproducto,codigo,nombre,descripcion,stock,stockmin,preciocosto,precioventa,utilidad,estado,imagen,idcategoria,tipoimagen,nroserie,codigobarra
+							json = $.parseJSON(response);
+							
+							monto = parseFloat(json[0].precioventa) * parseInt(cantidad);
+							//var idRetornado = insertarDetalleAux(json[0].idproducto, cantidad, json[0].precioventa, monto, json);
+							
+							$('#prodNombre').val(json[0].nombre);
+							$('#prodPrecio').val(json[0].precioventa);
+							
+							/*
+							$('.detalle tr').each(function(){
+								
+							});
+							*/
+							
+							$("#tabla tbody tr").each(function (index) {
+								var cantidadNueva, subtotalNuevo;
+								
+								if ($(this).find('td').eq(0).children("input").attr('id') == 'prod'+json[0].idproducto) {
+									
+									cantidadNueva = parseInt(cantidad) + parseInt($(this).find('td').eq(2).children("input").val());
+									subtotalNuevo = parseFloat(monto) + parseFloat($(this).find('td').eq(4).text());
+									
+									$(this).remove();
+									
+									$('.detalle').prepend('<tr><td align="center"><input type="checkbox" name="prod'+json[0].idproducto+'" id="prod'+json[0].idproducto+'" checked  onclick="this.checked=!this.checked"/></td><td><input type="text" name="nombre'+json[0].idproducto+'" id="nombre'+json[0].idproducto+'" value="'+json[0].nombre+'" readonly style="background-color:transparent; border:none;cursor:default;text-align: center;" /></td><td align="center"><input type="text" name="cant'+json[0].idproducto+'" id="cant'+json[0].idproducto+'" value="'+cantidadNueva+'" readonly style="background-color:transparent; border:none;cursor:default;text-align: center;" /></td><td align="right"><input type="text" name="precio'+json[0].idproducto+'" id="precio'+json[0].idproducto+'" value="'+json[0].precioventa+'" readonly style="background-color:transparent; border:none;cursor:default;text-align: right; width:70px;" /></td><td align="right">'+subtotalNuevo.toFixed(2)+'</td><td class="text-center"><button type="button" class="btn btn-danger eliminarfila" id="'+json[0].idproducto+'" style="margin-left:0px;">Eliminar</button></td></tr>');
+									
+									return false;
+								} else {
+									$('.detalle').prepend('<tr id="'+json[0].idproducto+'"><td align="center"><input type="checkbox" name="prod'+json[0].idproducto+'" id="prod'+json[0].idproducto+'" checked  onclick="this.checked=!this.checked"/></td><td><input type="text" name="nombre'+json[0].idproducto+'" id="nombre'+json[0].idproducto+'" value="'+json[0].nombre+'" readonly style="background-color:transparent; border:none;cursor:default;text-align: center;" /></td><td align="center"><input type="text" name="cant'+json[0].idproducto+'" id="cant'+json[0].idproducto+'" value="'+cantidad+'" readonly style="background-color:transparent; border:none;cursor:default;text-align: center;" /></td><td align="right"><input type="text" name="precio'+json[0].idproducto+'" id="precio'+json[0].idproducto+'" value="'+json[0].precioventa+'" readonly style="background-color:transparent; border:none;cursor:default;text-align: right; width:70px;" /></td><td align="right">'+monto.toFixed(2)+'</td><td class="text-center"><button type="button" class="btn btn-danger eliminarfila" id="'+json[0].idproducto+'" style="margin-left:0px;">Eliminar</button></td></tr>');
+									return false;
+								}
+								/*
+								$(this).children("td").each(function (index2) {
+									if (index2 == 0) {
+										if ($(this).children("input").attr('id') == 'prod'+json[0].idproducto) {
+		
+										}
+									}
+								});
+								*/
+							});
+					
+							
+							
+							
+							
+							$('#cantidadbuscar').val(1);
+									
+							$("#aviso").show();
+									
+							$('#total').val(SumarTabla());
+						} else {
+							//var producto = ['', 0];
+							$('#prodNombre').val('');
+							$('#prodPrecio').val(0);
+						}
+						
+						$('#agregar').show();
+						$('#agregarfila').show();
+					}
+			});	
+	}
+	
+	
+	$('.agregarfila').click(function(e) {
+		id =  $(this).attr("id");
+		//getProducto(id);
+		var cantidad = 1;
+		$('.detallefaltante tr').each(function(){
+			
+			if ($(this).find('td').eq(0).text() == id) {
+				cantidad = $(this).find('td').eq(2).text();	
+			}
+			//suma += parseFloat($(this).find('td').eq(4).text()||0,10); //numero de la celda 3
+		});
+		
+		getProducto(id, cantidad);
+		
+	});
+	
+	
+	function SumarTabla() {
+		var suma = 0;
+		$('.detalle tr').each(function(){
+			
+			suma += parseFloat($(this).find('td').eq(6).text()||0,10); //numero de la celda 3
+		})
+		return suma.toFixed(2);
 
+	  }
+	  
+	//elimina una fila
+	  $(document).on("click",".eliminarfila",function(){
+		var padre = $(this).parents().get(1);
+
+		$(padre).remove();
+		
+		$('#total').val(SumarTabla());
+		
+	  });
 	
 	$('#orden').click(function(){
 		
 		$('#accion').val('orden');
 		//información del formulario
-		var formData = new FormData($(".formulario")[0]);
-		var message = "";
-		//hacemos la petición ajax  
-		$.ajax({
-			url: '../../ajax/ajax.php',  
-			type: 'POST',
-			// Form data
-			//datos del formulario
-			data: formData,
-			//necesario para subir archivos via ajax
-			cache: false,
-			contentType: false,
-			processData: false,
-			//mientras enviamos el archivo
-			beforeSend: function(){
-				$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
-			},
-			//una vez finalizado correctamente
-			success: function(data){
-				
-				$('#total').html('');
-				$('#accion').val('cotizar');
-				$("#load").html('');
-				$(".alert").removeClass("alert-danger");
-				$(".alert").removeClass("alert-info");
-				$(".alert").addClass("alert-success");
-				$(".alert").html('<strong>Ok!</strong> Se cargo exitosamente la <strong>Orden y la Venta</strong>. ');
-			},
-			//si ha ocurrido un error
-			error: function(){
-				$(".alert").html('<strong>Error!</strong> Actualice la pagina');
-				$("#load").html('');
+		var error = '';
+		if ($('.normal').val() == 2) {
+			if ($('#reftelaopcional').val() == '') {
+				error = 'Debe seleccionar otra tela para el sistema doble';	
 			}
-		});
+		}
+		
+		if (error == '') {
+			var formData = new FormData($(".formulario")[0]);
+			var message = "";
+			//hacemos la petición ajax  
+			$.ajax({
+				url: '../../ajax/ajax.php',  
+				type: 'POST',
+				// Form data
+				//datos del formulario
+				data: formData,
+				//necesario para subir archivos via ajax
+				cache: false,
+				contentType: false,
+				processData: false,
+				//mientras enviamos el archivo
+				beforeSend: function(){
+					$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
+				},
+				//una vez finalizado correctamente
+				success: function(data){
+					
+					$('#total').html('');
+					$('#accion').val('cotizar');
+					$("#load").html('');
+					$(".alert").removeClass("alert-danger");
+					$(".alert").removeClass("alert-info");
+					$(".alert").addClass("alert-success");
+					$(".alert").html('<strong>Ok!</strong> Se cargo exitosamente la <strong>Orden y la Venta</strong>. ');
+				},
+				//si ha ocurrido un error
+				error: function(){
+					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+					$("#load").html('');
+				}
+			});
+		
+		} else {
+			alert('Error: '+error);
+		}
 
     });
 	
@@ -592,53 +669,70 @@ $(document).ready(function(){
 		
 		$('#accion').val('cotizar');
 		//información del formulario
-		var formData = new FormData($(".formulario")[0]);
-		var message = "";
-		//hacemos la petición ajax  
-		$.ajax({
-			url: '../../ajax/ajax.php',  
-			type: 'POST',
-			// Form data
-			//datos del formulario
-			data: formData,
-			//necesario para subir archivos via ajax
-			cache: false,
-			contentType: false,
-			processData: false,
-			//mientras enviamos el archivo
-			beforeSend: function(){
-				$("#load").html('<img src="../imagenes/load13.gif" width="50" height="50" />');       
-			},
-			//una vez finalizado correctamente
-			success: function(data){
-				
-				if (parseFloat(data)>0) {
-					$('#total').html(data);
-					$(".alert").removeClass("alert-danger");
-					$(".alert").removeClass("alert-info");
-					$(".alert").html('');
-					$("#load").html('');
-					$('#orden').show();
-					$('#datosFacturacion').show();
-					$('#totalgral').val(data);
-				} else {
-					$(".alert").removeClass("alert-danger");
-					$(".alert").addClass("alert-danger");
-					$(".alert").html('<strong>Error!</strong> '+data);
-					$("#load").html('');
-					$('#total').html('');
-					$('#orden').hide();
-					$('#datosFacturacion').hide();
-					$('#totalgral').val(0);
+		var error = '';
 
-				}
-			},
-			//si ha ocurrido un error
-			error: function(){
-				$(".alert").html('<strong>Error!</strong> Actualice la pagina');
-				$("#load").html('');
+		if ($('#doble').prop('checked')) {
+			if ($('#reftelaopcional').val() == '') {
+				error = 'Debe seleccionar otra tela para el sistema doble';	
 			}
-		});
+		}
+		
+		if (error == '') {
+			var formData = new FormData($(".formulario")[0]);
+			var message = "";
+			//hacemos la petición ajax  
+			$.ajax({
+				url: '../../ajax/ajax.php',  
+				type: 'POST',
+				// Form data
+				//datos del formulario
+				data: formData,
+				//necesario para subir archivos via ajax
+				cache: false,
+				contentType: false,
+				processData: false,
+				//mientras enviamos el archivo
+				beforeSend: function(){
+					$("#load").html('<img src="../imagenes/load13.gif" width="50" height="50" />');       
+				},
+				//una vez finalizado correctamente
+				success: function(data){
+					
+					if (parseFloat(data)>0) {
+						$('#total').html(data);
+						$(".alert").removeClass("alert-danger");
+						$(".alert").removeClass("alert-info");
+						$(".alert").html('');
+						$("#load").html('');
+						$('#orden').show();
+						$('#agregarpresupuesto').show();
+						$('#presupuesto').show();
+						$('#datosFacturacion').show();
+						$('#totalgral').val(data);
+					} else {
+						$(".alert").removeClass("alert-danger");
+						$(".alert").addClass("alert-danger");
+						$(".alert").html('<strong>Error!</strong> '+data);
+						$("#load").html('');
+						$('#total').html('');
+						$('#orden').hide();
+						$('#agregarpresupuesto').hide();
+						$('#presupuesto').hide();
+						$('#datosFacturacion').hide();
+						$('#totalgral').val(0);
+	
+					}
+				},
+				//si ha ocurrido un error
+				error: function(){
+					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+					$("#load").html('');
+				}
+			});
+		
+		} else {
+			alert('Error: '+error);
+		}
 		
     });
 	

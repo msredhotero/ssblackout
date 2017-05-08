@@ -256,36 +256,25 @@ function cotizar($serviciosReferencias) {
 		}
 	}
 	
-	if (isset($_POST['normal'])) {
-		$sistemaNormal = 1;
-		$sistema = 1;
-	}
+
+	$sistema = $_POST['normal'];
 	
-	if (isset($_POST['doble'])) {
-		$sistemaDoble = 1;
-		$sistema = 2;
-	}
-	
-	if (($sistemaNormal == 1) && ($sistemaDoble == 1)) {
-		$cadErrores .= "No se puede cotizar dos sistemas juntos<br>"; 	
-	}
-	
-	if (($sistemaNormal == 0) && ($sistemaDoble == 0)) {
-		$cadErrores .= "Debe seleccionar un sistema<br>"; 	
-	}
-	
-	
+	/*
 	while ($rowFS = mysql_fetch_array($resTelas)) {
 		if (isset($_POST[$cad.$rowFS[0]])) {
 			$idTela[] = $rowFS[0];
 		}
 	}
+	*/
 	
-	$ancho	=	$_POST['ancho'];
-	$alto	=	$_POST['alto'];
+	$idTela[] = $_POST['reftelas'];
+	$idTela[] = $_POST['reftelaopcional'];
+	
+	$ancho	=	(float)$_POST['ancho'] * 100;
+	$alto	=	(float)$_POST['alto'] * 100;
 	
 	
-	
+	/*
 	if ((sizeof($idTela) < 2) and ($sistema == 2)) {
 		$cadErrores .= "_ Debe seleccionar el segundo Material<br>"; 
 	}
@@ -297,14 +286,15 @@ function cotizar($serviciosReferencias) {
 	if ((sizeof($idTela) > 1) and ($sistema == 1)) {
 		$cadErrores .= "_ Selecciono más de un Material<br>"; 
 	}
-	
+	if (sizeof($idTela) < 1) {
+		$cadErrores .= "_ Debe seleccionar un Material<br>"; 
+	}
+	*/
 	if ($idResiduo == 0) {
 		$cadErrores .= "_ Debe seleccionar un Residuo<br>"; 
 	}
 	
-	if (sizeof($idTela) < 1) {
-		$cadErrores .= "_ Debe seleccionar un Material<br>"; 
-	}
+	
 	
 	if (($ancho == '') || ($ancho < 20)) {
 		$cadErrores .= "_ Debe cargar un acnho o el ancho a menor a las 20 centimetros<br>"; 
