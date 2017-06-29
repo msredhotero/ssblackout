@@ -84,9 +84,9 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	
 	if (mysql_num_rows($resSistema)>0) {
 		if ($esRevendedor == 1) {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+			$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
 		} else {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+			$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
 		}
 	} else {
 		$valorSistema = 0;		
@@ -95,8 +95,14 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	/****************************************/
 	
 	//Valores finales en "cm"
+	/*
 	$telaAltoFinal	= ($alto * 10) - $altoResiduo;
 	$telaAnchoFinal	= ($ancho * 10) - $anchoResiduo;
+	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
+	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
+	*/
+	$telaAltoFinal	= ($alto * 10);
+	$telaAnchoFinal	= ($ancho * 10);
 	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
 	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
 	
