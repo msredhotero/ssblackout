@@ -95,6 +95,15 @@ class Servicios {
 				$idresultados = "resultados";
 				$lblTask = 'Pagos';
 				break;
+			case 93:
+				$cantidad = 6;
+				$classMod = 'varmodificar';
+				$classEditar = 'vartareas';
+				$iconoEditar = 'glyphicon glyphicon-list-alt';
+				$lblEditar	  = 'Tareas';
+				$classEli = 'varborrar';
+				$idresultados = "resultados";
+				break;	
 			default:
 				$classMod = 'varmodificar';
 				$classEli = 'varborrar';

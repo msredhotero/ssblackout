@@ -22,45 +22,40 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Sistemas",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Tipo Tareas",$_SESSION['refroll_predio'],'');
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Sistema";
+$singular = "Tipo Tarea";
 
-$plural = "Sistemas";
+$plural = "Tipo Tareas";
 
-$eliminar = "eliminarSistemas";
+$eliminar = "eliminarTipotarea";
 
-$insertar = "insertarSistemas";
+$insertar = "insertarTipotarea";
 
 $tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbsistemas";
+$tabla 			= "tbtipotarea";
 
-$lblCambio	 	= array("refroller","preciocosto","preciocliente");
-$lblreemplazo	= array("Roller","Precio Costo","Precio Cliente");
+$lblCambio	 	= array();
+$lblreemplazo	= array();
 
-$resRoller	=	$serviciosReferencias->traerRoller();
-$cadRef 	= 	$serviciosFunciones->devolverSelectBox($resRoller,array(1),'');
 
-$refdescripcion = array(0=>$cadRef);
-$refCampo 	=  array("refroller");
+$refdescripcion = array();
+$refCampo 	=  array();
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
 
 
 /////////////////////// Opciones para la creacion del view  apellido,nombre,nrodocumento,fechanacimiento,direccion,telefono,email/////////////////////
-$cabeceras 		= "	<th>Nombre</th>
-					<th>Roller</th>
-					<th>Desde</th>
-					<th>Hasta</th>
-					<th>Precio Costo</th>
-					<th>Precio Cliente</th>";
+$cabeceras 		= "	<th>Tarea</th>
+					<th>Valor</th>
+					<th>Detalle</th>";
 
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
@@ -69,7 +64,7 @@ $cabeceras 		= "	<th>Nombre</th>
 
 $formulario 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
-$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerSistemas(),93);
+$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerTipotarea(),3);
 
 
 
@@ -146,19 +141,16 @@ if ($_SESSION['refroll_predio'] != 1) {
         	
         </div>
     	<div class="cuerpoBox">
-        	
-            <div class='row' style="margin-left:25px; margin-right:25px;">
-            	<div class="alert alert-info">
-                	<p><span class="glyphicon glyphicon-info-sign"></span> Recuerde que las medidas seran expresadas en metros</p>
-                </div>
-            </div>
         	<form class="form-inline formulario" role="form">
-        	<div class="row">
+
+            
+            <div class="row">
+            	
 			<?php echo $formulario; ?>
             </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
-                <div class='alert alertSistemas'>
+                <div class='alert'>
                 
                 </div>
                 <div id='load'>
@@ -215,7 +207,9 @@ if ($_SESSION['refroll_predio'] != 1) {
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	$('.valorAdd').html('mtrs');
+	$('#activo').prop('checked',true);
+	
+	$('.valorAdd').html('cm');
 	
 	$('#example').dataTable({
 		"order": [[ 0, "asc" ]],
@@ -269,18 +263,6 @@ $(document).ready(function(){
 			alert("Error, vuelva a realizar la acción.");	
 		  }
 	});//fin del boton modificar
-
-
-	$("#example").on("click",'.vartareas', function(){
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-			
-			url = "tareas.php?id=" + usersid;
-			$(location).attr('href',url);
-		  } else {
-			alert("Error, vuelva a realizar la acción.");	
-		  }
-	});//fin del boton tareas
 
 	 $( "#dialog2" ).dialog({
 		 	
@@ -355,26 +337,31 @@ $(document).ready(function(){
 				success: function(data){
 
 					if (data == '') {
-                                            $(".alertSistemas").removeClass("alert-danger");
-											$(".alertSistemas").removeClass("alert-info");
-                                            $(".alertSistemas").addClass("alert-success");
-                                            $(".alertSistemas").html('<strong>Ok!</strong> Se cargo exitosamente el <strong><?php echo $singular; ?></strong>. ');
-											
+                                            $(".alert").removeClass("alert-danger");
+											$(".alert").removeClass("alert-info");
+                                            $(".alert").addClass("alert-success");
+                                            $(".alert").html('<strong>Ok!</strong> Se cargo exitosamente el <strong><?php echo $singular; ?></strong>. ');
+											$(".alert").delay(3000).queue(function(){
+												/*aca lo que quiero hacer 
+												  después de los 2 segundos de retraso*/
+												$(this).dequeue(); //continúo con el siguiente ítem en la cola
+												
+											});
 											$("#load").html('');
 											url = "index.php";
 											$(location).attr('href',url);
                                             
 											
                                         } else {
-                                        	$(".alertSistemas").removeClass("alert-danger");
-                                            $(".alertSistemas").addClass("alert-danger");
-                                            $(".alertSistemas").html('<strong>Error!</strong> '+data);
+                                        	$(".alert").removeClass("alert-danger");
+                                            $(".alert").addClass("alert-danger");
+                                            $(".alert").html('<strong>Error!</strong> '+data);
                                             $("#load").html('');
                                         }
 				},
 				//si ha ocurrido un error
 				error: function(){
-					$(".alertSistemas").html('<strong>Error!</strong> Actualice la pagina');
+					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
                     $("#load").html('');
 				}
 			});

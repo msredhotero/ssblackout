@@ -44,6 +44,34 @@ eliminarConfiguracion($serviciosReferencias);
 break; 
 
 
+case 'insertarTipotarea':
+insertarTipotarea($serviciosReferencias);
+break;
+case 'modificarTipotarea':
+modificarTipotarea($serviciosReferencias);
+break;
+case 'eliminarTipotarea':
+eliminarTipotarea($serviciosReferencias);
+break; 
+case 'insertarSistematareas':
+insertarSistematareas($serviciosReferencias);
+break;
+case 'modificarSistematareas':
+modificarSistematareas($serviciosReferencias);
+break;
+case 'eliminarSistematareas':
+eliminarSistematareas($serviciosReferencias);
+break; 
+case 'insertarOrdenessistematareas':
+insertarOrdenessistematareas($serviciosReferencias);
+break;
+case 'modificarOrdenessistematareas':
+modificarOrdenessistematareas($serviciosReferencias);
+break;
+case 'eliminarOrdenessistematareas':
+eliminarOrdenessistematareas($serviciosReferencias);
+break; 
+
 /* PARA Tipovehiculo */
 
 case 'insertarClientes':
@@ -624,6 +652,81 @@ function eliminarOrdenes($serviciosReferencias) {
 
 
 /*****************        Datos del dashBoard  *************************************/
+
+
+function insertarTipotarea($serviciosReferencias) {
+	$tarea = $_POST['tarea'];
+	$valor = $_POST['valor'];
+	$detalle = $_POST['detalle'];
+	
+	$res = $serviciosReferencias->insertarTipotarea($tarea,$valor,$detalle);
+	
+	if ((integer)$res > 0) {
+		echo '';
+	} else {
+		echo 'Huvo un error al insertar datos';
+	}
+}
+
+
+function modificarTipotarea($serviciosReferencias) {
+	$id = $_POST['id'];
+	$tarea = $_POST['tarea'];
+	$valor = $_POST['valor'];
+	$detalle = $_POST['detalle'];
+	
+	$res = $serviciosReferencias->modificarTipotarea($id,$tarea,$valor,$detalle);
+	
+	if ($res == true) {
+		echo '';
+	} else {
+		echo 'Huvo un error al modificar datos';
+	}
+}
+
+
+function eliminarTipotarea($serviciosReferencias) {
+	$id = $_POST['id'];
+	$res = $serviciosReferencias->eliminarTipotarea($id);
+	echo $res;
+} 
+
+
+function insertarSistematareas($serviciosReferencias) {
+	$refsistemas = $_POST['refsistemas'];
+	$reftipotarea = $_POST['reftipotarea'];
+	
+	$res = $serviciosReferencias->insertarSistematareas($refsistemas,$reftipotarea);
+	
+	if ((integer)$res > 0) {
+		echo '';
+	} else {
+		echo 'Huvo un error al insertar datos';
+	}
+}
+
+
+function modificarSistematareas($serviciosReferencias) {
+	$id = $_POST['id'];
+	$refsistemas = $_POST['refsistemas'];
+	$reftipotarea = $_POST['reftipotarea'];
+	
+	$res = $serviciosReferencias->modificarSistematareas($id,$refsistemas,$reftipotarea);
+	
+	if ($res == true) {
+		echo '';
+	} else {
+		echo 'Huvo un error al modificar datos';
+	}
+}
+
+
+function eliminarSistematareas($serviciosReferencias) {
+	$id = $_POST['id'];
+	$res = $serviciosReferencias->eliminarSistematareas($id);
+	echo $res;
+} 
+
 
 function traerPagosPorCliente($serviciosReferencias) {
 	$id = $_POST['id'];

@@ -47,7 +47,11 @@ $tablasAr	= array("clientes"        => "dbclientes",
 "roles"           => "tbroles",   
 "roller"           => "tbroller", 
 "ventas"    => "dbventas",
-"tipopago"        => "tbtipopago");
+"tipopago"        => "tbtipopago",
+"tipotarea"        => "tbtipotarea",
+"sistematareas"        => "dbsistematareas",
+"ordenes"        => "dbordenes",
+"ordenessistematareas"        => "dbordenessistematareas");
 
 
 function recursiveTablas($ar, $tabla, $aliasTablaMadre) {
@@ -60,10 +64,15 @@ function recursiveTablas($ar, $tabla, $aliasTablaMadre) {
 "predio_menu"     => "predio_menu",       
 "estados"         => "tbestados",         
 "residuos"           => "tbresiduos",           
-"tipotramado"          => "tbtipotramado",          
-"roles"           => "tbroles",          
+"tipotramados"          => "tbtipotramados",          
+"roles"           => "tbroles", 
+"roller"           => "tbroller",          
 "ventas"    => "dbventas",
-"tipopago"        => "tbtipopago");
+"tipopago"        => "tbtipopago",
+"tipotarea"        => "tbtipotarea",
+"sistematareas"        => "dbsistematareas",
+"ordenes"        => "dbordenes",
+"ordenessistematareas"        => "dbordenessistematareas");
 
 	$tablasArAux	= array("clientes"        => 1,        
 "proveedores"=> 1,
@@ -73,10 +82,15 @@ function recursiveTablas($ar, $tabla, $aliasTablaMadre) {
 "predio_menu"     => 1,       
 "estados"         => 1,         
 "residuos"           =>1,           
-"tipotramado"          => 1,          
-"roles"           => 1,          
+"tipotramados"          => 1,          
+"roles"           => 1,    
+"roller"           => 1,       
 "ventas"    => 1,
-"tipopago"        => 1);
+"tipopago"        => 1,
+"tipotarea"        => 1,
+"sistematareas"        => 3,
+"ordenes"        => 5,
+"ordenessistematareas"        => 5);
 	
 	$inner= '';
 	$sql	=	"show columns from ".$tabla;

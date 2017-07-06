@@ -121,6 +121,133 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 }
 
 
+
+
+/* PARA Tipotarea */
+
+function insertarTipotarea($tarea,$valor,$detalle) {
+$sql = "insert into tbtipotarea(idtipotarea,tarea,valor,detalle)
+values ('','".utf8_decode($tarea)."',".$valor.",'".utf8_decode($detalle)."')";
+$res = $this->query($sql,1);
+return $res;
+}
+
+
+function modificarTipotarea($id,$tarea,$valor,$detalle) {
+$sql = "update tbtipotarea
+set
+tarea = '".utf8_decode($tarea)."',valor = ".$valor.",detalle = '".utf8_decode($detalle)."'
+where idtipotarea =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function eliminarTipotarea($id) {
+$sql = "delete from tbtipotarea where idtipotarea =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerTipotarea() {
+$sql = "select
+t.idtipotarea,
+t.tarea,
+t.valor,
+t.detalle
+from tbtipotarea t
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerTipotareaPorId($id) {
+$sql = "select idtipotarea,tarea,valor,detalle from tbtipotarea where idtipotarea =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+/* Fin */
+/* /* Fin de la Tabla: tbtipotarea*/
+
+
+/* PARA Sistematareas */
+
+function insertarSistematareas($refsistemas,$reftipotarea) {
+$sql = "insert into dbsistematareas(idsistematarea,refsistemas,reftipotarea)
+values ('',".$refsistemas.",".$reftipotarea.")";
+$res = $this->query($sql,1);
+return $res;
+}
+
+
+function modificarSistematareas($id,$refsistemas,$reftipotarea) {
+$sql = "update dbsistematareas
+set
+refsistemas = ".$refsistemas.",reftipotarea = ".$reftipotarea."
+where idsistematarea =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function eliminarSistematareas($id) {
+$sql = "delete from dbsistematareas where idsistematarea =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerSistematareas() {
+$sql = "select
+s.idsistematarea,
+s.refsistemas,
+s.reftipotarea
+from dbsistematareas s
+inner join dbsistemas sis ON sis.idsistema = s.refsistemas
+inner join tbroller ro ON ro.idroller = sis.refroller
+inner join tbtipotarea tip ON tip.idtipotarea = s.reftipotarea
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerSistematareasPorId($id) {
+$sql = "select idsistematarea,refsistemas,reftipotarea from dbsistematareas where idsistematarea =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+function traerSistemaTareasPorSistema($idSistema) {
+	$sql = "select idsistematarea,refsistemas,reftipotarea from dbsistematareas where refsistemas =".$idSistema;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+function traerSistemaTareasPorSistemaTodos($idSistema) {
+	$sql = "select 
+					idsistematarea,
+					sis.nombre as sistema,
+					tip.tarea,
+					tip.valor,
+					refsistemas,
+					reftipotarea 
+				from dbsistematareas s
+			inner join dbsistemas sis ON sis.idsistema = s.refsistemas
+			inner join tbroller ro ON ro.idroller = sis.refroller
+			inner join tbtipotarea tip ON tip.idtipotarea = s.reftipotarea where s.refsistemas =".$idSistema;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+/* Fin */
+/* /* Fin de la Tabla: dbsistematareas*/
+
+
+
 /* PARA Clientes */
 
 function insertarClientes($nombrecompleto,$cuil,$dni,$direccion,$telefono,$email,$observaciones) {
