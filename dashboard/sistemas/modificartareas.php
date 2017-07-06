@@ -22,47 +22,56 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Tipo Tareas",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Sistemas",$_SESSION['refroll_predio'],'');
 
 
 $id = $_GET['id'];
 
-$resResultado = $serviciosReferencias->traerTipotareaPorId($id);
+$resResultado = $serviciosReferencias->traerSistemaTareasPorSistema($id);
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Tipo Tarea";
+$singular = "Sistema";
 
-$plural = "Tipo Tareas";
+$plural = "Sistemas";
 
-$eliminar = "eliminarTipotarea";
+$eliminar = "eliminarSistematareas";
 
-$modificar = "modificarTipotarea";
+$modificar = "modificarSistematareas";
 
-$idTabla = "idtipotarea";
+$idTabla = "idpersonalcargo";
+
+$insertar = "modificarSistematareas";
 
 $tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
+/////////////////////// Opciones para la creacion del formulario  /////////////////////
+$tabla 			= "dbsistematareas";
 
-/////////////////////// Opciones pagina ///////////////////////////////////////////////
-$tabla 			= "tbtipotarea";
+$lblCambio	 	= array("refsistemas","reftipotarea");
+$lblreemplazo	= array("Sistema","Tipo Tarea");
 
-$lblCambio	 	= array();
-$lblreemplazo	= array();
+$resSistema	=	$serviciosReferencias->traerSistemasPorId($id);
+$cadRef 	= 	$serviciosFunciones->devolverSelectBoxActivo($resSistema,array(1),', ',$id);
 
-
-$refdescripcion = array();
-$refCampo 	=  array();
-//////////////////////// Fin opciones ////////////////////////////////////////////////
-
-
+$resTipoT	=	$serviciosReferencias->traerSistemaTareasPorSistemaSinUsar($id);
+$cadRef2 	= 	$serviciosFunciones->devolverSelectBox($resTipoT,array(1),'');
 
 
+$refdescripcion = array(0=>$cadRef,1=>$cadRef2);
+$refCampo 	=  array("refsistemas","reftipotarea");
+//////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
-$formulario 	= $serviciosFunciones->camposTablaModificar($id, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+$cabeceras 		= "	<th>Sistema</th>
+					<th>Tipo Tarea</th>
+					<th>Valor</th>";
 
+
+$formulario 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+
+$resTareas		= $serviciosReferencias->traerTipotareaPorId(mysql_result($resResultado,0,'reftipotarea'));
 
 if ($_SESSION['refroll_predio'] != 1) {
 
@@ -133,13 +142,14 @@ if ($_SESSION['refroll_predio'] != 1) {
 
     <div class="boxInfoLargo">
         <div id="headBoxInfo">
-        	<p style="color: #fff; font-size:18px; height:16px;">Modificar <?php echo $singular; ?></p>
+        	<p style="color: #fff; font-size:18px; height:16px;">Modificar Tareas al <?php echo $singular; ?></p>
         	
         </div>
     	<div class="cuerpoBox">
         	<form class="form-inline formulario" role="form">
         	
 			<div class="row">
+				<p style="margin-left:20px; color:#F28;">Tarea a cambiar: <?php echo mysql_result($resTareas,0,1); ?></p>
 			<?php echo $formulario; ?>
             </div>
             
@@ -152,15 +162,13 @@ if ($_SESSION['refroll_predio'] != 1) {
                 
                 </div>
             </div>
-            
+            <input type="hidden" id="id" name="id" value="<?php echo $id; ?>"/>
             <div class="row">
                 <div class="col-md-12">
                 <ul class="list-inline" style="margin-top:15px;">
+
                     <li>
-                        <button type="button" class="btn btn-warning" id="cargar" style="margin-left:0px;">Modificar</button>
-                    </li>
-                    <li>
-                        <button type="button" class="btn btn-danger varborrar" id="<?php echo $id; ?>" style="margin-left:0px;">Eliminar</button>
+                    <button type="button" class="btn btn-warning" id="cargar" style="margin-left:0px;">Modificar</button>
                     </li>
                     <li>
                         <button type="button" class="btn btn-default volver" style="margin-left:0px;">Volver</button>
@@ -184,7 +192,7 @@ if ($_SESSION['refroll_predio'] != 1) {
         	<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
             ¿Esta seguro que desea eliminar el <?php echo $singular; ?>?.<span id="proveedorEli"></span>
         </p>
-        <p><strong>Importante: </strong>Si elimina el equipo se perderan todos los datos de este</p>
+        <p><strong>Importante: </strong>Si elimina el cargo solo le pondra una fecha de baja actual</p>
         <input type="hidden" value="" id="idEliminar" name="idEliminar">
 </div>
 <script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
@@ -195,12 +203,15 @@ if ($_SESSION['refroll_predio'] != 1) {
 
 <script type="text/javascript">
 $(document).ready(function(){
-	
-	$('.valorAdd').html('mm');
+
+	$('#fechacrea').val('<?php echo date('Y-m-d'); ?>');
+	$('#fechamodi').val('');
+	$('#usuacrea').val('<?php echo $_SESSION['nombre_predio']; ?>');
+	$('#usuamodi').val('');
 	
 	$('.volver').click(function(event){
 		 
-		url = "index.php";
+		url = "tareas.php?id="+<?php echo mysql_result($resResultado,0,'refsistemas'); ?>;
 		$(location).attr('href',url);
 	});//fin del boton modificar
 	
@@ -213,6 +224,18 @@ $(document).ready(function(){
 			
 			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
 			//$(location).attr('href',url);
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton eliminar
+
+
+	$('.varmodificar').click(function(event){
+		  usersid =  $(this).attr("id");
+		  if (!isNaN(usersid)) {
+
+			url = "modificarcargos.php?id=" + usersid;
+			$(location).attr('href',url);
 		  } else {
 			alert("Error, vuelva a realizar la acción.");	
 		  }
@@ -256,20 +279,15 @@ $(document).ready(function(){
 		 
 	 		}); //fin del dialogo para eliminar
 	
-	
-	<?php 
-		echo $serviciosHTML->validacion($tabla);
-	
-	?>
-	
+
+
 
 	
 	
 	//al enviar el formulario
     $('#cargar').click(function(){
 		
-		if (validador() == "")
-        {
+
 			//información del formulario
 			var formData = new FormData($(".formulario")[0]);
 			var message = "";
@@ -303,8 +321,8 @@ $(document).ready(function(){
 												
 											});
 											$("#load").html('');
-											//url = "index.php";
-											//$(location).attr('href',url);
+											url = "tareas.php?id="+<?php echo $id; ?>;
+											$(location).attr('href',url);
                                             
 											
                                         } else {
@@ -320,25 +338,48 @@ $(document).ready(function(){
                     $("#load").html('');
 				}
 			});
-		}
+		
     });
 
 });
 </script>
 
-<script type="text/javascript">
-$('.form_date').datetimepicker({
-	language:  'es',
-	weekStart: 1,
-	todayBtn:  1,
-	autoclose: 1,
-	todayHighlight: 1,
-	startView: 2,
-	minView: 2,
-	forceParse: 0,
-	format: 'dd/mm/yyyy'
-});
-</script>
+<script>
+  $(function() {
+	  $.datepicker.regional['es'] = {
+ closeText: 'Cerrar',
+ prevText: '<Ant',
+ nextText: 'Sig>',
+ currentText: 'Hoy',
+ monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+ monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+ dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+ dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+ dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+ weekHeader: 'Sm',
+ dateFormat: 'dd/mm/yy',
+ firstDay: 1,
+ isRTL: false,
+ showMonthAfterYear: false,
+ yearSuffix: ''
+ };
+ $.datepicker.setDefaults($.datepicker.regional['es']);
+ 
+    $( "#fechabaja" ).datepicker();
+
+    $( "#fechabaja" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+	
+	$( "#fechaalta" ).datepicker();
+
+    $( "#fechaalta" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+
+    $("#fechaalta").datepicker("setDate", "getDate" );
+
+    $( "#fechabajatentativa" ).datepicker();
+
+    $( "#fechabajatentativa" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+  });
+  </script>
 <?php } ?>
 </body>
 </html>

@@ -350,7 +350,6 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
             <table class="table table-striped" id="table-6">
                 <thead>
                     <tr>
-                        <th class="text-center">Id</th>
                         <th style="width:260px;" class="text-center">Sistema</th>
                         <th class="text-center">Tela</th>
                         <th class="text-center">Tela-Adicional</th>
@@ -365,7 +364,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
                 </tbody>
                 <tfoot>
                     <tr style="background-color:#CCC; font-weight:bold; font-size:18px;">
-                        <td colspan="7" align="right">
+                        <td colspan="6" align="right">
                             Total $
                         </td>
                         <td>
@@ -735,6 +734,41 @@ $(document).ready(function(){
 		}
 		
     });
+
+
+    $(document).on("click","#agregarpresupuesto",function(){
+        var i= 1;
+
+        var valSistema = $('.normal').val();
+        var lblSistema = '';
+
+        var valTela = $('#reftelas').val();
+        var lblTela = $('#reftelas option:selected').html();
+
+        var valTelaAux = '';
+        var lblTelaAux = '';
+        var select3 = '';
+
+        if (valSistema == 1) {
+            lblSistema = 'Normal';
+        } else {
+            lblSistema = 'Doble';
+            valTelaAux = $('#reftelaopcional').val();
+            lblTelaAux = $('#reftelaopcional option:selected').html();
+            select3 = '<select id="telaopcional'+i+'" name="telaopcional'+i+'"><option value="'+valTelaAux+'">'+lblTelaAux+'</option></select>';
+        }
+
+        var select1 = '<select id="sistema'+i+'" name="sistema'+i+'"><option value="'+valSistema+'">'+lblSistema+'</option></select>';
+        var select2 = '<select id="tela'+i+'" name="tela'+i+'"><option value="'+valTela+'">'+lblTela+'</option></select>';
+
+        var input1  = '<input type="text" readonly name="alto'+i+'" id"alto'+i+'" value="' + $('#alto').val() + '" />';
+        var input2  = '<input type="text" readonly name="ancho'+i+'" id"ancho'+i+'" value="' + $('#ancho').val() + '" />';
+
+        var cadAgrega = '<tr> <td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td>'+$('#total').text()+'</td><td><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
+        $('.detalle').prepend(cadAgrega);
+    });
+
+    
 	
 	$('#datosFacturacion').hide();
 

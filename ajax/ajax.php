@@ -696,13 +696,20 @@ function insertarSistematareas($serviciosReferencias) {
 	$refsistemas = $_POST['refsistemas'];
 	$reftipotarea = $_POST['reftipotarea'];
 	
-	$res = $serviciosReferencias->insertarSistematareas($refsistemas,$reftipotarea);
+	$existe = $serviciosReferencias->existeTareaEnSistema($refsistemas,$reftipotarea);
+
+	if ($existe == 0) {
+		$res = $serviciosReferencias->insertarSistematareas($refsistemas,$reftipotarea);
 	
-	if ((integer)$res > 0) {
-		echo '';
+		if ((integer)$res > 0) {
+			echo '';
+		} else {
+			echo 'Huvo un error al insertar datos';
+		}
 	} else {
-		echo 'Huvo un error al insertar datos';
+		echo 'Ya existe esa tarea para este sistema';
 	}
+	
 }
 
 

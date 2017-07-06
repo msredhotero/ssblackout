@@ -174,6 +174,16 @@ return $res;
 
 
 /* PARA Sistematareas */
+function existeTareaEnSistema($refsistemas,$reftipotarea) {
+	$sql = "select * from dbsistematareas where refsistemas =".$refsistemas." and reftipotarea=".$reftipotarea;
+	$res = $this->query($sql,0);
+
+	if (mysql_num_rows($res)>0) {
+		return 1;
+	}
+	return 0;
+}
+
 
 function insertarSistematareas($refsistemas,$reftipotarea) {
 $sql = "insert into dbsistematareas(idsistematarea,refsistemas,reftipotarea)
@@ -239,6 +249,23 @@ function traerSistemaTareasPorSistemaTodos($idSistema) {
 			inner join dbsistemas sis ON sis.idsistema = s.refsistemas
 			inner join tbroller ro ON ro.idroller = sis.refroller
 			inner join tbtipotarea tip ON tip.idtipotarea = s.reftipotarea where s.refsistemas =".$idSistema;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+
+function traerSistemaTareasPorSistemaSinUsar($idSistema) {
+	$sql = "select 
+					tip.idtipotarea,
+					tip.tarea,
+					tip.valor,
+                    sis.nombre as sistema,
+					refsistemas,
+					reftipotarea 
+				from tbtipotarea tip
+			left join dbsistematareas s ON tip.idtipotarea = s.reftipotarea
+            left join dbsistemas sis ON sis.idsistema = s.refsistemas and s.idsistematarea =".$idSistema."
+            where sis.idsistema is null";
 	$res = $this->query($sql,0);
 	return $res;
 }

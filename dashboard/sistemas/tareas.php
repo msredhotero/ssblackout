@@ -247,7 +247,7 @@ $(document).ready(function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 
-			url = "modificarcargos.php?id=" + usersid;
+			url = "modificartareas.php?id=" + usersid;
 			$(location).attr('href',url);
 		  } else {
 			alert("Error, vuelva a realizar la acción.");	
