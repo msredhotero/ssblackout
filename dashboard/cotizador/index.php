@@ -77,7 +77,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
     
 	<!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css"/>
-	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<!-- <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'> -->
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="../../css/chosen.css">
@@ -144,6 +144,10 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
 		#table-6 tbody td .cent {
 			text-align:center;	
 		}
+
+        .flecha select::-ms-expand {
+            display: none;
+        }
   
 		
 	</style>
@@ -350,6 +354,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
             <table class="table table-striped" id="table-6">
                 <thead>
                     <tr>
+                        <th class="text-center">Id</th>
                         <th style="width:260px;" class="text-center">Sistema</th>
                         <th class="text-center">Tela</th>
                         <th class="text-center">Tela-Adicional</th>
@@ -364,11 +369,11 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
                 </tbody>
                 <tfoot>
                     <tr style="background-color:#CCC; font-weight:bold; font-size:18px;">
-                        <td colspan="6" align="right">
+                        <td colspan="7" align="right">
                             Total $
                         </td>
                         <td>
-                            <input type="text" readonly name="total" id="total" value="0" style="border:none; background-color:#CCC;"/>
+                            <input type="text" readonly name="totales" id="totales" value="0" style="border:none; background-color:#CCC;"/>
                         </td>
                     </tr>
                 </tfoot>
@@ -436,11 +441,14 @@ $(document).ready(function(){
 	
 	$('#doble').click(function() {
 		$('.adicional').show();
+        $('#agregarpresupuesto').hide();
+
 	});
 	
 	$('#normal').click(function() {
 		$('.adicional').hide();
 		$('.adicional option[value=""]').attr("selected",true);
+        $('#agregarpresupuesto').hide();
 	});
 	
 	
@@ -605,7 +613,7 @@ $(document).ready(function(){
 
 		$(padre).remove();
 		
-		$('#total').val(SumarTabla());
+		$('#totales').val(SumarTabla());
 		
 	  });
 	
@@ -662,7 +670,7 @@ $(document).ready(function(){
 
     });
 	
-	
+
 	
 	$('#cotizar').click(function(){
 		
@@ -736,40 +744,74 @@ $(document).ready(function(){
     });
 
 
+    var i= 1;
+
+    var valSistema = '';
+    var lblSistema = '';
+
+    var valTela = '';
+    var lblTela = '';
+
+    var valTelaAux = '';
+    var lblTelaAux = '';
+
+    var select1 = '';
+    var select2 = '';
+
+    var input1  = '';
+    var input2  = '';
+
+    var cadAgrega = '';
+    
+
     $(document).on("click","#agregarpresupuesto",function(){
-        var i= 1;
 
-        var valSistema = $('.normal').val();
-        var lblSistema = '';
+        valSistema = $('.normal').val();
+        lblSistema = '';
 
-        var valTela = $('#reftelas').val();
-        var lblTela = $('#reftelas option:selected').html();
+        valTela = $('#reftelas').val();
+        lblTela = $('#reftelas option:selected').html();
 
-        var valTelaAux = '';
-        var lblTelaAux = '';
-        var select3 = '';
+        valTelaAux = $('#reftelaopcional').val();
+        lblTelaAux = $('#reftelaopcional option:selected').html();
+        select3 = '';
 
-        if (valSistema == 1) {
+        if ($('#normal').prop('checked') == 1) {
             lblSistema = 'Normal';
+
+            select3 = '<select id="telaopcional'+i+'" class="flecha" name="telaopcional'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="0"></option></select>';
         } else {
             lblSistema = 'Doble';
-            valTelaAux = $('#reftelaopcional').val();
-            lblTelaAux = $('#reftelaopcional option:selected').html();
-            select3 = '<select id="telaopcional'+i+'" name="telaopcional'+i+'"><option value="'+valTelaAux+'">'+lblTelaAux+'</option></select>';
+
+            select3 = '<select id="telaopcional'+i+'" class="flecha" name="telaopcional'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valTelaAux+'">'+lblTelaAux+'</option></select>';
         }
 
-        var select1 = '<select id="sistema'+i+'" name="sistema'+i+'"><option value="'+valSistema+'">'+lblSistema+'</option></select>';
-        var select2 = '<select id="tela'+i+'" name="tela'+i+'"><option value="'+valTela+'">'+lblTela+'</option></select>';
+        select1 = '<select id="sistema'+i+'" name="sistema'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valSistema+'">'+lblSistema+'</option></select>';
+        select2 = '<select id="tela'+i+'" name="tela'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valTela+'">'+lblTela+'</option></select>';
 
-        var input1  = '<input type="text" readonly name="alto'+i+'" id"alto'+i+'" value="' + $('#alto').val() + '" />';
-        var input2  = '<input type="text" readonly name="ancho'+i+'" id"ancho'+i+'" value="' + $('#ancho').val() + '" />';
+        input1  = '<input type="text" readonly name="alto'+i+'" id"alto'+i+'" value="' + $('#alto').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+        input2  = '<input type="text" readonly name="ancho'+i+'" id"ancho'+i+'" value="' + $('#ancho').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
 
-        var cadAgrega = '<tr> <td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td>'+$('#total').text()+'</td><td><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
+        cadAgrega = '<tr> <td id="'+i+'">'+i+'</td><td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td style="text-align:right;">'+$('#total').text()+'</td><td style="text-align:center;"><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
         $('.detalle').prepend(cadAgrega);
+        $('#totales').val(SumarTabla());
+
     });
 
     
-	
+	function SumarTabla() {
+        var suma = 0;
+        var sumadesc = 0;
+        $('.detalle tr').each(function(){
+            
+            suma += parseFloat($(this).find('td').eq(5).text()||0,10); //numero de la celda 3
+        })
+        
+        return suma.toFixed(2);
+
+      }
+      
+
 	$('#datosFacturacion').hide();
 
 });

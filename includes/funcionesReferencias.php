@@ -173,6 +173,69 @@ return $res;
 /* /* Fin de la Tabla: tbtipotarea*/
 
 
+/* PARA Presupuestos */
+
+function insertarPresupuestos($numero,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios) {
+$sql = "insert into dbpresupuestos(idpresupuesto,numero,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios)
+values ('','".utf8_decode($numero)."','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",'".utf8_decode($refusuarios)."')";
+$res = $this->query($sql,1);
+return $res;
+}
+
+
+function modificarPresupuestos($id,$numero,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios) {
+$sql = "update dbpresupuestos
+set
+numero = '".utf8_decode($numero)."',fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble.",refusuarios = '".utf8_decode($refusuarios)."'
+where idpresupuesto =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function eliminarPresupuestos($id) {
+$sql = "delete from dbpresupuestos where idpresupuesto =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerPresupuestos() {
+$sql = "select
+p.idpresupuesto,
+p.numero,
+p.fechacrea,
+p.fechamodi,
+p.usuacrea,
+p.usuamodi,
+p.refestados,
+p.refsistemas,
+p.reftelas,
+p.refresiduos,
+p.roller,
+p.tramado,
+p.ancho,
+p.alto,
+p.reftelaopcional,
+p.esdoble,
+p.refusuarios
+from dbpresupuestos p
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerPresupuestosPorId($id) {
+$sql = "select idpresupuesto,numero,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios from dbpresupuestos where idpresupuesto =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+/* Fin */
+/* /* Fin de la Tabla: dbpresupuestos*/
+
+
 /* PARA Sistematareas */
 function existeTareaEnSistema($refsistemas,$reftipotarea) {
 	$sql = "select * from dbsistematareas where refsistemas =".$refsistemas." and reftipotarea=".$reftipotarea;

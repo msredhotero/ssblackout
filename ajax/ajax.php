@@ -255,7 +255,15 @@ case 'cotizar':
 	cotizar($serviciosReferencias);
 	break;
 
+case 'insertarPresupuesto':
+	insertarPresupuesto($serviciosReferencias);
+	break;
+
 }
+
+
+
+
 
 /* Fin */
 /*
@@ -343,6 +351,17 @@ function cotizar($serviciosReferencias) {
 
 /********* fin cotizador ***************/
 
+
+/*********  Presupuestos ***************/
+function insertarPresupuesto($serviciosReferencias) {
+
+
+
+
+
+}
+
+//***********  fin Presupuestos ***************************************************/
 
 //******************  VENTAS  *****************************************************/
 
