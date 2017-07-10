@@ -22,13 +22,13 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Ordenes",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Presupuestos",$_SESSION['refroll_predio'],'');
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Orden";
+$singular = "Presupuesto";
 
-$plural = "Ordenes";
+$plural = "Presupuestos";
 
 $eliminar = "eliminarOrdenes";
 
@@ -37,7 +37,7 @@ $tituloWeb = "Gestión: Sistema Cortinas Roller";
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbordenes";
+$tabla 			= "dbpresupuestos";
 
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 

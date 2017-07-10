@@ -56,6 +56,7 @@ if (mysql_num_rows($respusu) > 0) {
 		//die(var_dump($error));
 		session_start();
 		$_SESSION['usua_predio'] = $usuario;
+		$_SESSION['idusua_predio'] = $idUsua;
 		$_SESSION['nombre_predio'] = mysql_result($resppass,0,0);
 		$_SESSION['email_predio'] = mysql_result($resppass,0,1);
 		$_SESSION['idroll_predio'] = mysql_result($resppass,0,4);

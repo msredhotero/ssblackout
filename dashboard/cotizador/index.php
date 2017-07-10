@@ -286,20 +286,18 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
             
             <div class='row' style="margin-left:25px; margin-right:25px;"> 
             	<?php
-					while ($row = mysql_fetch_array($resResiduo)) {
+					$cadResiduo = $serviciosFunciones->devolverSelectBox($resResiduo,array(1),'');
+                    //while ($row = mysql_fetch_array($resResiduo)) {
 				?>
-                    <div class="col-md-4" style="margin-bottom:7px;">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                            <input type="checkbox" aria-label="..." id="resi<?php echo $row[0]; ?>" name="resi<?php echo $row[0]; ?>">
-                            </span>
-                            <input type="text" class="form-control" aria-label="..." value="<?php echo $row[1]; ?>">
-                            
-                        </div><!-- /input-group -->
-                    </div><!-- /.col-lg-6 -->
-                <?php
-					}
-				?>
+
+                <div class="col-md-3" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <select class="form-control" id="refresiduo" name="refresiduo">
+                            <?php echo $cadResiduo; ?>
+                        </select>
+                        
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
             </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
@@ -360,6 +358,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
                         <th class="text-center">Tela-Adicional</th>
                         <th class="text-center">Alto</th>
                         <th class="text-center">Ancho</th>
+                        <th class="text-center">Residuo</th>
                         <th class="text-center">Total</th>
                         <th style="width:120px;" class="text-center">Acciones</th>
                     </tr>
@@ -369,7 +368,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
                 </tbody>
                 <tfoot>
                     <tr style="background-color:#CCC; font-weight:bold; font-size:18px;">
-                        <td colspan="7" align="right">
+                        <td colspan="8" align="right">
                             Total $
                         </td>
                         <td>
@@ -744,13 +743,16 @@ $(document).ready(function(){
     });
 
 
-    var i= 1;
+    var i= 0;
 
     var valSistema = '';
     var lblSistema = '';
 
     var valTela = '';
     var lblTela = '';
+
+    var valResiduo = '';
+    var lblResiduo = '';
 
     var valTelaAux = '';
     var lblTelaAux = '';
@@ -765,12 +767,15 @@ $(document).ready(function(){
     
 
     $(document).on("click","#agregarpresupuesto",function(){
-
-        valSistema = $('.normal').val();
+        i = i + 1;
+        valSistema = 1;
         lblSistema = '';
 
         valTela = $('#reftelas').val();
         lblTela = $('#reftelas option:selected').html();
+
+        valResiduo = $('#refresiduo').val();
+        lblResiduo = $('#refresiduo option:selected').html();
 
         valTelaAux = $('#reftelaopcional').val();
         lblTelaAux = $('#reftelaopcional option:selected').html();
@@ -778,22 +783,24 @@ $(document).ready(function(){
 
         if ($('#normal').prop('checked') == 1) {
             lblSistema = 'Normal';
-
-            select3 = '<select id="telaopcional'+i+'" class="flecha" name="telaopcional'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="0"></option></select>';
+            valSistema = 1;
+            select3 = '<select id="telaopcional" class="flecha" name="telaopcional" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="0"></option></select>';
         } else {
             lblSistema = 'Doble';
-
-            select3 = '<select id="telaopcional'+i+'" class="flecha" name="telaopcional'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valTelaAux+'">'+lblTelaAux+'</option></select>';
+            valSistema = 2;
+            select3 = '<select id="telaopcional" class="flecha" name="telaopcional" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valTelaAux+'">'+lblTelaAux+'</option></select>';
         }
 
-        select1 = '<select id="sistema'+i+'" name="sistema'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valSistema+'">'+lblSistema+'</option></select>';
-        select2 = '<select id="tela'+i+'" name="tela'+i+'" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valTela+'">'+lblTela+'</option></select>';
+        select1 = '<select id="sistema" name="sistema" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valSistema+'">'+lblSistema+'</option></select>';
+        select2 = '<select id="tela" name="tela" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valTela+'">'+lblTela+'</option></select>';
+        select4 = '<select id="residuo" name="residuo" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valResiduo+'">'+lblResiduo+'</option></select>';
+        
 
-        input1  = '<input type="text" readonly name="alto'+i+'" id"alto'+i+'" value="' + $('#alto').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
-        input2  = '<input type="text" readonly name="ancho'+i+'" id"ancho'+i+'" value="' + $('#ancho').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+        input1  = '<input type="text" readonly name="alto" id="alto" value="' + $('#alto').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+        input2  = '<input type="text" readonly name="ancho" id="ancho" value="' + $('#ancho').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
 
-        cadAgrega = '<tr> <td id="'+i+'">'+i+'</td><td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td style="text-align:right;">'+$('#total').text()+'</td><td style="text-align:center;"><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
-        $('.detalle').prepend(cadAgrega);
+        cadAgrega = '<tr id="tr_'+i+'"> <td id="td_id">'+i+'</td><td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td>'+select4+'</td><td id="totalparcial" style="text-align:right;">'+$('#total').text()+'</td><td style="text-align:center;"><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
+        $('.detalle').append(cadAgrega);
         $('#totales').val(SumarTabla());
 
     });
@@ -804,7 +811,7 @@ $(document).ready(function(){
         var sumadesc = 0;
         $('.detalle tr').each(function(){
             
-            suma += parseFloat($(this).find('td').eq(5).text()||0,10); //numero de la celda 3
+            suma += parseFloat($(this).find('td').eq(7).text()||0,10); //numero de la celda 3
         })
         
         return suma.toFixed(2);
@@ -812,10 +819,80 @@ $(document).ready(function(){
       }
       
 
+
 	$('#datosFacturacion').hide();
+
+
+    // Actualiza de manera masiva todos los archivos cargados en la tercera pestaña.
+    function grabaTodoTabla(TABLAID){
+        //tenemos 2 variables, la primera será el Array principal donde estarán nuestros datos y la segunda es el objeto tabla
+        var DATA    = [];
+        var TABLA   = $("#"+TABLAID+" tbody > tr");
+
+        //una vez que tenemos la tabla recorremos esta misma recorriendo cada TR y por cada uno de estos se ejecuta el siguiente codigo
+        TABLA.each(function(){
+            //por cada fila o TR que encuentra rescatamos 3 datos, el ID de cada fila, la Descripción que tiene asociada en el input text, y el valor seleccionado en un select
+            var ID              = $(this).find("td[id='td_id']").text(),
+                SISTEMAS        = $(this).find("select[id*='sistema']").val(),
+                TELA            = $(this).find("select[id*='tela']").val(),
+                RESIDUO         = $(this).find("select[id*='residuo']").val(),
+                RESIDUO         = $(this).find("select[id*='residuo']").val(),
+                ALTO            = $(this).find("input[id*='alto']").val(),
+                ANCHO           = $(this).find("input[id*='ancho']").val(),
+                TOTALPARCIAL    = $(this).find("td[id='totalparcial']").text(),
+                TELAOPCIONAL    = $(this).find("select[id*='telaopcional']").val();
+
+            //entonces declaramos un array para guardar estos datos, lo declaramos dentro del each para así reemplazarlo y cada vez
+            item = {};
+            //si miramos el HTML vamos a ver un par de TR vacios y otros con el titulo de la tabla, por lo que le decimos a la función que solo se ejecute y guarde estos datos cuando exista la variable ID, si no la tiene entonces que no anexe esos datos.
+            if(ID !== ''){
+                item ["id"]     = ID;
+                item ["sistema"]   = SISTEMAS;
+                item ['tela']   = TELA;
+                item ['residuo']   = RESIDUO;
+                item ['telaopcional']   = TELAOPCIONAL;
+                item ['alto']   = ALTO;
+                item ['ancho']   = ANCHO;
+                item ['totalparcial']   = TOTALPARCIAL;
+                item ['usuacrea']   = '<?php echo $_SESSION['nombre_predio']; ?>';
+                item ['refusuarios']   = <?php echo $_SESSION['idusua_predio']; ?>;
+                //una vez agregados los datos al array "item" declarado anteriormente hacemos un .push() para agregarlos a nuestro array principal "DATA".
+                DATA.push(item);
+            }
+        });
+        console.log(DATA);
+
+        //eventualmente se lo vamos a enviar por PHP por ajax de una forma bastante simple y además convertiremos el array en json para evitar cualquier incidente con compativilidades.
+        INFO    = new FormData();
+        aInfo   = JSON.stringify(DATA);
+
+        INFO.append('data', aInfo);
+
+        $.ajax({
+            data: INFO,
+            type: 'POST',
+            url : '../../json/cargar_presupuesto.php',
+            processData: false, 
+            contentType: false,
+            success: function(r){
+                alert(r);
+                url = "index.php";
+                $(location).attr('href',url);
+            }
+        });
+    }
+
+  
+    $('#presupuesto').click(function() {
+        grabaTodoTabla('table-6');
+    });
+    
 
 });
 </script>
+
+
+
 <script src="../../js/chosen.jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
     var config = {

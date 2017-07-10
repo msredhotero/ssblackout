@@ -286,11 +286,8 @@ function cotizar($serviciosReferencias) {
 	$resTelas = $serviciosReferencias->traerTelas();
 	$resResiduos = $serviciosReferencias->traerResiduos();
 	
-	while ($rowFS1 = mysql_fetch_array($resResiduos)) {
-		if (isset($_POST[$cad1.$rowFS1[0]])) {
-			$idResiduo = $rowFS1[0];
-		}
-	}
+	$idResiduo = $_POST['refresiduo'];
+
 	
 
 	$sistema = $_POST['normal'];

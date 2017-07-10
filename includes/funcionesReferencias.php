@@ -175,18 +175,18 @@ return $res;
 
 /* PARA Presupuestos */
 
-function insertarPresupuestos($numero,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios) {
-$sql = "insert into dbpresupuestos(idpresupuesto,numero,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios)
-values ('','".utf8_decode($numero)."','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",'".utf8_decode($refusuarios)."')";
+function insertarPresupuestos($fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios,$montofinal) {
+$sql = "insert into dbpresupuestos(idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios,montofinal)
+values ('','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",'".utf8_decode($refusuarios)."',".$montofinal.")";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarPresupuestos($id,$numero,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios) {
+function modificarPresupuestos($id,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios,$montofinal) {
 $sql = "update dbpresupuestos
 set
-numero = '".utf8_decode($numero)."',fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble.",refusuarios = '".utf8_decode($refusuarios)."'
+fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble.",refusuarios = '".utf8_decode($refusuarios)."',montofinal = ".$montofinal."
 where idpresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -203,7 +203,6 @@ return $res;
 function traerPresupuestos() {
 $sql = "select
 p.idpresupuesto,
-p.numero,
 p.fechacrea,
 p.fechamodi,
 p.usuacrea,
@@ -218,7 +217,8 @@ p.ancho,
 p.alto,
 p.reftelaopcional,
 p.esdoble,
-p.refusuarios
+p.refusuarios,
+p.montofinal
 from dbpresupuestos p
 order by 1";
 $res = $this->query($sql,0);
@@ -227,7 +227,7 @@ return $res;
 
 
 function traerPresupuestosPorId($id) {
-$sql = "select idpresupuesto,numero,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios from dbpresupuestos where idpresupuesto =".$id;
+$sql = "select idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios,montofinal from dbpresupuestos where idpresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
 }
@@ -494,6 +494,24 @@ return $res;
 
 function traerSistemasPorId($id) {
 $sql = "select idsistema,nombre,refroller,desde,hasta,preciocosto,preciocliente from dbsistemas where idsistema =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerSistemasPorSistema($idSistema) {
+$sql = "select
+s.idsistema,
+s.nombre,
+rol.diametro as roller,
+s.desde,
+s.hasta,
+s.preciocosto,
+s.preciocliente,
+s.refroller
+from dbsistemas s
+inner join tbroller rol ON rol.idroller = s.refroller
+where s.idsistema =".$idSistema;
 $res = $this->query($sql,0);
 return $res;
 }
