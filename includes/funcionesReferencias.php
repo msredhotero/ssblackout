@@ -121,7 +121,59 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 }
 
 
+/* PARA Cabecerapresupuesto */
 
+function insertarCabecerapresupuesto($refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocuemnto,$observaciones) {
+$sql = "insert into dbcabecerapresupuesto(idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocuemnto,observaciones)
+values ('',".$refusuarios.",".$refclientes.",'".utf8_decode($fecha)."',".$monto.",".$adelanto.",'".utf8_decode($solicitante)."','".utf8_decode($nrodocuemnto)."','".utf8_decode($observaciones)."')";
+$res = $this->query($sql,1);
+return $res;
+}
+
+
+function modificarCabecerapresupuesto($id,$refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocuemnto,$observaciones) {
+$sql = "update dbcabecerapresupuesto
+set
+refusuarios = ".$refusuarios.",refclientes = ".$refclientes.",fecha = '".utf8_decode($fecha)."',monto = ".$monto.",adelanto = ".$adelanto.",solicitante = '".utf8_decode($solicitante)."',nrodocuemnto = '".utf8_decode($nrodocuemnto)."',observaciones = '".utf8_decode($observaciones)."'
+where idcabecerapresupuesto =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function eliminarCabecerapresupuesto($id) {
+$sql = "delete from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerCabecerapresupuesto() {
+$sql = "select
+c.idcabecerapresupuesto,
+c.refusuarios,
+c.refclientes,
+c.fecha,
+c.monto,
+c.adelanto,
+c.solicitante,
+c.nrodocuemnto,
+c.observaciones
+from dbcabecerapresupuesto c
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerCabecerapresupuestoPorId($id) {
+$sql = "select idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocuemnto,observaciones from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+/* Fin */
+/* /* Fin de la Tabla: dbcabecerapresupuesto*/
 
 /* PARA Tipotarea */
 
@@ -175,18 +227,18 @@ return $res;
 
 /* PARA Presupuestos */
 
-function insertarPresupuestos($fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios,$montofinal) {
-$sql = "insert into dbpresupuestos(idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios,montofinal)
-values ('','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",'".utf8_decode($refusuarios)."',".$montofinal.")";
+function insertarPresupuestos($fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto) {
+$sql = "insert into dbpresupuestos(idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto)
+values ('','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",".$montofinal.",".$refcabecerapresupuesto.")";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarPresupuestos($id,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$refusuarios,$montofinal) {
+function modificarPresupuestos($id,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto) {
 $sql = "update dbpresupuestos
 set
-fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble.",refusuarios = '".utf8_decode($refusuarios)."',montofinal = ".$montofinal."
+fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble.",montofinal = ".$montofinal.",refcabecerapresupuesto = ".$refcabecerapresupuesto."
 where idpresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -217,9 +269,10 @@ p.ancho,
 p.alto,
 p.reftelaopcional,
 p.esdoble,
-p.refusuarios,
-p.montofinal
+p.montofinal,
+p.refcabecerapresupuesto
 from dbpresupuestos p
+inner join dbcabecerapresupuesto cab ON cab.idcabecerapresupuesto = p.refcabecerapresupuesto
 order by 1";
 $res = $this->query($sql,0);
 return $res;
@@ -227,7 +280,7 @@ return $res;
 
 
 function traerPresupuestosPorId($id) {
-$sql = "select idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,refusuarios,montofinal from dbpresupuestos where idpresupuesto =".$id;
+$sql = "select idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto from dbpresupuestos where idpresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
 }

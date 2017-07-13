@@ -323,6 +323,36 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
             </div>
             
             
+            <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
+            	<div class="form-group col-md-6" style="display:block">
+                	<label class="control-label" for="codigobarra" style="text-align:left">Solicitante</label>
+                    <div class="input-group col-md-12">
+	                    <input type="text" class="form-control" id="solicitante" name="solicitante" />
+                    </div>
+                </div>
+                
+                <div class="form-group col-md-6" style="display:block">
+                	<label class="control-label" for="codigobarra" style="text-align:left">Nro Documento</label>
+                    <div class="input-group col-md-12">
+	                    <input type="text" class="form-control" id="nrodocumento" name="nrodocumento" />
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
+            	<div class="form-group col-md-12" style="display:block">
+                	<label class="control-label" for="codigobarra" style="text-align:left">Observaciones</label>
+                    <div class="input-group col-md-12">
+	                    <textarea rows="3" class="form-control" name="observaciones" id="observaciones">
+                        
+                        </textarea>
+                    </div>
+                </div>
+
+            </div>
+            
+            
             <div class="row">
                 <div class="col-md-12">
                 <ul class="list-inline" style="margin-top:15px;">
@@ -828,6 +858,7 @@ $(document).ready(function(){
         //tenemos 2 variables, la primera será el Array principal donde estarán nuestros datos y la segunda es el objeto tabla
         var DATA    = [];
         var TABLA   = $("#"+TABLAID+" tbody > tr");
+		var Total   = 0;
 
         //una vez que tenemos la tabla recorremos esta misma recorriendo cada TR y por cada uno de estos se ejecuta el siguiente codigo
         TABLA.each(function(){
@@ -841,6 +872,8 @@ $(document).ready(function(){
                 ANCHO           = $(this).find("input[id*='ancho']").val(),
                 TOTALPARCIAL    = $(this).find("td[id='totalparcial']").text(),
                 TELAOPCIONAL    = $(this).find("select[id*='telaopcional']").val();
+				
+				Total			= Total + parseFloat(TOTALPARCIAL);
 
             //entonces declaramos un array para guardar estos datos, lo declaramos dentro del each para así reemplazarlo y cada vez
             item = {};
@@ -856,6 +889,11 @@ $(document).ready(function(){
                 item ['totalparcial']   = TOTALPARCIAL;
                 item ['usuacrea']   = '<?php echo $_SESSION['nombre_predio']; ?>';
                 item ['refusuarios']   = <?php echo $_SESSION['idusua_predio']; ?>;
+				item ['solicitante']   = $('#solicitante').val();
+				item ['nrodocumento']   = $('#nrodocumento').val();
+				item ['observaciones']   = $('#observaciones').val();
+				item ['refclientes']   = $('#refclientes').val();
+				item ['total']   = Total;
                 //una vez agregados los datos al array "item" declarado anteriormente hacemos un .push() para agregarlos a nuestro array principal "DATA".
                 DATA.push(item);
             }

@@ -23,6 +23,8 @@ $json = json_decode($json);
 
 //die(var_dump(count($json)));
 
+$refCabeceraPresupuesto = $serviciosReferencias->insertarCabecerapresupuesto($json[0]->refusuarios, $json[0]->refclientes, date('Y-m-d'), $json[0]->total,0,$json[0]->solicitante,$json[0]->nrodocumento,$json[0]->observaciones);
+
 for ($i=0; $i < count($json); $i++) {
 
 
@@ -30,15 +32,15 @@ for ($i=0; $i < count($json); $i++) {
 	$resTelas	 = $serviciosReferencias->traerTelasPorId($json[$i]->tela);
 
 	if ($json[$i]->sistema == 1) {
-		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,0,$json[$i]->refusuarios,$json[$i]->totalparcial);
+		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,0,$json[$i]->totalparcial,$refCabeceraPresupuesto);
 	} else {
 		$resTelasOpcional	 = $serviciosReferencias->traerTelasPorId($json[$i]->telaopcional);
-		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado').' - Segunda Tela: '.mysql_result($resTelasOpcional,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,1,$json[$i]->refusuarios,$json[$i]->totalparcial);
+		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado').' - Segunda Tela: '.mysql_result($resTelasOpcional,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,1,$json[$i]->totalparcial ,$refCabeceraPresupuesto);
 	}
 
-	echo 'Presupuesto generado correctamente!!.';
+	
 
 }
-
+echo 'Presupuesto generado correctamente!!.';
 
 ?>
