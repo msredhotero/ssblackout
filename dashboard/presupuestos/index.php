@@ -30,7 +30,7 @@ $singular = "Presupuesto";
 
 $plural = "Presupuestos";
 
-$eliminar = "eliminarOrdenes";
+$eliminar = "eliminarPresupuestos";
 
 $tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
@@ -45,24 +45,26 @@ $tabla 			= "dbpresupuestos";
 
 
 /////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
-$cabeceras 		= "	<th>Nro Orden</th>
-					<th>Nro Venta</th>
-					<th>Clientes</th>
+$cabeceras 		= "	<th>Usuario</th>
+					<th>Cliente</th>
+					<th>DNI</th>
 					<th>Fecha</th>
-					<th>Usua. Crea</th>
-					<th>Sistema</th>
-					<th>Tela</th>
-					<th>Roller</th>
-					<th>Tramado</th>
-					<th>Ancho</th>
-					<th>Alto</th>
-					<th>Es Doble</th>
-					<th>Tela Sec.</th>";
+					<th>Monto</th>
+					<th>Adelanto</th>
+					<th>Solicitante</th>
+					<th>NroDoc Soli.</th>
+					<th>Obs.</th>
+					<th>Estado</th>";
 
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 //nroorden, nroventa, cliente, fecha, usuario, sistema, tela, roller, tramado, ancho, alto, esdoble, tela aux
-$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenes(),96);
+if ($_SESSION['idroll_predio'] == 1) {
+	$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerCabecerapresupuesto(),92);
+}	else {
+	$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerCabecerapresupuestoPorUsuario($_SESSION['idusua_predio']),92);
+}				
+
 
 
 
@@ -102,7 +104,7 @@ if ($_SESSION['refroll_predio'] != 1) {
     
 	<!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css"/>
-	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'> -->
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="../../css/chosen.css">
@@ -155,12 +157,12 @@ if ($_SESSION['refroll_predio'] != 1) {
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Responsables</h4>
+        <h4 class="modal-title" id="myModalLabel">Detalles</h4>
       </div>
       <div class="modal-body userasignates">
         
@@ -216,12 +218,12 @@ $(document).ready(function(){
 	} );
 	
 	
-	$("#example").on("click",'.varver', function(){
+	$("#example").on("click",'.vardetalles', function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 
 			$.ajax({
-					data:  {id: usersid, accion: 'traerResponsablesPorOrden'},
+					data:  {id: usersid, accion: 'traerDetallePresupuestoPorCabecera'},
 					url:   '../../ajax/ajax.php',
 					type:  'post',
 					beforeSend: function () {

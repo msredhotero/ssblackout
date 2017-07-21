@@ -103,6 +103,15 @@ class Servicios {
 				$lblEditar	  = 'Tareas';
 				$classEli = 'varborrar';
 				$idresultados = "resultados";
+				break;
+			case 92: //cabeceras
+				$cantidad = 10;
+				$classMod = 'varmodificar';
+				$classVer = 'vardetalles';
+				$iconoVer = 'glyphicon glyphicon-list-alt';
+				$lblVer	  = 'Detalle';
+				$classEli = 'varborrar';
+				$idresultados = "resultados";
 				break;	
 			default:
 				$classMod = 'varmodificar';

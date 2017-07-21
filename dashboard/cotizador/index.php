@@ -421,7 +421,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
                 </div>
             </div>
             <input type="hidden" name="accion" id="accion" value="cotizar"/>
-            <input type="hidden" name="totalgral" id="totalgral" value="0"/>
+            
             <input type="hidden" name="usuario" id="usuario" value="<?php echo $_SESSION['nombre_predio']; ?>" />
             </form>
             <div style="height:70px;">
@@ -702,7 +702,7 @@ $(document).ready(function(){
 
 	
 	$('#cotizar').click(function(){
-		
+		$('#total').html('');
 		$('#accion').val('cotizar');
 		//información del formulario
 		var error = '';
@@ -729,13 +729,13 @@ $(document).ready(function(){
 				processData: false,
 				//mientras enviamos el archivo
 				beforeSend: function(){
-					$("#load").html('<img src="../imagenes/load13.gif" width="50" height="50" />');       
+					$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
 				},
 				//una vez finalizado correctamente
 				success: function(data){
 					
 					if (parseFloat(data)>0) {
-						$('#total').html(data);
+						
 						$(".alert").removeClass("alert-danger");
 						$(".alert").removeClass("alert-info");
 						$(".alert").html('');
@@ -744,7 +744,8 @@ $(document).ready(function(){
 						$('#agregarpresupuesto').show();
 						$('#presupuesto').show();
 						$('#datosFacturacion').show();
-						$('#totalgral').val(data);
+                        $('#total').html(data);
+						
 					} else {
 						$(".alert").removeClass("alert-danger");
 						$(".alert").addClass("alert-danger");
@@ -755,7 +756,7 @@ $(document).ready(function(){
 						$('#agregarpresupuesto').hide();
 						$('#presupuesto').hide();
 						$('#datosFacturacion').hide();
-						$('#totalgral').val(0);
+						
 	
 					}
 				},
@@ -826,12 +827,13 @@ $(document).ready(function(){
         select4 = '<select id="residuo" name="residuo" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valResiduo+'">'+lblResiduo+'</option></select>';
         
 
-        input1  = '<input type="text" readonly name="alto" id="alto" value="' + $('#alto').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
-        input2  = '<input type="text" readonly name="ancho" id="ancho" value="' + $('#ancho').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+        input1  = '<input type="text" readonly name="altopre" id="altopre" value="' + $('#alto').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+        input2  = '<input type="text" readonly name="anchopre" id="anchopre" value="' + $('#ancho').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
 
         cadAgrega = '<tr id="tr_'+i+'"> <td id="td_id">'+i+'</td><td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td>'+select4+'</td><td id="totalparcial" style="text-align:right;">'+$('#total').text()+'</td><td style="text-align:center;"><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
         $('.detalle').append(cadAgrega);
         $('#totales').val(SumarTabla());
+        $('#total').html('');
 
     });
 
@@ -867,13 +869,12 @@ $(document).ready(function(){
                 SISTEMAS        = $(this).find("select[id*='sistema']").val(),
                 TELA            = $(this).find("select[id*='tela']").val(),
                 RESIDUO         = $(this).find("select[id*='residuo']").val(),
-                RESIDUO         = $(this).find("select[id*='residuo']").val(),
-                ALTO            = $(this).find("input[id*='alto']").val(),
-                ANCHO           = $(this).find("input[id*='ancho']").val(),
+                ALTO            = $(this).find("input[id*='altopre']").val(),
+                ANCHO           = $(this).find("input[id*='anchopre']").val(),
                 TOTALPARCIAL    = $(this).find("td[id='totalparcial']").text(),
                 TELAOPCIONAL    = $(this).find("select[id*='telaopcional']").val();
 				
-				Total			= Total + parseFloat(TOTALPARCIAL);
+				Total			= parseFloat($('#totales').val());
 
             //entonces declaramos un array para guardar estos datos, lo declaramos dentro del each para así reemplazarlo y cada vez
             item = {};

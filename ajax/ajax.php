@@ -259,6 +259,12 @@ case 'insertarPresupuesto':
 	insertarPresupuesto($serviciosReferencias);
 	break;
 
+////****  POPUP'S   *********////
+case 'traerDetallePresupuestoPorCabecera':
+	traerDetallePresupuestoPorCabecera($serviciosReferencias);
+	break;
+
+////****   FIN       ************///	
 }
 
 
@@ -348,8 +354,50 @@ function cotizar($serviciosReferencias) {
 
 /********* fin cotizador ***************/
 
+/***********  			POPUP'S   				************/
+function traerDetallePresupuestoPorCabecera($serviciosReferencias) {
+	$idCabecera = $_POST['id'];
+
+	$res = $serviciosReferencias->traerPresupuestosDetallePorCabecera($idCabecera);
+
+	$cad = "<table class='table table-responsive table-striped'>
+			<thead>
+				<th>Sistema</th>
+				<th>Tela</th>
+				<th>Roller</th>
+				<th>Tramado</th>
+				<th>Monto</th>
+				<th>Ancho</th>
+				<th>Alto</th>
+				<th>Es Doble</th>
+				<th>2da Tela</th>
+			</thead>
+			<tbody>";
+	while ($row = mysql_fetch_array($res))	{
+		$cad .= "<tr>
+					<td>".$row['sistema']."</td>
+					<td>".$row['tela']."</td>
+					<td>".$row['roller']."</td>
+					<td>".$row['tramado']."</td>
+					<td>".$row['monto']."</td>
+					<td>".$row['ancho']."</td>
+					<td>".$row['alto']."</td>
+					<td>".$row['esdoble']."</td>
+					<td>".$row['segundatela']."</td>
+				</tr>";
+	}
+
+	$cad .= "</tbody></table>";
+
+	echo $cad;	
+}
+
+
+/************				fin 				************/
+
 
 /*********  Presupuestos ***************/
+
 function insertarPresupuesto($serviciosReferencias) {
 
 

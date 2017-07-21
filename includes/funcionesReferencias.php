@@ -123,18 +123,19 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 
 /* PARA Cabecerapresupuesto */
 
-function insertarCabecerapresupuesto($refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocuemnto,$observaciones) {
-$sql = "insert into dbcabecerapresupuesto(idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocuemnto,observaciones)
-values ('',".$refusuarios.",".$refclientes.",'".utf8_decode($fecha)."',".$monto.",".$adelanto.",'".utf8_decode($solicitante)."','".utf8_decode($nrodocuemnto)."','".utf8_decode($observaciones)."')";
+
+function insertarCabecerapresupuesto($refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocumento,$observaciones,$refestados) {
+$sql = "insert into dbcabecerapresupuesto(idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocumento,observaciones,refestados)
+values ('',".$refusuarios.",".$refclientes.",'".utf8_decode($fecha)."',".$monto.",".$adelanto.",'".utf8_decode($solicitante)."','".utf8_decode($nrodocumento)."','".utf8_decode($observaciones)."',".$refestados.")";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarCabecerapresupuesto($id,$refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocuemnto,$observaciones) {
+function modificarCabecerapresupuesto($id,$refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocumento,$observaciones,$refestados) {
 $sql = "update dbcabecerapresupuesto
 set
-refusuarios = ".$refusuarios.",refclientes = ".$refclientes.",fecha = '".utf8_decode($fecha)."',monto = ".$monto.",adelanto = ".$adelanto.",solicitante = '".utf8_decode($solicitante)."',nrodocuemnto = '".utf8_decode($nrodocuemnto)."',observaciones = '".utf8_decode($observaciones)."'
+refusuarios = ".$refusuarios.",refclientes = ".$refclientes.",fecha = '".utf8_decode($fecha)."',monto = ".$monto.",adelanto = ".$adelanto.",solicitante = '".utf8_decode($solicitante)."',nrodocumento = '".utf8_decode($nrodocumento)."',observaciones = '".utf8_decode($observaciones)."',refestados = ".$refestados."
 where idcabecerapresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -145,32 +146,77 @@ function eliminarCabecerapresupuesto($id) {
 $sql = "delete from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
-}
+} 
 
 
 function traerCabecerapresupuesto() {
-$sql = "select
-c.idcabecerapresupuesto,
-c.refusuarios,
-c.refclientes,
-c.fecha,
-c.monto,
-c.adelanto,
-c.solicitante,
-c.nrodocuemnto,
-c.observaciones
-from dbcabecerapresupuesto c
-order by 1";
-$res = $this->query($sql,0);
-return $res;
+	$sql = "SELECT 
+		    c.idcabecerapresupuesto,
+		    u.nombrecompleto AS usuario,
+		    cl.nombrecompleto AS cliente,
+		    cl.dni,
+		    c.fecha,
+		    c.monto,
+		    c.adelanto,
+		    c.solicitante,
+		    c.nrodocumento,
+		    c.observaciones,
+		    est.estado,
+		    c.refusuarios,
+		    c.refclientes,
+		    c.refestados
+		FROM
+		    dbcabecerapresupuesto c
+		        INNER JOIN
+		    dbusuarios u ON u.idusuario = c.refusuarios
+		        LEFT JOIN
+		    dbclientes cl ON cl.idcliente = c.refclientes
+		        INNER JOIN
+		    tbestados est ON est.idestado = c.refestados
+		ORDER BY c.fecha DESC";
+
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+
+function traerCabecerapresupuestoPorUsuario($idUsuario) {
+	$sql = "SELECT 
+		    c.idcabecerapresupuesto,
+		    u.nombrecompleto AS usuario,
+		    cl.nombrecompleto AS cliente,
+		    cl.dni,
+		    c.fecha,
+		    c.monto,
+		    c.adelanto,
+		    c.solicitante,
+		    c.nrodocumento,
+		    c.observaciones,
+		    est.estado,
+		    c.refusuarios,
+		    c.refclientes,
+		    c.refestados
+		FROM
+		    dbcabecerapresupuesto c
+		        INNER JOIN
+		    dbusuarios u ON u.idusuario = c.refusuarios
+		        LEFT JOIN
+		    dbclientes cl ON cl.idcliente = c.refclientes
+		        INNER JOIN
+		    tbestados est ON est.idestado = c.refestados
+		where u.idusuario = ".$idUsuario."
+		ORDER BY c.fecha DESC";
+
+	$res = $this->query($sql,0);
+	return $res;
 }
 
 
 function traerCabecerapresupuestoPorId($id) {
-$sql = "select idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocuemnto,observaciones from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
+$sql = "select idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocumento,observaciones,refestados from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
-}
+} 
 
 /* Fin */
 /* /* Fin de la Tabla: dbcabecerapresupuesto*/
@@ -252,30 +298,56 @@ return $res;
 }
 
 
-function traerPresupuestos() {
-$sql = "select
-p.idpresupuesto,
-p.fechacrea,
-p.fechamodi,
-p.usuacrea,
-p.usuamodi,
-p.refestados,
-p.refsistemas,
-p.reftelas,
-p.refresiduos,
-p.roller,
-p.tramado,
-p.ancho,
-p.alto,
-p.reftelaopcional,
-p.esdoble,
-p.montofinal,
-p.refcabecerapresupuesto
-from dbpresupuestos p
-inner join dbcabecerapresupuesto cab ON cab.idcabecerapresupuesto = p.refcabecerapresupuesto
-order by 1";
-$res = $this->query($sql,0);
-return $res;
+function traerPresupuestosDetallePorCabecera($idCabecera) {
+$sql = "select 
+			o.idcabecerapresupuesto,
+			cl.nombrecompleto,
+            cl.dni as dnicliente,
+            o.solicitante,
+            o.nrodocumento,
+			o.fecha,
+			ven.montofinal as monto,
+            o.adelanto,
+			sis.nombre as sistema,
+			tel.tela,
+			ven.roller,
+			ven.tramado,
+			ven.ancho,
+			ven.alto,
+			(case when ven.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = ven.reftelaopcional) as segundatela,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			ven.idpresupuesto,
+			ven.refestados,
+			ven.refsistemas,
+			ven.reftelas,
+			ven.refresiduos,
+			ven.reftelaopcional
+			
+		from
+			dbcabecerapresupuesto o
+				inner join
+			dbpresupuestos ven ON o.idcabecerapresupuesto = ven.refcabecerapresupuesto
+				left join
+			dbclientes cl ON cl.idcliente = o.refclientes
+				inner join
+			dbsistemas sis ON sis.idsistema = ven.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = ven.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = ven.refresiduos		
+		where o.idcabecerapresupuesto =".$idCabecera."	
+		order by 1";
+
+	$res = $this->query($sql,0);
+	return $res;
 }
 
 
