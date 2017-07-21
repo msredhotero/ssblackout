@@ -110,6 +110,9 @@ class Servicios {
 				$classVer = 'vardetalles';
 				$iconoVer = 'glyphicon glyphicon-list-alt';
 				$lblVer	  = 'Detalle';
+				$classEditar = 'varorden';
+				$iconoEditar = 'glyphicon glyphicon-usd';
+				$lblEditar	  = 'Generar Orden';
 				$classEli = 'varborrar';
 				$idresultados = "resultados";
 				break;	
