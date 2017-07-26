@@ -19,6 +19,14 @@ $serviciosUsuario 		= new ServiciosUsuarios();
 $serviciosHTML 			= new ServiciosHTML();
 $serviciosReferencias 	= new ServiciosReferencias();
 
+
+//*** SEGURIDAD ****/
+include ('../../includes/funcionesSeguridad.php');
+$serviciosSeguridad = new ServiciosSeguridad();
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_predio'], '../presupuestos/');
+//*** FIN  ****/
+
+
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
@@ -256,6 +264,8 @@ $(document).ready(function(){
 					},
 					success:  function (response) {
 							alert(response);
+							url = "index.php";
+							$(location).attr('href',url);
 							
 					}
 			});

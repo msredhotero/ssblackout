@@ -18,6 +18,12 @@ $serviciosHTML = new ServiciosHTML();
 $serviciosFunciones = new Servicios();
 $serviciosReferencias 	= new ServiciosReferencias();
 
+//*** SEGURIDAD ****/
+include ('../../includes/funcionesSeguridad.php');
+$serviciosSeguridad = new ServiciosSeguridad();
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_predio'], '../cotizador/');
+//*** FIN  ****/
+
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
@@ -258,7 +264,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
             </div>
             <div class='row' style="margin-left:25px; margin-right:25px;">
             	<div class="form-group col-md-6" style="display:block">
-                    <label for="desde" class="control-label" style="text-align:left">Alto</label>
+                    <label for="desde" class="control-label" style="text-align:left">Alto <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
                         <input class="form-control" id="alto" name="alto" value="0" required type="text">
@@ -267,7 +273,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                 </div>
                 
                 <div class="form-group col-md-6" style="display:block">
-                    <label for="desde" class="control-label" style="text-align:left">Ancho</label>
+                    <label for="desde" class="control-label" style="text-align:left">Ancho <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
                         <input class="form-control" id="ancho" name="ancho" value="0" required type="text">
@@ -325,14 +331,14 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
             
             <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
             	<div class="form-group col-md-6" style="display:block">
-                	<label class="control-label" for="codigobarra" style="text-align:left">Solicitante</label>
+                	<label class="control-label" for="codigobarra" style="text-align:left">Solicitante <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
 	                    <input type="text" class="form-control" id="solicitante" name="solicitante" />
                     </div>
                 </div>
                 
                 <div class="form-group col-md-6" style="display:block">
-                	<label class="control-label" for="codigobarra" style="text-align:left">Nro Documento</label>
+                	<label class="control-label" for="codigobarra" style="text-align:left">Nro Documento <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
 	                    <input type="text" class="form-control" id="nrodocumento" name="nrodocumento" />
                     </div>
@@ -352,6 +358,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
 
             </div>
             
+
             
             <div class="row">
                 <div class="col-md-12">
@@ -365,9 +372,15 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                     <li>
                         <button type="button" class="btn btn-success" id="presupuesto" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-shopping-cart"></span> Crear Presupuesto</button>
                     </li>
+                    <?php
+                        if ($_SESSION['idroll_predio'] == 1) {
+                    ?>
                     <li>
                         <button type="button" class="btn btn-primary" id="orden" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-floppy-disk"></span> Crear Orden</button>
                     </li>
+                    <?php
+                    }
+                    ?>
                     <li style="font-weight:bold; color:#F00; font-size:1.6em; margin-right:10%;" class="pull-right">
                     	Precio: <span class="glyphicon glyphicon-usd"></span><span style="font-weight:bold; color:#F00; font-size:1.6em;" id="total"></span>
                     </li>
@@ -421,8 +434,9 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                 </div>
             </div>
             <input type="hidden" name="accion" id="accion" value="cotizar"/>
-            
+            <input type="hidden" name="totalgral" id="totalgral" value="0" />
             <input type="hidden" name="usuario" id="usuario" value="<?php echo $_SESSION['nombre_predio']; ?>" />
+            <input type="hidden" id="refroles" name="refroles" value="<?php echo $_SESSION['idroll_predio']; ?>">
             </form>
             <div style="height:70px;">
             </div>
@@ -678,13 +692,23 @@ $(document).ready(function(){
 				//una vez finalizado correctamente
 				success: function(data){
 					
-					$('#total').html('');
-					$('#accion').val('cotizar');
-					$("#load").html('');
-					$(".alert").removeClass("alert-danger");
-					$(".alert").removeClass("alert-info");
-					$(".alert").addClass("alert-success");
-					$(".alert").html('<strong>Ok!</strong> Se cargo exitosamente la <strong>Orden y la Venta</strong>. ');
+                    if (data == '') {
+    					$('#total').html('');
+    					$('#accion').val('cotizar');
+    					$("#load").html('');
+    					$(".alert").removeClass("alert-danger");
+    					$(".alert").removeClass("alert-info");
+    					$(".alert").addClass("alert-success");
+    					$(".alert").html('<strong>Ok!</strong> Se cargo exitosamente la <strong>Orden y la Venta</strong>. ');
+                    } else {
+                        $('#total').html('');
+                        $('#accion').val('cotizar');
+                        $("#load").html('');
+                        $(".alert").removeClass("alert-success");
+                        $(".alert").removeClass("alert-info");
+                        $(".alert").addClass("alert-danger");
+                        $(".alert").html('<strong>Error!</strong> '+data);
+                    }
 				},
 				//si ha ocurrido un error
 				error: function(){
@@ -704,6 +728,7 @@ $(document).ready(function(){
 	$('#cotizar').click(function(){
 		$('#total').html('');
 		$('#accion').val('cotizar');
+        
 		//información del formulario
 		var error = '';
 
@@ -745,6 +770,7 @@ $(document).ready(function(){
 						$('#presupuesto').show();
 						$('#datosFacturacion').show();
                         $('#total').html(data);
+                        $('#totalgral').val(data);
 						
 					} else {
 						$(".alert").removeClass("alert-danger");
@@ -756,6 +782,7 @@ $(document).ready(function(){
 						$('#agregarpresupuesto').hide();
 						$('#presupuesto').hide();
 						$('#datosFacturacion').hide();
+                        $('#totalgral').val(0);
 						
 	
 					}
@@ -923,7 +950,13 @@ $(document).ready(function(){
 
   
     $('#presupuesto').click(function() {
-        grabaTodoTabla('table-6');
+        
+        if (($('#solicitante').val() != '') && ($('#nrodocumento').val() != '') && ($('.detalle').html().trim() != '')) {
+            grabaTodoTabla('table-6');    
+        } else {
+            alert('Error: Faltan los datos del Solicitante o el Nro Documento o No cargo ningun Presupuesto');
+        }
+        
     });
     
 

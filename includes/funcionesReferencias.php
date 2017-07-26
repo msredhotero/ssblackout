@@ -260,46 +260,19 @@ function insertarVentaPorPresupuesto($idCabecera) {
 
 function insertarDetallesOrdenPorPresupuesto($idCabecera, $idVenta) {
 	
-	$numero = $this->generarNroOrden();
-	$sql = "INSERT INTO dbordenes
-			(idorden,
-			numero,
-			refventas,
-			fechacrea,
-			fechamodi,
-			usuacrea,
-			usuamodi,
-			refestados,
-			refsistemas,
-			reftelas,
-			refresiduos,
-			roller,
-			tramado,
-			ancho,
-			alto,
-			reftelaopcional,
-			esdoble)
-			SELECT '',
-				'".$numero."',
-				".$idVenta.",
-				now(),
-				'',
-				usuacrea,
-				usuamodi,
-				refestados,
-				refsistemas,
-				reftelas,
-				refresiduos,
-				roller,
-				tramado,
-				ancho,
-				alto,
-				reftelaopcional,
-				esdoble
-			FROM dbpresupuestos 
-			where refcabecerapresupuesto = ".$idCabecera;	
-	$res = $this->query($sql,0);
-	return $res;
+	if ($idVenta >0) {
+		$resPresupuestos = $this->traerPresupuestosDetallePorCabecera($idCabecera);
+
+		while ($row = mysql_fetch_array($resPresupuestos)) {
+			$numero = $this->generarNroOrden();
+			$res = $this->insertarOrdenes($numero,$idVenta,date('Y-m-d'),'',$row['usuacrea'],$row['usuamodi'],$row['refestados'],$row['refsistemas'],$row['reftelas'],$row['refresiduos'],$row['roller'],$row['tramado'],$row['ancho'],$row['alto'],$row['reftelaopcional'],$row['esdobleaux']);
+		}		
+		
+		
+		return $res;
+	} else {
+		return 0;
+	}
 }
 
 
@@ -410,7 +383,10 @@ $sql = "select
 			ven.refsistemas,
 			ven.reftelas,
 			ven.refresiduos,
-			ven.reftelaopcional
+			ven.reftelaopcional,
+			ven.usuacrea,
+			ven.usuamodi,
+			ven.esdoble as esdobleaux
 			
 		from
 			dbcabecerapresupuesto o
@@ -552,8 +528,8 @@ function traerSistemaTareasPorSistemaSinUsarPorOrden($idOrden) {
 					refsistemas,
 					reftipotarea 
 				from tbtipotarea tip
-			left join dbsistematareas s ON tip.idtipotarea = s.reftipotarea
-            left join dbsistemas sis ON sis.idsistema = s.refsistemas
+			inner join dbsistematareas s ON tip.idtipotarea = s.reftipotarea
+            inner join dbsistemas sis ON sis.idsistema = s.refsistemas
             left join dbordenessistematareas ost ON ost.refsistematareas = s.idsistematarea and ost.refordenes = ".$idOrden."
             where ost.refsistematareas is null";
 	$res = $this->query($sql,0);
@@ -579,8 +555,12 @@ function devolverPorcentajeCumplido($idOrden) {
 			where s.refordenes = ".$idOrden;
 	$resCantidad = $this->query($sqlCantidad,0);
 
-	if (mysql_num_rows($resCumplidas)>0) {
-		return mysql_result($resCumplidas,0,0) * 100 / mysql_result($resCantidad,0,0);
+	if (mysql_result($resCantidad,0,0)>0) {
+		if (mysql_num_rows($resCumplidas)>0) {
+			return mysql_result($resCumplidas,0,0) * 100 / mysql_result($resCantidad,0,0);
+		} else {
+			return 0;
+		}
 	} else {
 		return 0;
 	}
@@ -1035,12 +1015,12 @@ function generarNroVenta() {
 }
 
 
-function insertarVentas($numero,$sistema,$tela,$total,$refclientes,$reftipopago,$cancelada) {
-$sql = "insert into dbventas(idventa,numero,sistema,tela,total,refclientes,reftipopago,cancelada)
-values ('','".utf8_decode($numero)."','".utf8_decode($sistema)."','".utf8_decode($tela)."',".$total.",".$refclientes.",".$reftipopago.",0)";
+function insertarVentas($numero,$fecha,$adelanto,$total,$refclientes,$reftipopago,$observacion,$cancelada,$refpresupuesto) {
+$sql = "insert into dbventas(idventa,numero,fecha,adelanto,total,refclientes,reftipopago,observacion,cancelada,refpresupuesto)
+values ('','".utf8_decode($numero)."','".utf8_decode($fecha)."',".$adelanto.",".$total.",".$refclientes.",".$reftipopago.",'".utf8_decode($observacion)."',0,".$refpresupuesto.")";
 $res = $this->query($sql,1);
 return $res;
-}
+} 
 
 
 function modificarVentas($id,$numero,$adelanto,$total,$refclientes,$reftipopago,$cancelada) {
@@ -1053,10 +1033,10 @@ return $res;
 }
 
 
-function modificarVentasValor($id,$sistema,$tela,$total) {
+function modificarVentasValor($id,$total) {
 $sql = "update dbventas
 set
-sistema = '".utf8_decode($sistema)."',tela = '".utf8_decode($tela)."',total = ".$total."
+total = ".$total."
 where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -1317,6 +1297,17 @@ e.estado,
 e.icono
 from tbestados e
 order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+function traerEstadosPorRevendedor() {
+$sql = "select
+e.idestado,
+e.estado,
+e.icono
+from tbestados e
+where e.idestado in (1,5)";
 $res = $this->query($sql,0);
 return $res;
 }
@@ -1767,6 +1758,7 @@ $sql = "select
 			o.alto,
 			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
 			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			est.estado,
 			o.fechamodi,
 			o.usuamodi,
 			res.roller as residuoroller,
@@ -1801,6 +1793,67 @@ $sql = "select
 				inner join
 			tbresiduos res ON res.idresiduo = o.refresiduos		
 			where est.idestado in (1,2)
+		order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+
+function traerOrdenesPorUsuarios($idUsuarios) {
+$sql = "select 
+			o.idorden,
+			o.numero as nroorden,
+			ven.numero as nroventa,
+			cl.nombrecompleto,
+			o.fechacrea,
+			o.usuacrea,
+			sis.nombre as sistema,
+			tel.tela,
+			o.roller,
+			o.tramado,
+			o.ancho,
+			o.alto,
+			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			est.estado,
+			o.fechamodi,
+			o.usuamodi,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			o.refventas,
+			o.refestados,
+			o.refsistemas,
+			o.reftelas,
+			o.refresiduos,
+			o.reftelaopcional
+			
+		from
+			dbordenes o
+				inner join
+			dbventas ven ON ven.idventa = o.refventas
+				inner join
+			dbclientes cl ON cl.idcliente = ven.refclientes
+				inner join
+			tbtipopago ti ON ti.idtipopago = ven.reftipopago
+				inner join
+			tbestados est ON est.idestado = o.refestados
+				inner join
+			dbsistemas sis ON sis.idsistema = o.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = o.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = o.refresiduos
+				inner join
+			dbcabecerapresupuesto cc ON cc.idcabecerapresupuesto = ven.refpresupuesto
+
+			where est.idestado in (1,2) and cc.refusuarios = ".$idUsuarios."
 		order by 1";
 $res = $this->query($sql,0);
 return $res;

@@ -288,7 +288,7 @@ function insertarUsuario($usuario,$password,$refroll,$email,$nombrecompleto) {
 				(idusuario,
 				usuario,
 				password,
-				refroll,
+				refroles,
 				email,
 				nombrecompleto)
 			VALUES

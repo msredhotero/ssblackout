@@ -305,17 +305,14 @@ function cotizar($serviciosReferencias) {
 	
 	$idResiduo = $_POST['refresiduo'];
 
-	
+	$refroles = $_POST['refroles'];
+	if ($refroles == 3) {
+		$esRevendedor = 1;
+	} else {
+		$esRevendedor = 0;
+	}
 
 	$sistema = $_POST['normal'];
-	
-	/*
-	while ($rowFS = mysql_fetch_array($resTelas)) {
-		if (isset($_POST[$cad.$rowFS[0]])) {
-			$idTela[] = $rowFS[0];
-		}
-	}
-	*/
 	
 	$idTela[] = $_POST['reftelas'];
 	$idTela[] = $_POST['reftelaopcional'];
@@ -356,7 +353,7 @@ function cotizar($serviciosReferencias) {
 	
 	
 	if ($cadErrores == '') {
-		$total = $serviciosReferencias->cotizar($sistema, $idTela, $idResiduo, $ancho, $alto, 0);
+		$total = $serviciosReferencias->cotizar($sistema, $idTela, $idResiduo, $ancho, $alto, $esRevendedor);
 		echo $total;
 	} else {
 		echo $cadErrores;	
@@ -418,12 +415,16 @@ function generarOrdenPorPresupuesto($serviciosReferencias) {
 	
 	if ($refEstado == 1) {
 		$idVenta	=	$serviciosReferencias->insertarVentaPorPresupuesto($refCabecera);
-	
-		$res 		=   $serviciosReferencias->insertarDetallesOrdenPorPresupuesto($refCabecera, $idVenta);
-	
-		$serviciosReferencias->modificarCabecerapresupuestoEstado($refCabecera);
 		
-		echo 'Orden Generada';
+		$res 		=   $serviciosReferencias->insertarDetallesOrdenPorPresupuesto($refCabecera, $idVenta);
+		
+		if ($idVenta > 0) {
+			$serviciosReferencias->modificarCabecerapresupuestoEstado($refCabecera);
+			
+			echo 'Orden Generada';
+		} else {
+			echo 'No se puede generar la Orden, datos incorrectos';
+		}
 	} else {
 		echo 'La orden ya fue cargada o cancelada';
 	}
@@ -452,40 +453,23 @@ function insertarVentas($serviciosReferencias) {
 	$sistema = 1;
 	$idResiduo = 0;
 	
+	$refroles = $_POST['refroles'];
 	//esta variable por ahora es asi
-	$esRevendedor = 0;
-	
-	$idTela = array();
-	
-	$resTelas = $serviciosReferencias->traerTelas();
-	$resResiduos = $serviciosReferencias->traerResiduos();
-	
-	while ($rowFS1 = mysql_fetch_array($resResiduos)) {
-		if (isset($_POST[$cad1.$rowFS1[0]])) {
-			$idResiduo = $rowFS1[0];
-		}
+	if ($refroles == 3) {
+		$esRevendedor = 1;
+	} else {
+		$esRevendedor = 0;
 	}
 	
-	if (isset($_POST['normal'])) {
-		$esDoble = 0;
-		$sistema = 1;
-	}
+	$idResiduo = $_POST['refresiduo'];
 	
-	if (isset($_POST['doble'])) {
-		$esDoble = 1;
-		$sistema = 2;
-	}
+	$sistema = $_POST['normal'];
 	
+	$idTela[] = $_POST['reftelas'];
+	$idTela[] = $_POST['reftelaopcional'];
 	
-	
-	while ($rowFS = mysql_fetch_array($resTelas)) {
-		if (isset($_POST[$cad.$rowFS[0]])) {
-			$idTela[] = $rowFS[0];
-		}
-	}
-	
-	$ancho	=	$_POST['ancho'];
-	$alto	=	$_POST['alto'];
+	$ancho	=	(float)$_POST['ancho'] * 100;
+	$alto	=	(float)$_POST['alto'] * 100;
 	
 	////********************* del cotizar  *****************/
 	if ($sistema == 1) {
@@ -534,6 +518,7 @@ function insertarVentas($serviciosReferencias) {
 	$altoResiduo	= mysql_result($resResiduo,0,'telaalto');
 	$zocaloResiduo	= mysql_result($resResiduo,0,'zocalo');
 	
+
 	/****************************************/
 	
 	
@@ -546,9 +531,9 @@ function insertarVentas($serviciosReferencias) {
 		$nombreSistema	= mysql_result($resSistema,0,'nombre');
 		$roller			= mysql_result($resSistema,0,'diametro');
 		if ($esRevendedor == 1) {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+			$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
 		} else {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+			$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
 		}
 	} else {
 		$valorSistema = 0;		
@@ -557,11 +542,16 @@ function insertarVentas($serviciosReferencias) {
 	/****************************************/
 	
 	//Valores finales en "cm"
+	/*
 	$telaAltoFinal	= ($alto * 10) - $altoResiduo;
 	$telaAnchoFinal	= ($ancho * 10) - $anchoResiduo;
 	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
 	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
-	
+	*/
+	$telaAltoFinal	= ($alto * 10);
+	$telaAnchoFinal	= ($ancho * 10);
+	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
+	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
 	/****************************************/
 	
 	$calculoSistema	= $valorSistema;
@@ -591,13 +581,13 @@ function insertarVentas($serviciosReferencias) {
 	
 	/*******   fin    **************************************/
 	
-	$res = $serviciosReferencias->insertarVentas($numero,$nombreSistema,$nombreTela,$total,$refclientes,$reftipopago,$cancelada);
+	$res = $serviciosReferencias->insertarVentas($numero,date('Y-m-d'),0,$total,$refclientes,$reftipopago,'',0,0);
 	
 	if ((integer)$res > 0) {
 		if ($sistema == 2) {
-			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,$refTelasB,1);
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho/100,$alto/100,$refTelasB,1);
 		} else {
-			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,'',0);	
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho/100,$alto/100,'',0);	
 		}
 		echo '';
 	} else {
@@ -626,12 +616,20 @@ function modificarOrdenes($serviciosReferencias) {
 	$refresiduos = $_POST['refresiduos'];
 	$roller = $_POST['roller'];
 	$tramado = $_POST['tramado'];
-	$ancho = $_POST['ancho'];
-	$alto = $_POST['alto'];
+	$ancho	=	(float)$_POST['ancho'] * 100;
+	$alto	=	(float)$_POST['alto'] * 100;
 	
+	$refroles = $_POST['refroles'];
 	
 	// POR AHORA LO SETEO EN 0
-	$esRevendedor = 0;
+	if ($refroles == 3) {
+		$esRevendedor = 1;
+	} else {
+		$esRevendedor = 0;
+	}
+
+
+	
 	
 	if (isset($_POST['esdoble'])) {
 		$esdoble = 1;
@@ -695,9 +693,9 @@ function modificarOrdenes($serviciosReferencias) {
 		$nombreSistema	= mysql_result($resSistema,0,'nombre');
 		$roller			= mysql_result($resSistema,0,'diametro');
 		if ($esRevendedor == 1) {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+			$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
 		} else {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+			$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
 		}
 	} else {
 		$valorSistema = 0;		
@@ -708,8 +706,14 @@ function modificarOrdenes($serviciosReferencias) {
 	/****************************************/
 	
 	//Valores finales en "cm"
+	/*
 	$telaAltoFinal	= ($alto * 10) - $altoResiduo;
 	$telaAnchoFinal	= ($ancho * 10) - $anchoResiduo;
+	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
+	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
+	*/
+	$telaAltoFinal	= ($alto * 10);
+	$telaAnchoFinal	= ($ancho * 10);
 	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
 	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
 	
@@ -726,10 +730,10 @@ function modificarOrdenes($serviciosReferencias) {
 	
 	/********************   FIN     ******************************************/
 	
-	$res = $serviciosReferencias->modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refSistema,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble);
+	$res = $serviciosReferencias->modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refSistema,$reftelas,$refresiduos,$roller,$tramado,$ancho/100,$alto/100,$reftelaopcional,$esdoble);
 	
 	if ($res == true) {
-		$serviciosReferencias->modificarVentasValor($refventas,$nombreSistema, $nombreTela, $total);
+		$serviciosReferencias->modificarVentasValor($refventas, $total);
 		echo '';
 	} else {
 		echo 'Huvo un error al modificar datos';

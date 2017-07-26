@@ -69,8 +69,8 @@ class Servicios {
 				$classEli = 'varborrar';
 				$idresultados = "resultados";
 				break;
-			case 96:
-				$cantidad = 13;
+			case 96: //ordenes
+				$cantidad = 14;
 				$classMod = 'varmodificar';
 				
 				$classEditar = 'vartareas';
@@ -116,6 +116,12 @@ class Servicios {
 				$iconoEditar = 'glyphicon glyphicon-usd';
 				$lblEditar	  = 'Generar Orden';
 				$classEli = 'varborrar';
+				$idresultados = "resultados";
+				break;
+			case 91: //ordenes para clientes
+				$cantidad = 14;
+				$classMod = 'varmodificar';
+				$classEli = '';
 				$idresultados = "resultados";
 				break;	
 			default:

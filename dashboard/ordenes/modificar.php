@@ -19,6 +19,14 @@ $serviciosUsuario 	= new ServiciosUsuarios();
 $serviciosHTML 		= new ServiciosHTML();
 $serviciosReferencias 	= new ServiciosReferencias();
 
+
+//*** SEGURIDAD ****/
+include ('../../includes/funcionesSeguridad.php');
+$serviciosSeguridad = new ServiciosSeguridad();
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_predio'], '../ordenes/');
+//*** FIN  ****/
+
+
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
@@ -54,14 +62,18 @@ $lblreemplazo	= array("Es Doble", "Sistema", "Telas","Segunda Tela","Estado");
 $esDoble	= mysql_result($resResultado,0,'esdoble');
 $segTela	= mysql_result($resResultado,0,'reftelaopcional');
 
-$resEstado 	= $serviciosReferencias->traerEstados();
+if ($_SESSION['idroll_predio'] == 1) {
+	$resEstado 	= $serviciosReferencias->traerEstados();
+} else {
+	$resEstado 	= $serviciosReferencias->traerEstadosPorRevendedor();
+}
 $cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resEstado,array(1),'',mysql_result($resResultado,0,'refestados'));
 
 $resSistemas= $serviciosReferencias->traerSistemas();
 $cadRef2 	= $serviciosFunciones->devolverSelectBoxActivo($resSistemas,array(1),'',mysql_result($resResultado,0,'refsistemas'));
 
 $resTelas	= $serviciosReferencias->traerTelas();
-$cadRef3 	= $serviciosFunciones->devolverSelectBoxActivo($resTelas,array(1),'',mysql_result($resResultado,0,'reftelas'));
+$cadRef3 	= $serviciosFunciones->devolverSelectBoxActivo($resTelas,array(1,8),' - ',mysql_result($resResultado,0,'reftelas'));
 
 if ($esDoble == 1) {
 	$resTelasAux= $serviciosReferencias->traerTelas();
@@ -122,7 +134,7 @@ if ($_SESSION['idroll_predio'] != 1) {
     
 	<!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css"/>
-	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>-->
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="../../css/chosen.css">
@@ -164,6 +176,7 @@ if ($_SESSION['idroll_predio'] != 1) {
         	
 			<div class="row">
 			<?php echo $formulario; ?>
+			<input type="hidden" id="refroles" name="refroles" value="<?php echo $_SESSION['idroll_predio']; ?>">
             </div>
             
             
@@ -182,9 +195,15 @@ if ($_SESSION['idroll_predio'] != 1) {
                     <li>
                         <button type="button" class="btn btn-warning" id="cargar" style="margin-left:0px;">Modificar</button>
                     </li>
+                    <?php
+						if ($_SESSION['nombre_predio'] == 1) {
+					?>
                     <li>
                         <button type="button" class="btn btn-danger varborrar" id="<?php echo $id; ?>" style="margin-left:0px;">Eliminar</button>
                     </li>
+                    <?php
+                	}
+                    ?>
                     <li>
                         <button type="button" class="btn btn-default volver" style="margin-left:0px;">Volver</button>
                     </li>
@@ -216,13 +235,36 @@ if ($_SESSION['idroll_predio'] != 1) {
 <script type="text/javascript">
 $(document).ready(function(){
 	
+
+	<?php
+		if ($_SESSION['nombre_predio'] == 18) {
+	?>
+		$('#reftelas').attr('readonly', true);
+		$('#reftelas').attr('disabled', true);
+
+		$('#ancho').attr('readonly', true);
+		$('#ancho').attr('disabled', true);
+
+		$('#alto').attr('readonly', true);
+		$('#alto').attr('disabled', true);
+
+		$('#esdoble').attr('readonly', true);
+		$('#esdoble').attr('disabled', true);
+
+		$('#reftelaopcional').attr('readonly', true);
+		$('#reftelaopcional').attr('disabled', true);
+
+	<?php
+		}
+	?>
+
 	$('#usuacrea').attr('value','<?php echo mysql_result($resResultado,0,'usuacrea'); ?>');
 	$('#usuamodi').attr('value','<?php echo utf8_encode($_SESSION['nombre_predio']); ?>');
 	
 	$('#numero').attr('value','<?php echo $nroOrden; ?>');
 	$('#numero').attr('readonly', true);
 	
-	$('.valorAdd').html('cm');
+	$('.valorAdd').html('mtrs');
 	
 	$('#ancho').number( true, 2,'.','' );
 	$('#alto').number( true, 2,'.','' );
@@ -232,11 +274,11 @@ $(document).ready(function(){
 		var alto = $('#alto').val();	
 		var error = '';
 		
-		if ((ancho == '') || (ancho < 20))  {
+		if ((ancho == '') || (ancho < 0.2))  {
 			error = '_ Debe cargar un acnho o el ancho a menor a las 20 centimetros<br>';
 		}
 		
-		if ((alto == '') || (alto < 20))  {
+		if ((alto == '') || (alto < 0.2))  {
 			error += '_ Debe cargar un alto o el alto a menor a las 20 centimetros<br>';
 		}
 		
