@@ -72,13 +72,15 @@ class Servicios {
 			case 96:
 				$cantidad = 13;
 				$classMod = 'varmodificar';
-				$classVer = 'varver';
-				$lblVer	  = 'Responsables';
+				
+				$classEditar = 'vartareas';
+				$iconoEditar = 'glyphicon glyphicon-list-alt';
+				$lblEditar	  = 'Tareas';
 				$classEli = 'varborrar';
 				$idresultados = "resultados";
 				break;
 			case 95:
-				$cantidad = 8;
+				$cantidad = 7;
 				$classMod = 'varmodificar';
 				$classEditar = 'varpdf';
 				$iconoEditar = 'glyphicon glyphicon-barcode';
@@ -308,7 +310,7 @@ class Servicios {
 		if ($tabla == 'dbordenes') {
 			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","tramado","roller","refventas");
 		} else {
-			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","refpresupuesto");
 		}
 		
 		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto","desde","hasta");
@@ -633,7 +635,7 @@ class Servicios {
 		if ($tabla == 'dbordenes') {
 			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","tramado","roller","refventas","refresiduos","refsistemas");
 		} else {
-			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","refpresupuesto");
 		}
 		$geoposicionamiento = array("latitud","longitud","diametro","roller","telaancho","telaalto","zocalo","ancho","alto");
 		

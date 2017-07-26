@@ -251,12 +251,23 @@ case 'eliminarOrdenes':
 eliminarOrdenes($serviciosReferencias);
 break; 
 
+case 'cumplirTarea':
+	cumplirTarea($serviciosReferencias);
+	break;
+case 'devolverPorcentajeCumplido':
+	devolverPorcentajeCumplido($serviciosReferencias);
+	break;
+
+	
 case 'cotizar':
 	cotizar($serviciosReferencias);
 	break;
 
 case 'insertarPresupuesto':
 	insertarPresupuesto($serviciosReferencias);
+	break;
+case 'generarOrdenPorPresupuesto':
+	generarOrdenPorPresupuesto($serviciosReferencias);
 	break;
 
 ////****  POPUP'S   *********////
@@ -397,6 +408,27 @@ function traerDetallePresupuestoPorCabecera($serviciosReferencias) {
 
 
 /*********  Presupuestos ***************/
+
+function generarOrdenPorPresupuesto($serviciosReferencias) {
+	$refCabecera	=	$_POST['id'];
+	
+	$resCabecera =  $serviciosReferencias->traerCabecerapresupuestoPorId($refCabecera);
+	
+	$refEstado = mysql_result($resCabecera,0,'refestados');
+	
+	if ($refEstado == 1) {
+		$idVenta	=	$serviciosReferencias->insertarVentaPorPresupuesto($refCabecera);
+	
+		$res 		=   $serviciosReferencias->insertarDetallesOrdenPorPresupuesto($refCabecera, $idVenta);
+	
+		$serviciosReferencias->modificarCabecerapresupuestoEstado($refCabecera);
+		
+		echo 'Orden Generada';
+	} else {
+		echo 'La orden ya fue cargada o cancelada';
+	}
+		
+}
 
 function insertarPresupuesto($serviciosReferencias) {
 
@@ -710,12 +742,74 @@ function eliminarOrdenes($serviciosReferencias) {
 	echo $res;
 } 
 
+function cumplirTarea($serviciosReferencias) {
+	$id = $_POST['id'];
+
+	$res = $serviciosReferencias->cumplirTarea($id);
+	echo $res;
+}
 
 
 /********************    FIN        ************************************************/
 
 
 /*****************        Datos del dashBoard  *************************************/
+
+function insertarOrdenessistematareas($serviciosReferencias) { 
+	$refsistematareas = $_POST['refsistematareas']; 
+	$refordenes = $_POST['refordenes']; 
+	
+	if (isset($_POST['cumplida'])) { 
+		$cumplida	= 1; 
+	} else { 
+		$cumplida = 0; 
+	} 
+	
+	$res = $serviciosReferencias->insertarOrdenessistematareas($refsistematareas,$refordenes,$cumplida); 
+	
+	if ((integer)$res > 0) { 
+		echo ''; 
+	} else { 
+		echo 'Huvo un error al insertar datos';	 
+	} 
+} 
+
+
+function modificarOrdenessistematareas($serviciosReferencias) { 
+	$id = $_POST['id']; 
+	$refsistematareas = $_POST['refsistematareas']; 
+	$refordenes = $_POST['refordenes']; 
+	
+	if (isset($_POST['cumplida'])) { 
+		$cumplida	= 1; 
+	} else { 
+		$cumplida = 0; 
+	} 
+
+	$res = $serviciosReferencias->modificarOrdenessistematareas($id,$refsistematareas,$refordenes,$cumplida); 
+	
+	if ($res == true) { 
+		echo ''; 
+	} else { 
+		echo 'Huvo un error al modificar datos'; 
+	} 
+} 
+
+
+function eliminarOrdenessistematareas($serviciosReferencias) { 
+	$id = $_POST['id']; 
+	$res = $serviciosReferencias->eliminarOrdenessistematareas($id); 
+	echo $res; 
+} 
+
+
+function devolverPorcentajeCumplido($serviciosReferencias) {
+	$id = $_POST['id']; 
+	$res = $serviciosReferencias->devolverPorcentajeCumplido($id); 
+	echo $res;
+
+}
+
 
 
 function insertarTipotarea($serviciosReferencias) {
@@ -1208,18 +1302,19 @@ echo $res;
 function modificarVentas($serviciosReferencias) {
 	$id = $_POST['id'];
 	$numero = $_POST['numero'];
-	$sistema = $_POST['sistema'];
-	$tela = $_POST['tela'];
+	$adelanto = $_POST['adelanto'];
 	$total = $_POST['total'];
 	$refclientes = $_POST['refclientes'];
 	$reftipopago = $_POST['reftipopago'];
 	if (isset($_POST['cancelada'])) {
 		$cancelada = 1;
+		$serviciosReferencias->eliminarVentas($id);
+		//cancelo la venta y cancelo todas las ordenes
 	} else {
 		$cancelada = 0;
 	}
 	
-	$res = $serviciosReferencias->modificarVentas($id,$numero,$sistema,$tela,$total,$refclientes,$reftipopago,$cancelada);
+	$res = $serviciosReferencias->modificarVentas($id,$numero,$adelanto,$total,$refclientes,$reftipopago,$cancelada);
 	
 	if ($res == true) {
 		echo '';

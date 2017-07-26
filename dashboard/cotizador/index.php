@@ -46,7 +46,7 @@ $lstClientes = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
 
 $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->traerTipopago(),array(1),'');
 
-$cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1),'');
+$cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
 
 
 ?>

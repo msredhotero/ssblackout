@@ -141,6 +141,13 @@ $res = $this->query($sql,0);
 return $res;
 }
 
+function modificarCabecerapresupuestoEstado($id) {
+	$sql = "update dbcabecerapresupuesto set refestados = 3 where idcabecerapresupuesto =".$id;	
+	
+	$res = $this->query($sql,0);
+	return $res;
+}
+
 
 function eliminarCabecerapresupuesto($id) {
 $sql = "delete from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
@@ -217,6 +224,84 @@ $sql = "select idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelant
 $res = $this->query($sql,0);
 return $res;
 } 
+
+
+function insertarVentaPorPresupuesto($idCabecera) {
+	$numero = $this->generarNroVenta();
+	$sql = "INSERT INTO dbventas
+			(idventa,
+			numero,
+			fecha,
+			adelanto,
+			total,
+			refclientes,
+			reftipopago,
+			observacion,
+			cancelada,
+			refpresupuesto)
+			SELECT '',
+				'".$numero."',
+				now(),
+				adelanto,
+				monto,
+				refclientes,
+				1,
+				observaciones,
+				0,
+				idcabecerapresupuesto
+			FROM dbcabecerapresupuesto
+			where idcabecerapresupuesto =".$idCabecera;	
+			
+	$res = $this->query($sql,1);
+	return $res;
+	
+}
+
+
+function insertarDetallesOrdenPorPresupuesto($idCabecera, $idVenta) {
+	
+	$numero = $this->generarNroOrden();
+	$sql = "INSERT INTO dbordenes
+			(idorden,
+			numero,
+			refventas,
+			fechacrea,
+			fechamodi,
+			usuacrea,
+			usuamodi,
+			refestados,
+			refsistemas,
+			reftelas,
+			refresiduos,
+			roller,
+			tramado,
+			ancho,
+			alto,
+			reftelaopcional,
+			esdoble)
+			SELECT '',
+				'".$numero."',
+				".$idVenta.",
+				now(),
+				'',
+				usuacrea,
+				usuamodi,
+				refestados,
+				refsistemas,
+				reftelas,
+				refresiduos,
+				roller,
+				tramado,
+				ancho,
+				alto,
+				reftelaopcional,
+				esdoble
+			FROM dbpresupuestos 
+			where refcabecerapresupuesto = ".$idCabecera;	
+	$res = $this->query($sql,0);
+	return $res;
+}
+
 
 /* Fin */
 /* /* Fin de la Tabla: dbcabecerapresupuesto*/
@@ -458,8 +543,156 @@ function traerSistemaTareasPorSistemaSinUsar($idSistema) {
 	return $res;
 }
 
+function traerSistemaTareasPorSistemaSinUsarPorOrden($idOrden) {
+	$sql = "select 
+					s.idsistematarea,
+					tip.tarea,
+					tip.valor,
+                    sis.nombre as sistema,
+					refsistemas,
+					reftipotarea 
+				from tbtipotarea tip
+			left join dbsistematareas s ON tip.idtipotarea = s.reftipotarea
+            left join dbsistemas sis ON sis.idsistema = s.refsistemas
+            left join dbordenessistematareas ost ON ost.refsistematareas = s.idsistematarea and ost.refordenes = ".$idOrden."
+            where ost.refsistematareas is null";
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+function devolverPorcentajeCumplido($idOrden) {
+	$sqlCumplidas = "select
+			count(s.refordenes) as cantidad
+			from dbordenessistematareas s
+			where cumplida = 1 and s.refordenes = ".$idOrden;
+	$resCumplidas = $this->query($sqlCumplidas,0);
+
+	$sqlNoCumplidas = "select
+			count(s.refordenes) as cantidad
+			from dbordenessistematareas s
+			where cumplida = 0 and s.refordenes = ".$idOrden;
+    $resNoCumplidas = $this->query($sqlNoCumplidas,0);
+
+	$sqlCantidad = "select
+			count(s.refordenes) as cantidad
+			from dbordenessistematareas s
+			where s.refordenes = ".$idOrden;
+	$resCantidad = $this->query($sqlCantidad,0);
+
+	if (mysql_num_rows($resCumplidas)>0) {
+		return mysql_result($resCumplidas,0,0) * 100 / mysql_result($resCantidad,0,0);
+	} else {
+		return 0;
+	}
+}
+
 /* Fin */
 /* /* Fin de la Tabla: dbsistematareas*/
+
+
+/* PARA Ordenessistematareas */
+
+function insertarOrdenessistematareas($refsistematareas,$refordenes,$cumplida) { 
+$sql = "insert into dbordenessistematareas(idordenesistematarea,refsistematareas,refordenes,cumplida) 
+values ('',".$refsistematareas.",".$refordenes.",".$cumplida.")"; 
+$res = $this->query($sql,1); 
+return $res; 
+} 
+
+
+function modificarOrdenessistematareas($id,$refsistematareas,$refordenes,$cumplida) { 
+$sql = "update dbordenessistematareas 
+set 
+refsistematareas = ".$refsistematareas.",refordenes = ".$refordenes.",cumplida = ".$cumplida." 
+where idordenesistematarea =".$id; 
+$res = $this->query($sql,0); 
+return $res; 
+} 
+
+
+function eliminarOrdenessistematareas($id) { 
+$sql = "delete from dbordenessistematareas where idordenesistematarea =".$id; 
+$res = $this->query($sql,0); 
+return $res; 
+} 
+
+
+function traerOrdenessistematareas() { 
+$sql = "select 
+o.idordenesistematarea,
+o.refsistematareas,
+o.refordenes,
+o.cumplida
+from dbordenessistematareas o 
+inner join dbsistematareas sis ON sis.idsistematarea = o.refsistematareas 
+inner join dbsistemas si ON si.idsistema = sis.refsistemas 
+inner join tbtipotarea ti ON ti.idtipotarea = sis.reftipotarea 
+inner join dbordenes ord ON ord.idorden = o.refordenes 
+inner join dbventas ve ON ve.idventa = ord.refventas 
+inner join tbestados es ON es.idestado = ord.refestados 
+inner join dbsistemas s ON s.idsistema = ord.refsistemas 
+inner join dbtelas te ON te.idtela = ord.reftelas 
+inner join tbresiduos re ON re.idresiduo = ord.refresiduos 
+order by 1"; 
+$res = $this->query($sql,0); 
+return $res; 
+} 
+
+
+
+function traerOrdenessistematareasPorOrden($idOrden) { 
+$sql = "SELECT 
+		    o.idordenesistematarea,
+		    ti.tarea,
+		    ti.detalle,
+		    (case when o.cumplida = 1 then 'Si' else 'No' end) as cumplida,
+		    ti.valor,
+		    o.refsistematareas,
+		    o.refordenes
+		FROM
+		    dbordenessistematareas o
+		        INNER JOIN
+		    dbsistematareas sis ON sis.idsistematarea = o.refsistematareas
+		        INNER JOIN
+		    dbsistemas si ON si.idsistema = sis.refsistemas
+		        INNER JOIN
+		    tbtipotarea ti ON ti.idtipotarea = sis.reftipotarea
+		        INNER JOIN
+		    dbordenes ord ON ord.idorden = o.refordenes
+		        INNER JOIN
+		    dbventas ve ON ve.idventa = ord.refventas
+		        INNER JOIN
+		    tbestados es ON es.idestado = ord.refestados
+		        INNER JOIN
+		    dbsistemas s ON s.idsistema = ord.refsistemas
+		        INNER JOIN
+		    dbtelas te ON te.idtela = ord.reftelas
+		        INNER JOIN
+		    tbresiduos re ON re.idresiduo = ord.refresiduos
+		    where ord.idorden = ".$idOrden."
+		ORDER BY o.cumplida"; 
+	$res = $this->query($sql,0); 
+	return $res; 
+} 
+
+function cumplirTarea($idordenesistematarea) {
+	$sql = "update dbordenessistematareas set cumplida = (1 - cumplida) where idordenesistematarea =".$idordenesistematarea;
+	$res = $this->query($sql,0); 
+
+	$tarea = $this->traerOrdenessistematareasPorId($idordenesistematarea);
+	return mysql_result($tarea, 0,'cumplida'); 
+}
+
+
+function traerOrdenessistematareasPorId($id) { 
+$sql = "select idordenesistematarea,refsistematareas,refordenes,(case when cumplida = 1 then 'Si' else 'No' end) as cumplida from dbordenessistematareas where idordenesistematarea =".$id; 
+$res = $this->query($sql,0); 
+return $res; 
+} 
+
+/* Fin */
+/* /* Fin de la Tabla: dbordenessistematareas*/
+
 
 
 
@@ -690,7 +923,8 @@ t.ancho,
 t.alto,
 t.preciolista,
 t.preciocosto,
-t.preciocliente
+t.preciocliente,
+tip.tipotramado
 from dbtelas t
 inner join tbtipotramados tip ON tip.idtipotramado = t.reftipotramados
 order by 1";
@@ -809,10 +1043,10 @@ return $res;
 }
 
 
-function modificarVentas($id,$numero,$sistema,$tela,$total,$refclientes,$reftipopago,$cancelada) {
+function modificarVentas($id,$numero,$adelanto,$total,$refclientes,$reftipopago,$cancelada) {
 $sql = "update dbventas
 set
-numero = '".utf8_decode($numero)."',sistema = '".utf8_decode($sistema)."',tela = '".utf8_decode($tela)."',total = ".$total.",refclientes = ".$refclientes.",reftipopago = ".$reftipopago.",cancelada = ".$cancelada."
+numero = '".utf8_decode($numero)."',adelanto = ".($adelanto == '' ? 0 : $adelanto).",total = ".$total.",refclientes = ".$refclientes.",reftipopago = ".$reftipopago.",cancelada = ".$cancelada."
 where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -845,10 +1079,9 @@ $sql = "select
 v.idventa,
 v.numero,
 cli.nombrecompleto,
-v.sistema,
-v.tela,
+v.adelanto,
 v.total,
-ord.fechacrea,
+v.fecha,
 tip.descripcion,
 (case when v.cancelada = 1 then 'Si' else 'No' end) as cancelada,
 v.refclientes,
@@ -856,7 +1089,6 @@ v.reftipopago
 from dbventas v
 inner join dbclientes cli ON cli.idcliente = v.refclientes
 inner join tbtipopago tip ON tip.idtipopago = v.reftipopago
-inner join dbordenes ord ON v.idventa = ord.refventas
 order by 1";
 $res = $this->query($sql,0);
 return $res;
@@ -864,7 +1096,7 @@ return $res;
 
 
 function traerVentasPorId($id) {
-$sql = "select idventa,numero,sistema,tela,total,refclientes,reftipopago,cancelada from dbventas where idventa =".$id;
+$sql = "select idventa,numero,adelanto,total,refclientes,reftipopago,cancelada from dbventas where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
 }

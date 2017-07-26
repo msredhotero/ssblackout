@@ -242,6 +242,33 @@ $(document).ready(function(){
 		  }
 	});//fin del boton eliminar
 	
+	
+	$("#example").on("click",'.varorden', function(){
+		  usersid =  $(this).attr("id");
+		  if (!isNaN(usersid)) {
+
+			$.ajax({
+					data:  {id: usersid, accion: 'generarOrdenPorPresupuesto'},
+					url:   '../../ajax/ajax.php',
+					type:  'post',
+					beforeSend: function () {
+							
+					},
+					success:  function (response) {
+							alert(response);
+							
+					}
+			});
+			
+			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
+			//$(location).attr('href',url);
+		  } else {
+			alert("Error redo action.");	
+		  }
+	});//fin del boton eliminar
+	
+	
+	
 	$("#example").on("click",'.varborrar', function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {

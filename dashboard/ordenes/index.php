@@ -62,7 +62,7 @@ $cabeceras 		= "	<th>Nro Orden</th>
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 //nroorden, nroventa, cliente, fecha, usuario, sistema, tela, roller, tramado, ancho, alto, esdoble, tela aux
-$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenes(),96);
+$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenesActivas(),96);
 
 
 
@@ -134,7 +134,7 @@ if ($_SESSION['refroll_predio'] != 1) {
 <h3><?php echo $plural; ?></h3>
 
     
-    <div class="boxInfoSuperLargo">
+    <div class="boxInfoLargo">
         <div id="headBoxInfo">
         	<p style="color: #fff; font-size:18px; height:16px;"><?php echo $plural; ?> Cargados</p>
         	
@@ -259,6 +259,18 @@ $(document).ready(function(){
 		  if (!isNaN(usersid)) {
 			
 			url = "modificar.php?id=" + usersid;
+			$(location).attr('href',url);
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton modificar
+	
+	
+	$("#example").on("click",'.vartareas', function(){
+		  usersid =  $(this).attr("id");
+		  if (!isNaN(usersid)) {
+			
+			url = "tareas.php?id=" + usersid;
 			$(location).attr('href',url);
 		  } else {
 			alert("Error, vuelva a realizar la acción.");	

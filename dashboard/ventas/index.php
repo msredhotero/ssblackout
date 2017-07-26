@@ -47,8 +47,7 @@ $tabla 			= "dbventas";
 /////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
 $cabeceras 		= "	<th>Nro Venta</th>
 					<th>Clientes</th>
-					<th>Sistema</th>
-					<th>Tela</th>
+					<th>Adelento</th>
 					<th>Total</th>
 					<th>Fecha</th>
 					<th>Tipo Pago</th>
