@@ -19,58 +19,86 @@ $serviciosUsuario 	= new ServiciosUsuarios();
 $serviciosHTML 		= new ServiciosHTML();
 $serviciosReferencias 	= new ServiciosReferencias();
 
+
+
+
+//*** SEGURIDAD ****/
+include ('../../includes/funcionesSeguridad.php');
+$serviciosSeguridad = new ServiciosSeguridad();
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_predio'], '../ventas/');
+//*** FIN  ****/
+
+
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Configuraciones",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Ventas",$_SESSION['refroll_predio'],'');
 
 
 $id = $_GET['id'];
 
-$resResultado = $serviciosReferencias->traerConfiguracionPorId($id);
-
+$resResultado = $serviciosReferencias->traerVentasPorId($id);
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Configuracion";
+$singular = "Venta";
 
-$plural = "Configuraciones";
+$plural = "Ventas";
 
-$eliminar = "eliminarConfiguracion";
+$eliminar = "eliminarVentas";
 
-$modificar = "modificarConfiguracion";
+$modificar = "modificarVentas";
 
-$idTabla = "idconfiguracion";
+$idTabla = "idventa";
 
-$tituloWeb = "Gestión: Libreria";
+$tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "tbconfiguracion";
+$tabla 			= "dbventas";
 
-$lblCambio	 	= array("codigopostal");
-$lblreemplazo	= array("Cod. Postal");
+$lblCambio	 	= array("reftipopago","refclientes");
+$lblreemplazo	= array("Tipo Pago","Cliente");
 
-$cadRef 	= '';
 
-$refdescripcion = array();
-$refCampo 	=  array();
+$resTipoPago 	= $serviciosReferencias->traerTipopagoPorId(mysql_result($resResultado,0,'reftipopago'));
+$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resTipoPago,array(1),'',mysql_result($resResultado,0,'reftipopago'));
+    
+$resClientes 	= $serviciosReferencias->traerClientesPorId(mysql_result($resResultado,0,'refclientes'));
+$cadRef2 	= $serviciosFunciones->devolverSelectBoxActivo($resClientes,array(1),'',mysql_result($resResultado,0,'refclientes'));
+   
+	
+$refdescripcion = array(0 => $cadRef,1=>$cadRef2);
+$refCampo 	=  array("reftipopago","refclientes");
+//////////////////////////////////////////////  FIN de los opciones //////////////////////////
+/////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
+$cabeceras 		= "	<th>Nro Orden</th>
+					<th>Nro Venta</th>
+					<th>Clientes</th>
+					<th>Fecha</th>
+					<th>Usua. Crea</th>
+					<th>Sistema</th>
+					<th>Tela</th>
+					<th>Roller</th>
+					<th>Tramado</th>
+					<th>Ancho</th>
+					<th>Alto</th>
+					<th>Es Doble</th>
+					<th>Tela Sec.</th>
+					<th>% Completo</th>";
+
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
+//nroorden, nroventa, cliente, fecha, usuario, sistema, tela, roller, tramado, ancho, alto, esdoble, tela aux
+$lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($id),14);
+
+$lblid			= 'idventa';
+
+$formulario 	= $serviciosFunciones->camposTablaVer($id,$lblid,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo)
 
 
 
 
-
-$formulario 	= $serviciosFunciones->camposTablaModificar($id, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
-
-
-if ($_SESSION['idroll_predio'] != 1) {
-
-} else {
-
-	
-}
 
 
 ?>
@@ -101,7 +129,7 @@ if ($_SESSION['idroll_predio'] != 1) {
     
 	<!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css"/>
-	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>-->
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 
@@ -144,6 +172,18 @@ if ($_SESSION['idroll_predio'] != 1) {
 			<?php echo $formulario; ?>
             </div>
             
+            <div class='row' style="margin-left:25px; margin-right:25px;">
+            	
+                <div class="col-md-12">
+                	<div class="panel panel-info">
+                    	<div class="panel-heading">Detalle de la Venta</div>
+                        <div class="panel-body">
+							<?php echo $lstCargados; ?>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
                 <div class='alert'>
@@ -188,12 +228,40 @@ if ($_SESSION['idroll_predio'] != 1) {
         <p><strong>Importante: </strong>Si elimina el equipo se perderan todos los datos de este</p>
         <input type="hidden" value="" id="idEliminar" name="idEliminar">
 </div>
+
+<div id="dialog3" title="Borrar imagen">
+    	<p>
+        	<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+            ¿Esta seguro de desea eliminar esta imagen?.
+        </p>
+        <div id="auxImg">
+        
+        </div>
+        <input type="hidden" value="" id="idAgente" name="idAgente">
+</div>
 <script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
 <script src="../../bootstrap/js/dataTables.bootstrap.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function(){
-
+	
+	if (<?php echo mysql_result($resResultado,0,'cancelada'); ?> == 1) {
+		$('#cancelado').prop('checked',true);	
+		$('#cancelado').prop('disabled',true);
+	} else {
+		$('#cancelado').prop('checked',false);	
+	}
+	
+	
+	
+	$('#total').prop('readonly', true);
+	
+	$('#sistema').prop('readonly', true);
+	
+	$('#tela').prop('readonly', true);
+	
+	$('#numero').prop('readonly', true);
+	
 	$('.volver').click(function(event){
 		 
 		url = "index.php";
@@ -258,7 +326,62 @@ $(document).ready(function(){
 	
 	?>
 	
+	$('.eliminar').click(function(event){
+                
+			  usersid =  $(this).attr("id");
+			  imagenId = 'img'+usersid;
+			  
+			  if (!isNaN(usersid)) {
+				$("#idAgente").val(usersid);
+                                //$('#vistaPrevia30').attr('src', e.target.result);
+				$("#auxImg").html($('#'+imagenId).html());
+				$("#dialog3").dialog("open");
+				//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
+				//$(location).attr('href',url);
+			  } else {
+				alert("Error, vuelva a realizar la acción.");	
+			  }
+			  
+			  //post code
+	});
+	
+	$( "#dialog3" ).dialog({
+		 	
+		autoOpen: false,
+		resizable: false,
+		width:600,
+		height:340,
+		modal: true,
+		buttons: {
+			"Eliminar": function() {
 
+				$.ajax({
+							data:  {id: $("#idAgente").val(), accion: 'eliminarFoto'},
+							url:   '../../ajax/ajax.php',
+							type:  'post',
+							beforeSend: function () {
+									
+							},
+							success:  function (response) {
+									url = "modificar.php?id=<?php echo $id; ?>";
+									$(location).attr('href',url);
+									
+							}
+					});
+				$( this ).dialog( "close" );
+				$( this ).dialog( "close" );
+					$('html, body').animate({
+						scrollTop: '1000px'
+					},
+					1500);
+			},
+			Cancelar: function() {
+				$( this ).dialog( "close" );
+			}
+		}
+ 
+ 
+	});
 	
 	
 	//al enviar el formulario
@@ -299,8 +422,8 @@ $(document).ready(function(){
 												
 											});
 											$("#load").html('');
-											//url = "index.php";
-											//$(location).attr('href',url);
+											url = "modificar.php?id=<?php echo $id; ?>";
+											$(location).attr('href',url);
                                             
 											
                                         } else {
@@ -318,6 +441,22 @@ $(document).ready(function(){
 			});
 		}
     });
+	
+	$('#imagen1').on('change', function(e) {
+	  var Lector,
+		  oFileInput = this;
+	 
+	  if (oFileInput.files.length === 0) {
+		return;
+	  };
+	 
+	  Lector = new FileReader();
+	  Lector.onloadend = function(e) {
+		$('#vistaPrevia1').attr('src', e.target.result);         
+	  };
+	  Lector.readAsDataURL(oFileInput.files[0]);
+	 
+	});
 
 });
 </script>

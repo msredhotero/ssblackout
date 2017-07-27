@@ -241,7 +241,7 @@ function insertarVentaPorPresupuesto($idCabecera) {
 			refpresupuesto)
 			SELECT '',
 				'".$numero."',
-				now(),
+				'".date('Y-m-d')."',
 				adelanto,
 				monto,
 				refclientes,
@@ -266,6 +266,7 @@ function insertarDetallesOrdenPorPresupuesto($idCabecera, $idVenta) {
 		while ($row = mysql_fetch_array($resPresupuestos)) {
 			$numero = $this->generarNroOrden();
 			$res = $this->insertarOrdenes($numero,$idVenta,date('Y-m-d'),'',$row['usuacrea'],$row['usuamodi'],$row['refestados'],$row['refsistemas'],$row['reftelas'],$row['refresiduos'],$row['roller'],$row['tramado'],$row['ancho'],$row['alto'],$row['reftelaopcional'],$row['esdobleaux']);
+			$this->insertarTareasSistemasPorOrden($res, $row['refsistemas']);
 		}		
 		
 		
@@ -273,6 +274,29 @@ function insertarDetallesOrdenPorPresupuesto($idCabecera, $idVenta) {
 	} else {
 		return 0;
 	}
+}
+
+function eliminarTareasSistemasPorOrden($idOrden) {
+	$sql = "delete from dbordenessistematareas where refordenes =".$idOrden;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+function insertarTareasSistemasPorOrden($idOrden, $idSistema) {
+	$sql = "INSERT INTO dbordenessistematareas
+				(idordenesistematarea,
+				refsistematareas,
+				refordenes,
+				cumplida)
+
+				SELECT '',
+					idsistematarea,
+				    ".$idOrden.",
+				    0
+				FROM dbsistematareas 
+				where refsistemas = ".$idSistema;
+	$res = $this->query($sql,0);
+	return $res;			
 }
 
 
@@ -519,7 +543,7 @@ function traerSistemaTareasPorSistemaSinUsar($idSistema) {
 	return $res;
 }
 
-function traerSistemaTareasPorSistemaSinUsarPorOrden($idOrden) {
+function traerSistemaTareasPorSistemaSinUsarPorOrden($idOrden, $idSistema) {
 	$sql = "select 
 					s.idsistematarea,
 					tip.tarea,
@@ -531,7 +555,7 @@ function traerSistemaTareasPorSistemaSinUsarPorOrden($idOrden) {
 			inner join dbsistematareas s ON tip.idtipotarea = s.reftipotarea
             inner join dbsistemas sis ON sis.idsistema = s.refsistemas
             left join dbordenessistematareas ost ON ost.refsistematareas = s.idsistematarea and ost.refordenes = ".$idOrden."
-            where ost.refsistematareas is null";
+            where ost.refsistematareas is null and sis.idsistema =".$idSistema;
 	$res = $this->query($sql,0);
 	return $res;
 }
@@ -996,7 +1020,7 @@ function traerCantidadClientes() {
 
 
 function traerCantidadVentas($fecha) {
-	$sql = "select count(*) from dbventas v inner join dbordenes o ON v.idventa = o.refventas where o.fechacrea = '".$fecha."'";
+	$sql = "select count(*) from dbventas v where v.fecha = '".$fecha."'";
 	$res = $this->query($sql,0); 
 	return $res; 	
 }
@@ -1076,7 +1100,7 @@ return $res;
 
 
 function traerVentasPorId($id) {
-$sql = "select idventa,numero,adelanto,total,refclientes,reftipopago,cancelada from dbventas where idventa =".$id;
+$sql = "select idventa,numero,adelanto,total,refclientes,reftipopago,cancelada,fecha from dbventas where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
 }
@@ -1085,20 +1109,23 @@ function traerVentasPorDia($fecha) {
 	$sql = "select
 v.idventa,
 v.numero,
-ord.fechacrea,
+v.fecha,
 tip.descripcion,
 v.total,
 cli.nombrecompleto,
 (case when v.cancelada = 1 then 'Si' else 'No' end) as cancelado,
+coalesce(u.nombrecompleto, ord.usuacrea) as usuacrea,
 v.reftipopago,
-ord.usuacrea,
 v.refclientes
 from dbventas v
 inner join tbtipopago tip ON tip.idtipopago = v.reftipopago
 inner join dbclientes cli ON cli.idcliente = v.refclientes
 inner join dbordenes ord ON v.idventa = ord.refventas
-where	ord.fechacrea = '".$fecha."'
-order by ord.fechacrea desc";
+left join dbcabecerapresupuesto cab ON cab.idcabecerapresupuesto = v.refpresupuesto
+left join dbusuarios u ON u.idusuario = cab.refusuarios
+where	ord.refestados in (1,2)
+group by v.idventa,v.numero,v.fecha,tip.descripcion,v.total,cli.nombrecompleto,v.cancelada ,v.reftipopago,u.nombrecompleto,v.refclientes,ord.usuacrea
+order by v.fecha desc";
 $res = $this->query($sql,0);
 return $res;
 }
@@ -1700,6 +1727,7 @@ $sql = "select
 			o.alto,
 			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
 			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			est.estado,
 			o.fechamodi,
 			o.usuamodi,
 			res.roller as residuoroller,
@@ -1949,6 +1977,76 @@ return $res;
 /* /* Fin de la Tabla: dbpagos*/
 
 
+/* PARA Configuracion */
+
+function insertarConfiguracion($empresa,$cuit,$direccion,$telefono,$email,$localidad,$codigopostal) {
+$sql = "insert into tbconfiguracion(idconfiguracion,empresa,cuit,direccion,telefono,email,localidad,codigopostal)
+values ('','".utf8_decode($empresa)."','".utf8_decode($cuit)."','".utf8_decode($direccion)."','".utf8_decode($telefono)."','".utf8_decode($email)."','".utf8_decode($localidad)."','".utf8_decode($codigopostal)."')";
+$res = $this->query($sql,1);
+return $res;
+}
+
+
+function modificarConfiguracion($id,$empresa,$cuit,$direccion,$telefono,$email,$localidad,$codigopostal) {
+$sql = "update tbconfiguracion
+set
+empresa = '".utf8_decode($empresa)."',cuit = '".utf8_decode($cuit)."',direccion = '".utf8_decode($direccion)."',telefono = '".utf8_decode($telefono)."',email = '".utf8_decode($email)."',localidad = '".utf8_decode($localidad)."',codigopostal = '".utf8_decode($codigopostal)."'
+where idconfiguracion =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function eliminarConfiguracion($id) {
+$sql = "delete from tbconfiguracion where idconfiguracion =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerConfiguracion() {
+$sql = "select
+c.idconfiguracion,
+c.empresa,
+c.cuit,
+c.direccion,
+c.telefono,
+c.email,
+c.localidad,
+c.codigopostal
+from tbconfiguracion c
+order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerConfiguracionUltima() {
+$sql = "select
+c.idconfiguracion,
+c.empresa,
+c.cuit,
+c.direccion,
+c.telefono,
+c.email,
+c.localidad,
+c.codigopostal
+from tbconfiguracion c
+order by 1 desc
+limit 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+function traerConfiguracionPorId($id) {
+$sql = "select idconfiguracion,empresa,cuit,direccion,telefono,email,localidad,codigopostal from tbconfiguracion where idconfiguracion =".$id;
+$res = $this->query($sql,0);
+return $res;
+}
+
+/* Fin */
+/* /* Fin de la Tabla: tbconfiguracion*/
 
 
 

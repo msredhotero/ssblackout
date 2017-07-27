@@ -92,10 +92,11 @@ $cabeceras2 		= "	<th>Numero</th>
                     <th>Tipo Pago</th>
 					<th>Total</th>
 					<th>Cliente</th>
-                    <th>Cancelada</th>";				
+                    <th>Cancelada</th>
+                    <th>Usuario</th>";				
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
-$lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferencias->traerVentasPorDia(date('Y-m-d')),6);
+$lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferencias->traerVentasPorDia(date('Y-m-d')),95);
 
 ?>
 
@@ -125,7 +126,7 @@ $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferen
     
 	<!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css"/>
-	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>-->
     <!-- Latest compiled and minified JavaScript -->
     <script src="../bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="../css/chosen.css">
@@ -161,13 +162,13 @@ $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferen
         	<div class="col-md-12">
             	<div class="col-md-4 col-xs-2">
                     <div align="center">
-                        <img src="../imagenes/lblClientes.png" width="80%" title="Clientes"/>
+                        <img src="../imagenes/lblClientes.png" width="50%" title="Clientes"/>
                         <p><span id="lblCliente" style="color: red;">0</span></p>
                     </div>
                 </div>
                 <div class="col-md-4 col-xs-2">
                     <div align="center">
-                        <img src="../imagenes/lblVentas.png" width="80%" title="Ventas">
+                        <img src="../imagenes/lblVentas.png" width="50%" title="Ventas">
                         <p><span id="lblVentas" style="color: red;">0</span></p>
                     </div>
                 </div>
@@ -175,7 +176,7 @@ $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferen
 
                 <div class="col-md-4 col-xs-2">
                     <div align="center">
-                        <img src="../imagenes/lblPedidos.png" width="80%" title="Ordenes">
+                        <img src="../imagenes/lblPedidos.png" width="50%" title="Ordenes">
                         <p><span id="lblPedidos" style="color: red;">0</span></p>
                     </div>
                 </div>            
@@ -198,7 +199,7 @@ $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferen
 					<span class="pull-right clickable panel-collapsed" style="margin-top:-15px; cursor:pointer;"><i class="glyphicon glyphicon-chevron-down"></i></span>
 				</div>
                 <div class="panel-body collapse">
-            		<?php echo $lstVentas; ?>
+            		<?php echo str_replace("example","example2",$lstVentas); ?>
 								
 				</div>
             </div>
@@ -338,7 +339,35 @@ $(document).ready(function(){
 		}
 	});
 	
-	$('table.table').dataTable({
+	$('#example').dataTable({
+		"order": [[ 0, "asc" ]],
+		"language": {
+			"emptyTable":     "No hay datos cargados",
+			"info":           "Mostrar _START_ hasta _END_ del total de _TOTAL_ filas",
+			"infoEmpty":      "Mostrar 0 hasta 0 del total de 0 filas",
+			"infoFiltered":   "(filtrados del total de _MAX_ filas)",
+			"infoPostFix":    "",
+			"thousands":      ",",
+			"lengthMenu":     "Mostrar _MENU_ filas",
+			"loadingRecords": "Cargando...",
+			"processing":     "Procesando...",
+			"search":         "Buscar:",
+			"zeroRecords":    "No se encontraron resultados",
+			"paginate": {
+				"first":      "Primero",
+				"last":       "Ultimo",
+				"next":       "Siguiente",
+				"previous":   "Anterior"
+			},
+			"aria": {
+				"sortAscending":  ": activate to sort column ascending",
+				"sortDescending": ": activate to sort column descending"
+			}
+		  }
+	} );
+
+
+	$('#example2').dataTable({
 		"order": [[ 0, "asc" ]],
 		"language": {
 			"emptyTable":     "No hay datos cargados",
@@ -365,7 +394,7 @@ $(document).ready(function(){
 		  }
 	} );
 	
-	$('table.table').on("click",'.varpagos', function(){
+	$('#example2').on("click",'.varpagos', function(){
 		  
 		  $.ajax({
 				data:  {id: $(this).attr("id"), 
@@ -383,128 +412,38 @@ $(document).ready(function(){
 	
 	
 
-	$('table.table').on("click",'.varborrar', function(){
+	$('#example2').on("click",'.varborrar', function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 			$("#idEliminar").val(usersid);
 			$("#dialog2").dialog("open");
 
 			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
+			url = "index.php";
+			$(location).attr('href',url);
 		  } else {
 			alert("Error, vuelva a realizar la acción.");	
 		  }
 	});//fin del boton eliminar
 	
-	$('table.table').on("click",'.varmodificar', function(){
+	$('#example2').on("click",'.varmodificar', function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 			
-			url = "productos/modificar.php?id=" + usersid;
+			url = "ventas/modificar.php?id=" + usersid;
 			$(location).attr('href',url);
 		  } else {
 			alert("Error, vuelva a realizar la acción.");	
 		  }
 	});//fin del boton modificar
 	
-	
-	$('table.table').on("click",'.varmodificarpedido', function(){
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-			
-			url = "pedidos/modificar.php?id=" + usersid;
-			$(location).attr('href',url);
-		  } else {
-			alert("Error, vuelva a realizar la acción.");	
-		  }
-	});//fin del boton modificar
-	
-	
-	$('table.table').on("click",'.varpagar', function(){
-		  usersid =  $(this).attr("id");
-		  
-		  if (!isNaN(usersid)) {
-			
-			url = "pedidos/entrada.php?id=" + usersid;
-			$(location).attr('href',url);
-		  } else {
-			alert("Error, vuelva a realizar la acción.");	
-		  }
-	});//fin del boton entradas
-	
-	
-	$('table.table').on("click",'.varpagos', function(){
-			
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
+	$('#example2').on("click",'.vardetalles', function(){
+		usersid =  $(this).attr("id");
 
-			$.ajax({
-					data:  {id: usersid, accion: 'traerPagosPorOrden'},
-					url:   '../ajax/ajax.php',
-					type:  'post',
-					beforeSend: function () {
-							
-					},
-					success:  function (response) {
-							$('.userasignates').html(response);
-							
-					}
-			});
-			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
-		  } else {
-			alert("Error redo action.");	
-		  }
-	});//fin del boton eliminar
-	
-	
-	$('table.table').on("click",'.varfinalizar', function(){
+		traerDetalleVentaPorVenta(usersid);
 
-		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-
-			$.ajax({
-					data:  {id: usersid, usuario: '<?php echo $_SESSION['nombre_predio']; ?>', accion: 'finalizarOrden'},
-					url:   '../ajax/ajax.php',
-					type:  'post',
-					beforeSend: function () {
-							
-					},
-					success:  function (response) {
-							if (response == '') {
-								$(".alert").removeClass("alert-danger");
-								$(".alert").removeClass("alert-info");
-								$(".alert").addClass("alert-success");
-								$(".alert").html('<strong>Ok!</strong> Se finalizo exitosamente la <strong>Orden</strong>. ');
-								$(".alert").delay(3000).queue(function(){
-									/*aca lo que quiero hacer 
-									  después de los 2 segundos de retraso*/
-									$(this).dequeue(); //continúo con el siguiente ítem en la cola
-									
-								});
-								$("#load").html('');
-								url = "index.php";
-								$(location).attr('href',url);
-								
-								
-							} else {
-								$(".alert").removeClass("alert-danger");
-								$(".alert").addClass("alert-danger");
-								$(".alert").html('<strong>Error!</strong> '+response);
-								$("#load").html('');
-							}
-							
-					}
-			});
-			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
-		  } else {
-			alert("Error redo action.");	
-		  }
-	});//fin del boton eliminar
+	});//fin del boton detalle de ventas	
+	
 	
 	 $( "#dialog2" ).dialog({
 		 	
@@ -599,6 +538,22 @@ $(document).ready(function(){
 		});
 	}
 	
+	function traerDetalleVentaPorVenta(idVenta) {
+		$.ajax({
+			data:  {id: idVenta, 
+					accion: 'traerDetalleVentaPorVenta'},
+			url:   '../ajax/ajax.php',
+			type:  'post',
+			beforeSend: function () {
+
+			},
+			success:  function (response) {
+				
+				$('.detalleVentas').html(response);
+					
+			}
+		});
+	}
 	
 	function traerDetalleVentaPorCliente(idVenta) {
 		$.ajax({
@@ -661,12 +616,25 @@ $(document).ready(function(){
 	
 	/* fin */
 	
-	$(document).on('click', '.varGenerarFactura', function(e){
+	$(document).on('click', '.varpdf', function(e){
 		  usersid =  $(this).attr("id");
 		  
 		  if (!isNaN(usersid)) {
 			
 			url = "../reportes/rptFactura.php?id=" + usersid;
+			$(location).attr('href',url);
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton modificar
+
+
+	$(document).on('click', '.varver', function(e){
+		  usersid =  $(this).attr("id");
+		  
+		  if (!isNaN(usersid)) {
+			
+			url = "ventas/ver.php?id=" + usersid;
 			$(location).attr('href',url);
 		  } else {
 			alert("Error, vuelva a realizar la acción.");	

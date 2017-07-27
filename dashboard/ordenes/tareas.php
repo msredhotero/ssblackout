@@ -58,7 +58,7 @@ $lblCambio	 	= array("refsistematareas","refordenes");
 $lblreemplazo	= array("Tareas", "Orden");
 
 
-$resSistemas 	= $serviciosReferencias->traerSistemaTareasPorSistemaSinUsarPorOrden($id);
+$resSistemas 	= $serviciosReferencias->traerSistemaTareasPorSistemaSinUsarPorOrden($id, mysql_result($resResultado,0,'refsistemas'));
 $cadRef 		= $serviciosFunciones->devolverSelectBox($resSistemas,array(1),'');
 
 $cadRef2 		= $serviciosFunciones->devolverSelectBoxActivo($serviciosReferencias->traerOrdenesPorId($id),array(1),'',$id);
@@ -188,7 +188,7 @@ if ($_SESSION['idroll_predio'] != 1) {
         	<form class="form-inline formulario" role="form">
 
         	<div class="row" style="margin: 10px 20px;">
-        		<h4>Porcentaje de Completo</h4>
+        		<h4>Porcentaje de Completo <span class="porcentajeaux"></span>%</h4>
         		<div class="progress">
 	                <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="<?php echo $porcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $porcentaje; ?>%; font-family:Verdana, Geneva, sans-serif;">
 	                <span id="porcentaje"><?php echo $porcentaje; ?></span>%
@@ -315,6 +315,8 @@ $(document).ready(function(){
 						$('.progress-bar').addClass('progress-bar-success');
 					}
 				}
+
+				$('.porcentajeaux').html(response);
 			}
 		});
 	}

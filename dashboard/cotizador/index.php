@@ -264,6 +264,16 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
             </div>
             <div class='row' style="margin-left:25px; margin-right:25px;">
             	<div class="form-group col-md-6" style="display:block">
+                    <label for="desde" class="control-label" style="text-align:left">Ancho <span style="color:#F00;">*</span></label>
+                    <div class="input-group col-md-12">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
+                        <input class="form-control" id="ancho" name="ancho" value="0" required type="text">
+                        <span class="input-group-addon valorAdd">mtrs</span>
+                    </div>
+                </div>
+
+                
+                <div class="form-group col-md-6" style="display:block">
                     <label for="desde" class="control-label" style="text-align:left">Alto <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
@@ -272,14 +282,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                     </div>
                 </div>
                 
-                <div class="form-group col-md-6" style="display:block">
-                    <label for="desde" class="control-label" style="text-align:left">Ancho <span style="color:#F00;">*</span></label>
-                    <div class="input-group col-md-12">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
-                        <input class="form-control" id="ancho" name="ancho" value="0" required type="text">
-                        <span class="input-group-addon valorAdd">mtrs</span>
-                    </div>
-                </div>
+                
             </div>
 
             

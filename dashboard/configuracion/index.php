@@ -19,16 +19,10 @@ $serviciosUsuario 		= new ServiciosUsuarios();
 $serviciosHTML 			= new ServiciosHTML();
 $serviciosReferencias 	= new ServiciosReferencias();
 
-//*** SEGURIDAD ****/
-include ('../../includes/funcionesSeguridad.php');
-$serviciosSeguridad = new ServiciosSeguridad();
-$serviciosSeguridad->seguridadRuta($_SESSION['refroll_predio'], '../configuraciones/');
-//*** FIN  ****/
-
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Configuracion",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Configuraciones",$_SESSION['refroll_predio'],'');
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
@@ -40,35 +34,34 @@ $eliminar = "eliminarConfiguracion";
 
 $insertar = "insertarConfiguracion";
 
-$tituloWeb = "Gestión: Talleres";
+$tituloWeb = "Gestión: Libreria";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "tbconfiguracion";
 
-$lblCambio	 	= array("reftipoidentificaciontributaria","numero","razonsocial","direccion","telefono","codigopostal");
-$lblreemplazo	= array("Identificación Tributaria","Número","Razon Social","Dirección","Teléfono","Codigo Postal");
+$lblCambio	 	= array("codigopostal");
+$lblreemplazo	= array("Cod. Postal");
 
 
-$resOrden 	= $serviciosReferencias->traerTipoidentificaciontributaria();
-$cadRef 	= $serviciosFunciones->devolverSelectBox($resOrden,array(1),'');
+$cadRef 	= '';
 
-$refdescripcion = array(0 => $cadRef);
-$refCampo 	=  array("reftipoidentificaciontributaria");
+$refdescripcion = array();
+$refCampo 	=  array();
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 
 
 
 /////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
-$cabeceras 		= "	<th>Identif.Tributaria</th>
-					<th>Nº</th>
-					<th>Razon Social</th>
+$cabeceras 		= "	<th>Empresa</th>
+					<th>CUIT</th>
 					<th>Dirección</th>
-					<th>Ciudad</th>
 					<th>Teléfono</th>
-                    <th>Cod.Postal</th>";
+					<th>Email</th>
+					<th>Localidad</th>
+					<th>Codigo Postal</th>";
 
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
@@ -118,7 +111,7 @@ if ($_SESSION['refroll_predio'] != 1) {
 	<!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/jquery.datetimepicker.css"/>
-	<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>-->
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 

@@ -222,6 +222,9 @@ case 'eliminarVentas':
 eliminarVentas($serviciosReferencias);
 break; 
 
+case 'traerDetalleVentaPorVenta':
+	traerDetalleVentaPorVenta($serviciosReferencias, $serviciosFunciones);
+	break;
 case 'traerDetalleVentaPorCliente':
 	traerDetalleVentaPorCliente($serviciosReferencias);
 	break;
@@ -400,7 +403,27 @@ function traerDetallePresupuestoPorCabecera($serviciosReferencias) {
 	echo $cad;	
 }
 
+function traerDetalleVentaPorVenta($serviciosReferencias, $serviciosFunciones) {
+	$idVenta = $_POST['id'];
 
+	$cabeceras 		= "	<th>Nro Orden</th>
+					<th>Nro Venta</th>
+					<th>Clientes</th>
+					<th>Fecha</th>
+					<th>Usua. Crea</th>
+					<th>Sistema</th>
+					<th>Tela</th>
+					<th>Roller</th>
+					<th>Tramado</th>
+					<th>Ancho</th>
+					<th>Alto</th>
+					<th>Es Doble</th>
+					<th>Tela Sec.</th>
+					<th>Estado</th>";
+	$lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($idVenta),14);
+
+	echo $lstCargados;
+}
 /************				fin 				************/
 
 
@@ -585,10 +608,12 @@ function insertarVentas($serviciosReferencias) {
 	
 	if ((integer)$res > 0) {
 		if ($sistema == 2) {
-			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho/100,$alto/100,$refTelasB,1);
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,$refTelasB,1);
+
 		} else {
-			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho/100,$alto/100,'',0);	
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,'',0);	
 		}
+		$serviciosReferencias->insertarTareasSistemasPorOrden($resN, $refSistema);
 		echo '';
 	} else {
 		echo 'Huvo un error al insertar datos';
@@ -628,7 +653,7 @@ function modificarOrdenes($serviciosReferencias) {
 		$esRevendedor = 0;
 	}
 
-
+	$resOrdenAux = $serviciosReferencias->traerOrdenesPorId($id);
 	
 	
 	if (isset($_POST['esdoble'])) {
@@ -734,6 +759,12 @@ function modificarOrdenes($serviciosReferencias) {
 	
 	if ($res == true) {
 		$serviciosReferencias->modificarVentasValor($refventas, $total);
+		if ((mysql_result($resOrdenAux,0,'ancho') != $ancho) || (mysql_result($resOrdenAux,0,'alto') != $alto)) {
+			$serviciosReferencias->eliminarTareasSistemasPorOrden($id);
+			$serviciosReferencias->insertarTareasSistemasPorOrden($id, $refSistema);
+		}
+
+
 		echo '';
 	} else {
 		echo 'Huvo un error al modificar datos';
@@ -760,22 +791,28 @@ function cumplirTarea($serviciosReferencias) {
 /*****************        Datos del dashBoard  *************************************/
 
 function insertarOrdenessistematareas($serviciosReferencias) { 
-	$refsistematareas = $_POST['refsistematareas']; 
-	$refordenes = $_POST['refordenes']; 
 	
-	if (isset($_POST['cumplida'])) { 
-		$cumplida	= 1; 
-	} else { 
-		$cumplida = 0; 
-	} 
-	
-	$res = $serviciosReferencias->insertarOrdenessistematareas($refsistematareas,$refordenes,$cumplida); 
-	
-	if ((integer)$res > 0) { 
-		echo ''; 
-	} else { 
-		echo 'Huvo un error al insertar datos';	 
-	} 
+	if (isset($_POST['refsistematareas'])) {
+
+		$refsistematareas = $_POST['refsistematareas']; 
+		$refordenes = $_POST['refordenes']; 
+		
+		if (isset($_POST['cumplida'])) { 
+			$cumplida	= 1; 
+		} else { 
+			$cumplida = 0; 
+		} 
+		
+		$res = $serviciosReferencias->insertarOrdenessistematareas($refsistematareas,$refordenes,$cumplida); 
+		
+		if ((integer)$res > 0) { 
+			echo ''; 
+		} else { 
+			echo 'Huvo un error al insertar datos';	 
+		} 
+	} else {
+		echo 'No extiste un tipo de Tarea Especifica para este sistema, debe crearlo.';	 
+	}
 } 
 
 
