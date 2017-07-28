@@ -71,8 +71,10 @@ $cabeceras 		= "	<th>Nro Orden</th>
 //nroorden, nroventa, cliente, fecha, usuario, sistema, tela, roller, tramado, ancho, alto, esdoble, tela aux
 if ($_SESSION['idroll_predio'] == 1) {
 	$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenesActivas(),96);
+	$lstCargadosFinalizadas 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenesFinalizadas(),96);
 }	else {
 	$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerOrdenesPorUsuarios($_SESSION['idusua_predio']),91);
+	$lstCargadosFinalizadas 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesFinalizadasPorUsuarios($_SESSION['idusua_predio']),14);
 }				
 
 
@@ -157,7 +159,15 @@ if ($_SESSION['refroll_predio'] != 1) {
     </div>
     
     
-
+    <div class="boxInfoLargo">
+        <div id="headBoxInfo">
+        	<p style="color: #fff; font-size:18px; height:16px;"><?php echo $plural; ?> Finalizados - Cancelados</p>
+        	
+        </div>
+    	<div class="cuerpoBox">
+        	<?php echo str_replace("example","example2",$lstCargadosFinalizadas); ?>
+    	</div>
+    </div>
     
     
    
@@ -226,9 +236,61 @@ $(document).ready(function(){
 			}
 		  }
 	} );
+
+
+	$('#example2').dataTable({
+		"order": [[ 3, "asc" ]],
+		"language": {
+			"emptyTable":     "No hay datos cargados",
+			"info":           "Mostrar _START_ hasta _END_ del total de _TOTAL_ filas",
+			"infoEmpty":      "Mostrar 0 hasta 0 del total de 0 filas",
+			"infoFiltered":   "(filtrados del total de _MAX_ filas)",
+			"infoPostFix":    "",
+			"thousands":      ",",
+			"lengthMenu":     "Mostrar _MENU_ filas",
+			"loadingRecords": "Cargando...",
+			"processing":     "Procesando...",
+			"search":         "Buscar:",
+			"zeroRecords":    "No se encontraron resultados",
+			"paginate": {
+				"first":      "Primero",
+				"last":       "Ultimo",
+				"next":       "Siguiente",
+				"previous":   "Anterior"
+			},
+			"aria": {
+				"sortAscending":  ": activate to sort column ascending",
+				"sortDescending": ": activate to sort column descending"
+			}
+		  }
+	} );
 	
 	
 	$("#example").on("click",'.varver', function(){
+		  usersid =  $(this).attr("id");
+		  if (!isNaN(usersid)) {
+
+			$.ajax({
+					data:  {id: usersid, accion: 'traerResponsablesPorOrden'},
+					url:   '../../ajax/ajax.php',
+					type:  'post',
+					beforeSend: function () {
+							
+					},
+					success:  function (response) {
+							$('.userasignates').html(response);
+							
+					}
+			});
+			
+			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
+			//$(location).attr('href',url);
+		  } else {
+			alert("Error redo action.");	
+		  }
+	});//fin del boton eliminar
+
+	$("#example2").on("click",'.varver', function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 
@@ -279,6 +341,31 @@ $(document).ready(function(){
 	
 	
 	$("#example").on("click",'.vartareas', function(){
+		  usersid =  $(this).attr("id");
+		  if (!isNaN(usersid)) {
+			
+			url = "tareas.php?id=" + usersid;
+			$(location).attr('href',url);
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton modificar
+
+
+
+	$("#example2").on("click",'.varmodificar', function(){
+		  usersid =  $(this).attr("id");
+		  if (!isNaN(usersid)) {
+			
+			url = "modificar.php?id=" + usersid;
+			$(location).attr('href',url);
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton modificar
+	
+	
+	$("#example2").on("click",'.vartareas', function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 			

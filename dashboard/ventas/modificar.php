@@ -64,7 +64,7 @@ $lblreemplazo	= array("Tipo Pago","Cliente");
 $resTipoPago 	= $serviciosReferencias->traerTipopago();
 $cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resTipoPago,array(1),'',mysql_result($resResultado,0,'reftipopago'));
     
-$resClientes 	= $serviciosReferencias->traerClientesPorId(mysql_result($resResultado,0,'refclientes'));
+$resClientes 	= $serviciosReferencias->traerClientes();
 $cadRef2 	= $serviciosFunciones->devolverSelectBoxActivo($resClientes,array(1),'',mysql_result($resResultado,0,'refclientes'));
    
 	

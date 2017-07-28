@@ -92,6 +92,8 @@ $cabeceras 		= "	<th>Nro Orden</th>
 //nroorden, nroventa, cliente, fecha, usuario, sistema, tela, roller, tramado, ancho, alto, esdoble, tela aux
 $lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($id),14);
 
+$resA = $serviciosReferencias->traerOrdenesPorVenta($id);
+
 $lblid			= 'idventa';
 
 $formulario 	= $serviciosFunciones->camposTablaVer($id,$lblid,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo)
@@ -172,13 +174,66 @@ $formulario 	= $serviciosFunciones->camposTablaVer($id,$lblid,$tabla,$lblCambio,
 			<?php echo $formulario; ?>
             </div>
             
-            <div class='row' style="margin-left:25px; margin-right:25px;">
+            <div class='row' style="margin-left:10px; margin-right:10px;">
             	
                 <div class="col-md-12">
                 	<div class="panel panel-info">
                     	<div class="panel-heading">Detalle de la Venta</div>
                         <div class="panel-body">
-							<?php echo $lstCargados; ?>
+							<?php //echo $lstCargados; 
+
+								$cad = "<table class='table table-responsive table-striped'>
+										<thead>
+											<th>Nro Orden</th>
+											<th>Nro Venta</th>
+											<th>Clientes</th>
+											<th>Fecha</th>
+											<th>Usua. Crea</th>
+											<th>Sistema</th>
+											<th>Tela</th>
+											<th>Roller</th>
+											<th>Tramado</th>
+											<th>Ancho</th>
+											<th>Alto</th>
+											<th>Es Doble</th>
+											<th>Tela Sec.</th>
+											<th>Estado</th>
+										</thead>
+										<tbody>";
+								while ($rowJ = mysql_fetch_array($resA))	{
+									$resPorcentaje = $serviciosReferencias->devolverPorcentajeCumplido($rowJ[0]); 
+									$cad .= '<tr>
+												<td>'.$rowJ[1].'</td>
+												<td>'.$rowJ[2].'</td>
+												<td>'.utf8_encode($rowJ[3]).'</td>
+												<td>'.$rowJ[4].'</td>
+												<td>'.$rowJ[5].'</td>
+												<td>'.$rowJ[6].'</td>
+												<td>'.$rowJ[7].'</td>
+												<td>'.$rowJ[8].'</td>
+												<td>'.$rowJ[9].'</td>
+												<td>'.$rowJ[10].'</td>
+												<td>'.$rowJ[11].'</td>
+												<td>'.$rowJ[12].'</td>
+												<td>'.$rowJ[13].'</td>
+												<td>'.$rowJ[14].'</td>
+											</tr>';
+									$cad .= '<tr><td colspan="14"> <h6 style="color:#676767;">Porcentaje de Completo <span class="porcentajeaux">'.$resPorcentaje.'</span>%</h6>
+							        		<div class="progress">
+								                <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="'.$resPorcentaje.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$resPorcentaje.'%; font-family:Verdana, Geneva, sans-serif;">
+								                <span id="porcentaje">'.$resPorcentaje.'</span>%
+								                </div>
+								            </div></td></tr>';
+								}
+
+								$cad .= "</tbody></table>";
+
+								
+
+								
+
+								echo $cad;            
+							?>
                         </div>
 
                     </div>

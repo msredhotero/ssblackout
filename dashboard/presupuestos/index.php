@@ -196,7 +196,7 @@ if ($_SESSION['refroll_predio'] != 1) {
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	
+	$('#colapsarMenu').click();
 	
 	$('#example').dataTable({
 		"order": [[ 3, "asc" ]],

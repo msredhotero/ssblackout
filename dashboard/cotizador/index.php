@@ -48,7 +48,7 @@ $resTelas	=	$serviciosReferencias->traerTelas();
 
 $resResiduo =	$serviciosReferencias->traerResiduos();
 
-$lstClientes = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->traerClientes(),array(1),'');
+$lstClientes = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->traerClientes(),array(1,3),' - ');
 
 $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->traerTipopago(),array(1),'');
 

@@ -1827,6 +1827,63 @@ return $res;
 }
 
 
+function traerOrdenesFinalizadas() {
+$sql = "select 
+			o.idorden,
+			o.numero as nroorden,
+			ven.numero as nroventa,
+			cl.nombrecompleto,
+			o.fechacrea,
+			o.usuacrea,
+			sis.nombre as sistema,
+			tel.tela,
+			o.roller,
+			o.tramado,
+			o.ancho,
+			o.alto,
+			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			est.estado,
+			o.fechamodi,
+			o.usuamodi,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			o.refventas,
+			o.refestados,
+			o.refsistemas,
+			o.reftelas,
+			o.refresiduos,
+			o.reftelaopcional
+			
+		from
+			dbordenes o
+				inner join
+			dbventas ven ON ven.idventa = o.refventas
+				inner join
+			dbclientes cl ON cl.idcliente = ven.refclientes
+				inner join
+			tbtipopago ti ON ti.idtipopago = ven.reftipopago
+				inner join
+			tbestados est ON est.idestado = o.refestados
+				inner join
+			dbsistemas sis ON sis.idsistema = o.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = o.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = o.refresiduos		
+			where est.idestado not in (1,2)
+		order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
 
 function traerOrdenesPorUsuarios($idUsuarios) {
 $sql = "select 
@@ -1882,6 +1939,67 @@ $sql = "select
 			dbcabecerapresupuesto cc ON cc.idcabecerapresupuesto = ven.refpresupuesto
 
 			where est.idestado in (1,2) and cc.refusuarios = ".$idUsuarios."
+		order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+
+function traerOrdenesFinalizadasPorUsuarios($idUsuarios) {
+$sql = "select 
+			o.idorden,
+			o.numero as nroorden,
+			ven.numero as nroventa,
+			cl.nombrecompleto,
+			o.fechacrea,
+			o.usuacrea,
+			sis.nombre as sistema,
+			tel.tela,
+			o.roller,
+			o.tramado,
+			o.ancho,
+			o.alto,
+			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			est.estado,
+			o.fechamodi,
+			o.usuamodi,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			o.refventas,
+			o.refestados,
+			o.refsistemas,
+			o.reftelas,
+			o.refresiduos,
+			o.reftelaopcional
+			
+		from
+			dbordenes o
+				inner join
+			dbventas ven ON ven.idventa = o.refventas
+				inner join
+			dbclientes cl ON cl.idcliente = ven.refclientes
+				inner join
+			tbtipopago ti ON ti.idtipopago = ven.reftipopago
+				inner join
+			tbestados est ON est.idestado = o.refestados
+				inner join
+			dbsistemas sis ON sis.idsistema = o.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = o.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = o.refresiduos
+				inner join
+			dbcabecerapresupuesto cc ON cc.idcabecerapresupuesto = ven.refpresupuesto
+
+			where est.idestado not in (1,2) and cc.refusuarios = ".$idUsuarios."
 		order by 1";
 $res = $this->query($sql,0);
 return $res;

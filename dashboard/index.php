@@ -23,6 +23,11 @@ $fecha = date('Y-m-d');
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
 $resMenu = $serviciosHTML->menu($_SESSION['nombre_predio'],"Dashboard",$_SESSION['refroll_predio'],'');
 
+
+if ($_SESSION['idroll_predio'] != 1) {
+	header('Location: cotizador/index.php');
+}
+
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
 $singular = "Orden";
 

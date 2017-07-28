@@ -1114,7 +1114,7 @@ class Servicios {
 											<div class="form-group col-md-6 col-xs-6" style="display:'.$lblOculta.'">
 												<label for="'.$campo.'" class="control-label" style="text-align:left; font-size:1.4em;"><b>'.$label.'</b></label>
 												<div class="input-group col-md-12">
-													<p>'.(htmlspecialchars(mysql_result($resMod,0,$row[0]),'ENT_HTML5') == '' ? ".............." : htmlspecialchars(mysql_result($resMod,0,$row[0]),'ENT_HTML5')).'</p>
+													<p>'.@(htmlspecialchars(mysql_result($resMod,0,$row[0]),ENT_HTML5) == '' ? ".............." : @(htmlspecialchars(mysql_result($resMod,0,$row[0]),ENT_HTML5))).'</p>
 												</div>
 												
 											</div>
@@ -1132,7 +1132,7 @@ class Servicios {
 											<div class="form-group col-md-12 col-xs-12" style="display:'.$lblOculta.'">
 												<label for="'.$campo.'" class="control-label" style="text-align:left; font-size:1.4em;"><b>'.$label.'</b></label>
 												<div class="input-group col-md-12 col-xs-12">
-													<p>'.(htmlspecialchars(mysql_result($resMod,0,$row[0]),ENT_HTML5) == '' ? ".............." : htmlspecialchars(mysql_result($resMod,0,$row[0]),ENT_HTML5)).'</p>
+													<p>'.@(htmlspecialchars(mysql_result($resMod,0,$row[0]),ENT_HTML5) == '' ? ".............." : @(htmlspecialchars(mysql_result($resMod,0,$row[0]),ENT_HTML5))).'</p>
 													
 													
 												</div>
