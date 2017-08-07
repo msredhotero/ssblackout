@@ -265,7 +265,7 @@ function insertarDetallesOrdenPorPresupuesto($idCabecera, $idVenta) {
 
 		while ($row = mysql_fetch_array($resPresupuestos)) {
 			$numero = $this->generarNroOrden();
-			$res = $this->insertarOrdenes($numero,$idVenta,date('Y-m-d'),'',$row['usuacrea'],$row['usuamodi'],$row['refestados'],$row['refsistemas'],$row['reftelas'],$row['refresiduos'],$row['roller'],$row['tramado'],$row['ancho'],$row['alto'],$row['reftelaopcional'],$row['esdobleaux']);
+			$res = $this->insertarOrdenes($numero,$idVenta,date('Y-m-d'),'',$row['usuacrea'],$row['usuamodi'],$row['refestados'],$row['refsistemas'],$row['reftelas'],$row['refresiduos'],$row['roller'],$row['tramado'],$row['ancho'],$row['alto'],$row['reftelaopcional'],$row['esdobleaux'],$row['monto']);
 			$this->insertarTareasSistemasPorOrden($res, $row['refsistemas']);
 		}		
 		
@@ -1058,10 +1058,10 @@ return $res;
 
 
 function modificarVentasValor($id,$total) {
-$sql = "update dbventas
+$sql = "update dbventas v
 set
-total = ".$total."
-where idventa =".$id;
+v.total = (select sum(o.monto) from dbordenes o where o.refventas = ".$id.")
+where v.idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
 }
@@ -1616,18 +1616,18 @@ function generarNroOrden() {
 
 
 
-function insertarOrdenes($numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble) {
-$sql = "insert into dbordenes(idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble)
-values ('','".utf8_decode($numero)."',".$refventas.",'".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".($reftelaopcional == '' ? 0 : $reftelaopcional).",".$esdoble.")";
+function insertarOrdenes($numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble, $monto) {
+$sql = "insert into dbordenes(idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble, monto)
+values ('','".utf8_decode($numero)."',".$refventas.",'".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".($reftelaopcional == '' ? 0 : $reftelaopcional).",".$esdoble.",".$monto.")";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble) {
+function modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble, $monto) {
 $sql = "update dbordenes
 set
-numero = '".utf8_decode($numero)."',refventas = ".$refventas.",fechamodi = '".date('Y-m-d')."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".($reftelaopcional == '' ? 0 : $reftelaopcional).",esdoble = ".$esdoble."
+numero = '".utf8_decode($numero)."',refventas = ".$refventas.",fechamodi = '".date('Y-m-d')."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".($reftelaopcional == '' ? 0 : $reftelaopcional).",esdoble = ".$esdoble.", monto = ".$monto."
 where idorden =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -1676,7 +1676,8 @@ $sql = "select
 			o.refsistemas,
 			o.reftelas,
 			o.refresiduos,
-			o.reftelaopcional
+			o.reftelaopcional,
+			o.monto as ordenmontomonto
 			
 		from
 			dbordenes o
@@ -1705,7 +1706,7 @@ return $res;
 
 
 function traerOrdenesPorId($id) {
-$sql = "select idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble from dbordenes where idorden =".$id;
+$sql = "select idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble, monto from dbordenes where idorden =".$id;
 $res = $this->query($sql,0);
 return $res;
 } 
@@ -1717,7 +1718,7 @@ $sql = "select
 			o.numero as nroorden,
 			ven.numero as nroventa,
 			cl.nombrecompleto,
-			o.fechacrea,
+			DATE_FORMAT(o.fechacrea,'%Y-%m-%d') AS fechacrea,
 			o.usuacrea,
 			sis.nombre as sistema,
 			tel.tela,
@@ -1728,6 +1729,7 @@ $sql = "select
 			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
 			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
 			est.estado,
+			o.monto as ordenmontomonto,
 			o.fechamodi,
 			o.usuamodi,
 			res.roller as residuoroller,
@@ -1770,6 +1772,70 @@ return $res;
 
 
 
+function traerOrdenesPorOrden($idOrden) {
+$sql = "select 
+			o.idorden,
+			o.numero as nroorden,
+			ven.numero as nroventa,
+			cl.nombrecompleto,
+			DATE_FORMAT(o.fechacrea,'%Y-%m-%d') AS fechacrea,
+			o.usuacrea,
+			sis.nombre as sistema,
+			concat(tel.tela, ' ', tit.tipotramado) as tela,
+			concat(tels.tela, ' ', tits.tipotramado) as telaopcional,
+			o.roller,
+			o.ancho,
+			o.alto,
+			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
+			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
+			est.estado,
+			o.monto as ordenmontomonto,
+			o.fechamodi,
+			o.usuamodi,
+			res.roller as residuoroller,
+			res.telaancho as residuotelaancho,
+			res.telaalto as residuotelaalto,
+			res.zocalo as residuozocalo,
+			o.refventas,
+			o.refestados,
+			o.refsistemas,
+			o.reftelas,
+			o.refresiduos,
+			o.reftelaopcional,
+			ven.total
+			
+		from
+			dbordenes o
+				inner join
+			dbventas ven ON ven.idventa = o.refventas
+				inner join
+			dbclientes cl ON cl.idcliente = ven.refclientes
+				inner join
+			tbtipopago ti ON ti.idtipopago = ven.reftipopago
+				inner join
+			tbestados est ON est.idestado = o.refestados
+				inner join
+			dbsistemas sis ON sis.idsistema = o.refsistemas
+				inner join
+			tbroller ro ON ro.idroller = sis.refroller
+				inner join
+			dbtelas tel ON tel.idtela = o.reftelas
+				inner join
+			tbtipotramados tit ON tit.idtipotramado = tel.reftipotramados
+				left join
+			dbtelas tels ON tels.idtela = o.reftelaopcional
+				left join
+			tbtipotramados tits ON tits.idtipotramado = tels.reftipotramados
+				inner join
+			tbresiduos res ON res.idresiduo = o.refresiduos		
+			where o.idorden = ".$idOrden."
+		order by 1";
+$res = $this->query($sql,0);
+return $res;
+}
+
+
+
 function traerOrdenesActivas() {
 $sql = "select 
 			o.idorden,
@@ -1798,7 +1864,8 @@ $sql = "select
 			o.refsistemas,
 			o.reftelas,
 			o.refresiduos,
-			o.reftelaopcional
+			o.reftelaopcional,
+			o.monto as ordenmontomonto
 			
 		from
 			dbordenes o
@@ -1855,7 +1922,8 @@ $sql = "select
 			o.refsistemas,
 			o.reftelas,
 			o.refresiduos,
-			o.reftelaopcional
+			o.reftelaopcional,
+			o.monto as ordenmontomonto
 			
 		from
 			dbordenes o
@@ -1913,7 +1981,8 @@ $sql = "select
 			o.refsistemas,
 			o.reftelas,
 			o.refresiduos,
-			o.reftelaopcional
+			o.reftelaopcional,
+			o.monto as ordenmontomonto
 			
 		from
 			dbordenes o
@@ -1974,7 +2043,8 @@ $sql = "select
 			o.refsistemas,
 			o.reftelas,
 			o.refresiduos,
-			o.reftelaopcional
+			o.reftelaopcional,
+			o.monto as ordenmontomonto
 			
 		from
 			dbordenes o

@@ -290,28 +290,9 @@ $(document).ready(function(){
 		  }
 	});//fin del boton eliminar
 
-	$("#example2").on("click",'.varver', function(){
+	$("#example").on("click",'.varimprimir', function(){
 		  usersid =  $(this).attr("id");
-		  if (!isNaN(usersid)) {
-
-			$.ajax({
-					data:  {id: usersid, accion: 'traerResponsablesPorOrden'},
-					url:   '../../ajax/ajax.php',
-					type:  'post',
-					beforeSend: function () {
-							
-					},
-					success:  function (response) {
-							$('.userasignates').html(response);
-							
-					}
-			});
-			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
-		  } else {
-			alert("Error redo action.");	
-		  }
+		  window.open("../../reportes/rptOrdenTrabajo.php?id=" + usersid ,'_blank');
 	});//fin del boton eliminar
 	
 	$("#example").on("click",'.varborrar', function(){

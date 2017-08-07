@@ -76,7 +76,9 @@ class Servicios {
 			case 96: //ordenes
 				$cantidad = 14;
 				$classMod = 'varmodificar';
-				
+				$classEditar2 = 'varimprimir';
+				$iconoEditar2 = 'glyphicon glyphicon-print';
+				$lblEditar2	  = 'Imprimir';
 				$classEditar = 'vartareas';
 				$iconoEditar = 'glyphicon glyphicon-list-alt';
 				$lblEditar	  = 'Tareas';

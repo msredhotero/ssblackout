@@ -419,8 +419,9 @@ function traerDetalleVentaPorVenta($serviciosReferencias, $serviciosFunciones) {
 					<th>Alto</th>
 					<th>Es Doble</th>
 					<th>Tela Sec.</th>
-					<th>Estado</th>";
-	$lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($idVenta),14);
+					<th>Estado</th>
+					<th>Monto</th>";
+	$lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($idVenta),15);
 
 	echo $lstCargados;
 }
@@ -608,10 +609,10 @@ function insertarVentas($serviciosReferencias) {
 	
 	if ((integer)$res > 0) {
 		if ($sistema == 2) {
-			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,$refTelasB,1);
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,$refTelasB,1,$total);
 
 		} else {
-			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,'',0);	
+			$resN = $serviciosReferencias->insertarOrdenes($numeroOrdenes,$res,date('Y-m-d'),'',$usuacrea,'',1,$refSistema,$refTelasA,$refResiduo,$roller,$tramado,$ancho,$alto,'',0,$total);	
 		}
 		$serviciosReferencias->insertarTareasSistemasPorOrden($resN, $refSistema);
 		echo '';
@@ -755,7 +756,7 @@ function modificarOrdenes($serviciosReferencias) {
 	
 	/********************   FIN     ******************************************/
 	
-	$res = $serviciosReferencias->modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refSistema,$reftelas,$refresiduos,$roller,$tramado,$ancho/100,$alto/100,$reftelaopcional,$esdoble);
+	$res = $serviciosReferencias->modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refSistema,$reftelas,$refresiduos,$roller,$tramado,$ancho/100,$alto/100,$reftelaopcional,$esdoble, $total);
 	
 	if ($res == true) {
 		$serviciosReferencias->modificarVentasValor($refventas, $total);
