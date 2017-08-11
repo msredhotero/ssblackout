@@ -550,7 +550,7 @@ function insertarVentas($serviciosReferencias) {
 	// busca medidas en "metros"
 	
 	if ($sistema == 3) {
-		$resSistema		=	$this->traerSistemasPorMedida(901); //voy a buscar a confeccion
+		$resSistema		=	$serviciosReferencias->traerSistemasPorMedida(901); //voy a buscar a confeccion
 		if (mysql_num_rows($resSistema)>0) {
 			$refSistema		= mysql_result($resSistema,0,0);
 			$nombreSistema	= mysql_result($resSistema,0,'nombre');
@@ -564,7 +564,7 @@ function insertarVentas($serviciosReferencias) {
 			$valorSistema = 0;		
 		}
 	} else {
-		$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+		$resSistema		=	$serviciosReferencias->traerSistemasPorMedida($ancho / 100);
 		
 		if (mysql_num_rows($resSistema)>0) {
 			$refSistema		= mysql_result($resSistema,0,0);
@@ -737,7 +737,7 @@ function modificarOrdenes($serviciosReferencias) {
 	//el sistema que voy a utilizar
 	// busca medidas en "metros"
 	if ($sistema == 3) {
-		$resSistema		=	$this->traerSistemasPorMedida(901); //voy a buscar a confeccion
+		$resSistema		=	$serviciosReferencias->traerSistemasPorMedida(901); //voy a buscar a confeccion
 		if (mysql_num_rows($resSistema)>0) {
 			$refSistema		= mysql_result($resSistema,0,0);
 			$nombreSistema	= mysql_result($resSistema,0,'nombre');
@@ -751,7 +751,7 @@ function modificarOrdenes($serviciosReferencias) {
 			$valorSistema = 0;		
 		}
 	} else {
-		$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+		$resSistema		=	$serviciosReferencias->traerSistemasPorMedida($ancho / 100);
 		
 		if (mysql_num_rows($resSistema)>0) {
 			$refSistema		= mysql_result($resSistema,0,0);
