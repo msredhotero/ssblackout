@@ -496,7 +496,7 @@ function insertarVentas($serviciosReferencias) {
 	$alto	=	(float)$_POST['alto'] * 100;
 	
 	////********************* del cotizar  *****************/
-	if ($sistema == 1) {
+	if (($sistema == 1) || ($sistema == 3)) {
 		$resTelas	=	$serviciosReferencias->traerTelasPorId($idTela[0]);
 		if (mysql_num_rows($resTelas)>0) {
 			$refTelasA = mysql_result($resTelas,0,0);
@@ -548,20 +548,38 @@ function insertarVentas($serviciosReferencias) {
 	
 	//el sistema que voy a utilizar
 	// busca medidas en "metros"
-	$resSistema		=	$serviciosReferencias->traerSistemasPorMedida($ancho / 100);
 	
-	if (mysql_num_rows($resSistema)>0) {
-		$refSistema		= mysql_result($resSistema,0,0);
-		$nombreSistema	= mysql_result($resSistema,0,'nombre');
-		$roller			= mysql_result($resSistema,0,'diametro');
-		if ($esRevendedor == 1) {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
+	if ($sistema == 3) {
+		$resSistema		=	$this->traerSistemasPorMedida(901); //voy a buscar a confeccion
+		if (mysql_num_rows($resSistema)>0) {
+			$refSistema		= mysql_result($resSistema,0,0);
+			$nombreSistema	= mysql_result($resSistema,0,'nombre');
+			$roller			= mysql_result($resSistema,0,'diametro');
+			if ($esRevendedor == 1) {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+			} else {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+			}
 		} else {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
+			$valorSistema = 0;		
 		}
 	} else {
-		$valorSistema = 0;		
+		$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+		
+		if (mysql_num_rows($resSistema)>0) {
+			$refSistema		= mysql_result($resSistema,0,0);
+			$nombreSistema	= mysql_result($resSistema,0,'nombre');
+			$roller			= mysql_result($resSistema,0,'diametro');
+			if ($esRevendedor == 1) {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
+			} else {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
+			}
+		} else {
+			$valorSistema = 0;		
+		}
 	}
+
 	
 	/****************************************/
 	
@@ -577,6 +595,12 @@ function insertarVentas($serviciosReferencias) {
 	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
 	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
 	/****************************************/
+	
+	if ($sistema == 3) {
+		$telaAltoFinal	= ($alto * 10) - $altoResiduo;
+	} else {
+		$telaAltoFinal	= ($alto * 10); //el residuo esta en mm y el ancho en cm
+	}
 	
 	$calculoSistema	= $valorSistema;
 	/*if ($sistema == 2) {
@@ -712,19 +736,35 @@ function modificarOrdenes($serviciosReferencias) {
 	
 	//el sistema que voy a utilizar
 	// busca medidas en "metros"
-	$resSistema		=	$serviciosReferencias->traerSistemasPorMedida($ancho / 100);
-	
-	if (mysql_num_rows($resSistema)>0) {
-		$refSistema		= mysql_result($resSistema,0,0);
-		$nombreSistema	= mysql_result($resSistema,0,'nombre');
-		$roller			= mysql_result($resSistema,0,'diametro');
-		if ($esRevendedor == 1) {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
+	if ($sistema == 3) {
+		$resSistema		=	$this->traerSistemasPorMedida(901); //voy a buscar a confeccion
+		if (mysql_num_rows($resSistema)>0) {
+			$refSistema		= mysql_result($resSistema,0,0);
+			$nombreSistema	= mysql_result($resSistema,0,'nombre');
+			$roller			= mysql_result($resSistema,0,'diametro');
+			if ($esRevendedor == 1) {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+			} else {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+			}
 		} else {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
+			$valorSistema = 0;		
 		}
 	} else {
-		$valorSistema = 0;		
+		$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+		
+		if (mysql_num_rows($resSistema)>0) {
+			$refSistema		= mysql_result($resSistema,0,0);
+			$nombreSistema	= mysql_result($resSistema,0,'nombre');
+			$roller			= mysql_result($resSistema,0,'diametro');
+			if ($esRevendedor == 1) {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
+			} else {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
+			}
+		} else {
+			$valorSistema = 0;		
+		}
 	}
 	
 	/****************************************/
@@ -743,6 +783,11 @@ function modificarOrdenes($serviciosReferencias) {
 	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
 	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
 	
+	if ($sistema == 3) {
+		$telaAltoFinal	= ($alto * 10) - $altoResiduo;
+	} else {
+		$telaAltoFinal	= ($alto * 10); //el residuo esta en mm y el ancho en cm
+	}
 	/****************************************/
 	
 	/*****************     CALCULOS     ***********************************/

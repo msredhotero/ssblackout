@@ -217,6 +217,16 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                         
                     </div><!-- /input-group -->
                 </div>
+                
+                <div class="col-md-4" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                        <input type="radio" aria-label="..." id="confeccion" class="normal" name="normal" value="3">
+                        </span>
+                        <input type="text" class="form-control" aria-label="..." value="Confeccion">
+                        
+                    </div><!-- /input-group -->
+                </div>
             </div>
             
             

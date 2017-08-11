@@ -37,7 +37,7 @@ function convertidorMilimetros($medida, $valor) {
 function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	//primero traigo el valor de la tela
 	
-	if ($sistema == 1) {
+	if (($sistema == 1) || ($sistema == 3)) {
 		$resTelas	=	$this->traerTelasPorId($tela[0]);
 		if (mysql_num_rows($resTelas)>0) {
 			if ($esRevendedor == 1) {
@@ -80,17 +80,31 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	
 	//el sistema que voy a utilizar
 	// busca medidas en "metros"
-	$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
-	
-	if (mysql_num_rows($resSistema)>0) {
-		if ($esRevendedor == 1) {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
+	if ($sistema == 3) {
+		$resSistema		=	$this->traerSistemasPorMedida(901); //voy a buscar a confeccion
+		if (mysql_num_rows($resSistema)>0) {
+			if ($esRevendedor == 1) {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocliente');
+			} else {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocosto');
+			}
 		} else {
-			$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
+			$valorSistema = 0;		
 		}
 	} else {
-		$valorSistema = 0;		
+		$resSistema		=	$this->traerSistemasPorMedida($ancho / 100);
+		
+		if (mysql_num_rows($resSistema)>0) {
+			if ($esRevendedor == 1) {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocliente') * ($ancho / 100);
+			} else {
+				$valorSistema	=	mysql_result($resSistema,0,'preciocosto') * ($ancho / 100);
+			}
+		} else {
+			$valorSistema = 0;		
+		}
 	}
+	
 	
 	/****************************************/
 	
@@ -101,7 +115,11 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
 	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
 	*/
-	$telaAltoFinal	= ($alto * 10);
+	if ($sistema == 3) {
+		$telaAltoFinal	= ($alto * 10) - $altoResiduo;
+	} else {
+		$telaAltoFinal	= ($alto * 10); //el residuo esta en mm y el ancho en cm
+	}
 	$telaAnchoFinal	= ($ancho * 10);
 	$cañoFinal	= ($ancho * 10) - $rollerResiduo;
 	$zocaloFinal	= ($ancho * 10) - $zocaloResiduo;
@@ -115,7 +133,7 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 	$calculoTela	= ((($telaAltoFinal)/1000 * ($ancho/100)) * $valorTela);
 	//}
 	$total = $calculoSistema + $calculoTela;
-	
+	//return $telaAltoFinal;
 	return round($total,2,PHP_ROUND_HALF_UP);
 	
 }
