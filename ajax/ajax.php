@@ -279,6 +279,24 @@ case 'traerDetallePresupuestoPorCabecera':
 	break;
 
 ////****   FIN       ************///	
+
+/*****************			ESTADISTICAS           *****************************/
+case 'traerVentasPorAno':
+	traerVentasPorAno($serviciosReferencias);
+	break;
+case 'graficosProductosConsumo':
+	graficosProductosConsumo($serviciosReferencias);
+	break;
+case 'graficosProductosConsumoMayores':
+	graficosProductosConsumoMayores($serviciosReferencias);
+	break;
+case 'graficosProductosConsumoMensual':
+	graficosProductosConsumoMensual($serviciosReferencias);
+	break;
+
+
+/*****************			FIN						****************************/
+
 }
 
 
@@ -464,6 +482,53 @@ function insertarPresupuesto($serviciosReferencias) {
 }
 
 //***********  fin Presupuestos ***************************************************/
+
+
+/*****************			ESTADISTICAS           *****************************/
+function traerVentasPorAno($serviciosReferencias) {
+	$anio = $_POST['anio'];
+	
+	$res = $serviciosReferencias->traerVentasPorAno($anio);
+
+	echo json_encode(toArray($res));
+}
+
+
+function graficosProductosConsumo($serviciosReferencias) {
+	$anio = $_POST['anio'];
+	
+	$res	=	$serviciosReferencias->graficosProductosConsumoAnual($anio);
+	
+	echo $res;
+}
+
+function graficosProductosConsumoMensual($serviciosReferencias) {
+	$anio = $_POST['anio'];
+	$mes = $_POST['mes'];
+	
+	$res	=	$serviciosReferencias->graficosProductosConsumoMensual($anio, $mes);
+	
+	echo $res;
+}
+
+function graficosProductosConsumoMayores($serviciosReferencias) {
+	$anio = $_POST['anio'];
+	
+	$res	=	$serviciosReferencias->graficosProductosConsumoMayores($anio);
+	
+	$cad = '<h4>Mayores Porcentajes</h4><ul>';
+	
+	while ($row = mysql_fetch_array($res)) {
+		$cad .= '<li style="margin-top:8px; margin-bottom:8px;"><span class="glyphicon glyphicon-info-sign"></span> '.$row[1].' - Porcentaje: <span style="color:#04B431;"> %'.$row[2].'</span></li>';
+	}
+	
+	$cad .= '</ul>';
+	
+	echo $cad;
+}
+
+
+/*****************			FIN						****************************/
 
 //******************  VENTAS  *****************************************************/
 

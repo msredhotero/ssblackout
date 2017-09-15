@@ -1118,7 +1118,7 @@ return $res;
 
 
 function traerVentasPorId($id) {
-$sql = "select idventa,numero,adelanto,total,refclientes,reftipopago,cancelada,fecha from dbventas where idventa =".$id;
+$sql = "select idventa,numero,fecha,adelanto,total,refclientes,reftipopago,cancelada,fecha from dbventas where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
 }
@@ -1146,6 +1146,188 @@ group by v.idventa,v.numero,v.fecha,tip.descripcion,v.total,cli.nombrecompleto,v
 order by v.fecha desc";
 $res = $this->query($sql,0);
 return $res;
+}
+
+
+function traerVentasPorAno($anio) {
+		$sql = "select
+			m.mes as mes,
+			m.nombremes as nombremes,
+			coalesce( v.total,0) as total
+			from tbmeses m
+			left join (select sum(ve.total) as total,month(ve.fecha) as mes
+						from dbventas ve
+						where year(ve.fecha)=".$anio." and ve.cancelada = 0 
+						group by month(ve.fecha)
+					  ) v on v.mes = m.mes
+			order by m.mes";
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+
+
+function graficosProductosConsumoMayores($anio) {
+	
+	$sqlT = "select
+			
+				coalesce(count(dv.refsistemas),0)
+
+			from dbventas v
+			inner join dbordenes dv ON v.idventa = dv.refventas
+			where	year(v.fecha) = ".$anio." and v.cancelada = 0";
+			
+	$resT = $this->query($sqlT,0);
+	
+	if (mysql_num_rows($resT)>0) {
+	
+		$cantidad = mysql_result($resT,0,0);
+		$sql = "select
+			
+				s.idsistema, s.nombre as descripcion, round((coalesce(count(s.idsistema),0) * 100 / ".$cantidad."),2) as porcentaje
+		
+					from dbventas v
+					inner join dbordenes dv ON v.idventa = dv.refventas
+					inner join dbsistemas s ON s.idsistema = dv.refsistemas
+					where	year(v.fecha) = ".$anio." and v.cancelada = 0
+			group by s.idsistema, s.nombre
+			order by (coalesce(count(s.idsistema),0) / 100 * ".$cantidad.") desc
+			";
+			
+		//return $this->query($sql,0);	
+		$resR = $this->query($sql,0);
+		return $resR;
+			
+	}
+	
+	$sql = "select
+			
+				s.idsistema, s.nombre as descripcion, 10 as porcentaje
+		
+					from dbventas v
+					inner join dbordenes dv ON v.idventa = dv.refventas
+					inner join dbsistemas s ON s.idsistema = dv.refsistemas
+					where	year(v.fecha) = 9 and v.cancelada = 0
+			group by s.idsistema, s.nombre
+			limit 5
+			";
+			
+		return $this->query($sql,0);
+		//return $sql;
+
+	
+}
+
+
+
+function graficosProductosConsumoAnual($anio) {
+
+
+	$sql = "select
+			
+				s.idsistema, s.nombre as descripcion, coalesce(count(s.idsistema),0)
+		
+					from dbventas v
+					inner join dbordenes dv ON v.idventa = dv.refventas
+					inner join dbsistemas s ON s.idsistema = dv.refsistemas
+					where	year(v.fecha) = ".$anio." and v.cancelada = 0
+			group by s.idsistema, s.nombre
+			";
+			
+	$sqlT = "select
+			
+				coalesce(count(s.idsistema),0)
+
+			from dbventas v
+					inner join dbordenes dv ON v.idventa = dv.refventas
+					inner join dbsistemas s ON s.idsistema = dv.refsistemas
+			where	year(v.fecha) = ".$anio." and v.cancelada = 0";
+			
+	$sqlT2 = "select
+					count(*)
+				from dbsistemas p
+			";
+
+	
+	$resT = mysql_result($this->query($sqlT,0),0,0);
+	$resR = $this->query($sql,0);
+	
+	$cad	= "Morris.Donut({
+              element: 'graph2',
+			  stacked: true,
+              data: [";
+	$cadValue = '';
+	if ($resT > 0) {
+		while ($row = mysql_fetch_array($resR)) {
+			$cadValue .= "{value: ".((100 * $row[2])	/ $resT).", label: '".$row[1]."'},";
+		}
+	}
+	
+
+	$cad .= substr($cadValue,0,strlen($cadValue)-1);
+    $cad .=          "],
+              formatter: function (x) { return x + '%'}
+            }).on('click', function(i, row){
+              console.log(i, row);
+            });";
+			
+	return $cad;
+}
+
+
+function graficosProductosConsumoMensual($anio, $mes) {
+
+
+	$sql = "select
+			
+				s.idsistema, s.nombre as descripcion, coalesce(count(s.idsistema),0)
+		
+					from dbventas v
+					inner join dbordenes dv ON v.idventa = dv.refventas
+					inner join dbsistemas s ON s.idsistema = dv.refsistemas
+					where	year(v.fecha) = ".$anio." and month(v.fecha) = ".$mes." and v.cancelada = 0
+			group by s.idsistema, s.nombre
+			";
+			
+	$sqlT = "select
+			
+				coalesce(count(s.idsistema),0)
+
+			from dbventas v
+					inner join dbordenes dv ON v.idventa = dv.refventas
+					inner join dbsistemas s ON s.idsistema = dv.refsistemas
+			where	year(v.fecha) = ".$anio." and month(v.fecha) = ".$mes." and v.cancelada = 0";
+			
+	$sqlT2 = "select
+					count(*)
+				from dbsistemas p
+			";
+
+	
+	$resT = mysql_result($this->query($sqlT,0),0,0);
+	$resR = $this->query($sql,0);
+	
+	$cad	= "Morris.Donut({
+              element: 'graph3',
+			  stacked: true,
+			  resize: false,
+              data: [";
+	$cadValue = '';
+	if ($resT > 0) {
+		while ($row = mysql_fetch_array($resR)) {
+			$cadValue .= "{value: ".((100 * $row[2])	/ $resT).", label: '".$row[1]."'},";
+		}
+	}
+	
+
+	$cad .= substr($cadValue,0,strlen($cadValue)-1);
+    $cad .=          "],
+              formatter: function (x) { return x + '%'}
+            }).on('click', function(i, row){
+              console.log(i, row);
+            });";
+			
+	return $cad;
 }
 
 
