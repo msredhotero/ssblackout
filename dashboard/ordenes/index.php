@@ -153,7 +153,7 @@ if ($_SESSION['refroll_predio'] != 1) {
         	<p style="color: #fff; font-size:18px; height:16px;"><?php echo $plural; ?> Cargados</p>
         	
         </div>
-    	<div class="cuerpoBox">
+    	<div class="cuerpoBox" style="font-size:12px;">
         	<?php echo $lstCargados; ?>
     	</div>
     </div>
@@ -208,7 +208,7 @@ if ($_SESSION['refroll_predio'] != 1) {
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	
+	$('#colapsarMenu').click();
 	
 	$('#example').dataTable({
 		"order": [[ 3, "asc" ]],
