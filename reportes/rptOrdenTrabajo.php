@@ -38,7 +38,12 @@ $tela			=	mysql_result($resOrden,0,'tela');
 $telaopcional	=	mysql_result($resOrden,0,'telaopcional');
 $ancho			=	mysql_result($resOrden,0,'ancho');
 $alto			=	mysql_result($resOrden,0,'alto');
+$residuoAlto	=	mysql_result($resOrden,0,'residuotelaalto');
+$idsistema		=	mysql_result($resOrden,0,'refsistemas');
 
+if ($idsistema == 3) {
+	$alto = $alto - ($residuoAlto / 1000);
+}
 
 $TotalIngresos = 0;
 $TotalEgresos = 0;

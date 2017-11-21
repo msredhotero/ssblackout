@@ -34,26 +34,26 @@ $resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Ordenes
 
 $id = $_GET['id'];
 
-$resResultado = $serviciosReferencias->traerOrdenesPorId($id);
+$resResultado = $serviciosReferencias->traerCabecerapresupuestoPorId($id);
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Orden";
+$singular = "Presupuesto";
 
-$plural = "Ordenes";
+$plural = "Presupuestos";
 
-$eliminar = "eliminarOrdenes";
+$eliminar = "eliminarCabecerapresupuesto";
 
-$modificar = "modificarOrdenes";
+$modificar = "modificarCabecerapresupuesto";
 
-$idTabla = "idorden";
+$idTabla = "idcabecerapresupuesto";
 
 $tituloWeb = "Gestión: Sistema Cortinas Roller";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbordenes";
+$tabla 			= "dbcabecerapresupuesto";
 
 $lblCambio	 	= array("esdoble","refsistemas","reftelas","reftelaopcional","refestados");
 $lblreemplazo	= array("Es Doble", "Sistema", "Telas","Segunda Tela","Estado");

@@ -117,7 +117,9 @@ if ($_SESSION['refroll_predio'] != 1) {
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="../../css/chosen.css">
 	<style type="text/css">
-		
+		#headBoxInfo {
+			background-color: #4B9962;
+		}
   
 		
 	</style>

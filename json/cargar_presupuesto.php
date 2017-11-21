@@ -33,10 +33,10 @@ for ($i=0; $i < count($json); $i++) {
 	$resTelas	 = $serviciosReferencias->traerTelasPorId($json[$i]->tela);
 
 	if ($json[$i]->sistema == 1) {
-		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,0,$json[$i]->totalparcial,$refCabeceraPresupuesto);
+		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,0,$json[$i]->totalparcial,$refCabeceraPresupuesto,$json[$i]->cantidad,$json[$i]->caida,$json[$i]->mando, $json[$i]->refclientes);
 	} else {
 		$resTelasOpcional	 = $serviciosReferencias->traerTelasPorId($json[$i]->telaopcional);
-		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado').' - Segunda Tela: '.mysql_result($resTelasOpcional,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,1,$json[$i]->totalparcial ,$refCabeceraPresupuesto);
+		$serviciosReferencias->insertarPresupuestos(date('Y-m-d'),'',$json[$i]->usuacrea,'',1,$json[$i]->sistema,$json[$i]->tela,$json[$i]->residuo,mysql_result($resSistemas,0,'roller'),mysql_result($resTelas,0,'tipotramado').' - Segunda Tela: '.mysql_result($resTelasOpcional,0,'tipotramado'),$json[$i]->ancho,$json[$i]->alto,$json[$i]->telaopcional,1,$json[$i]->totalparcial ,$refCabeceraPresupuesto,$json[$i]->cantidad,$json[$i]->caida,$json[$i]->mando, $json[$i]->refclientes);
 	}
 	
 

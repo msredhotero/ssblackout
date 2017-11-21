@@ -55,6 +55,23 @@ $lstTipoPago = $serviciosFunciones->devolverSelectBox( $serviciosReferencias->tr
 $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
 
 
+
+/////////////////////// Opciones para la creacion del formulario  /////////////////////
+$tabla          = "dbclientes";
+
+$lblCambio      = array("nrodocumento","fechanacimiento","telefono","direccion","nombrecompleto");
+$lblreemplazo   = array("Nro Documento","Fecha Nacimiento","Teléfono","dirección","Nombre Completo");
+
+
+$cadRef     = '';
+
+$refdescripcion = array();
+$refCampo   =  array();
+//////////////////////////////////////////////  FIN de los opciones //////////////////////////
+
+
+$formularioClientes     = $serviciosFunciones->camposTabla('insertarClientes' ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+
 ?>
 
 <!DOCTYPE HTML>
@@ -154,6 +171,14 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
         .flecha select::-ms-expand {
             display: none;
         }
+		
+		 .inputChico {
+			 width:50px;
+		 }
+		 
+		 .inputMedio {
+			 width:70px;
+		 }
   
 		
 	</style>
@@ -178,14 +203,14 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
 <?php echo $resMenu; ?>
 
 <div id="content">
-
+    <form class="form-inline formulario" role="form">
     <div class="boxInfoLargo tile-stats tile-white stat-tile">
         <div id="headBoxInfo">
         	<p style="color: #fff; font-size:18px; height:16px;"><span class="glyphicon glyphicon-usd"></span> Cotizador</p>
         	
         </div>
     	<div class="cuerpoBox">
-        	<form class="form-inline formulario" role="form">
+        	
         	<div class='row' style="margin-left:25px; margin-right:25px;">
                 <h4>Elegí el material de tu producto, completá las medidas y obtené el precio al instante!</h4>
                 <hr>
@@ -277,7 +302,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                     <label for="desde" class="control-label" style="text-align:left">Ancho <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
-                        <input class="form-control" id="ancho" name="ancho" value="0" required type="text">
+                        <input class="form-control" id="ancho" name="ancho" value="1" required type="text">
                         <span class="input-group-addon valorAdd">mtrs</span>
                     </div>
                 </div>
@@ -287,7 +312,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                     <label for="desde" class="control-label" style="text-align:left">Alto <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
-                        <input class="form-control" id="alto" name="alto" value="0" required type="text">
+                        <input class="form-control" id="alto" name="alto" value="1" required type="text">
                         <span class="input-group-addon valorAdd">mtrs</span>
                     </div>
                 </div>
@@ -300,7 +325,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                 <hr>
             </div>
             <div class='row' style="margin-left:25px; margin-right:25px;">   
-                <h2 class="cartel cartel_chico" style="margin-top:5px;">Residuo<br></h2>
+                <h2 class="cartel cartel_chico" style="margin-top:5px;">Residuo - Cantidad - Caida - Mando<br></h2>
             </div>
             
             <div class='row' style="margin-left:25px; margin-right:25px;"> 
@@ -317,59 +342,27 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                         
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->
-            </div>
-            
-            <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
-            	<div class="form-group col-md-6" style="display:block">
-                	<label class="control-label" for="codigobarra" style="text-align:left">Seleccione el Cliente</label>
-                    <div class="input-group col-md-12">
-	                    <select data-placeholder="selecione el Cliente..." id="refclientes" name="refclientes" class="chosen-select" tabindex="2" style="width:100%;">
-                            
-                            <?php echo $lstClientes; ?>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group col-md-6" style="display:block">
-                	<label class="control-label" for="codigobarra" style="text-align:left">Seleccione el Tipo Pago</label>
-                    <div class="input-group col-md-12">
-	                    <select data-placeholder="selecione el Tipo de Pago..." id="reftipopago" name="reftipopago" class="chosen-select" tabindex="2" style="width:100%;">
-                            
-                            <?php echo $lstTipoPago; ?>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
-            	<div class="form-group col-md-6" style="display:block">
-                	<label class="control-label" for="codigobarra" style="text-align:left">Solicitante <span style="color:#F00;">*</span></label>
-                    <div class="input-group col-md-12">
-	                    <input type="text" class="form-control" id="solicitante" name="solicitante" />
-                    </div>
-                </div>
-                
-                <div class="form-group col-md-6" style="display:block">
-                	<label class="control-label" for="codigobarra" style="text-align:left">Nro Documento <span style="color:#F00;">*</span></label>
-                    <div class="input-group col-md-12">
-	                    <input type="text" class="form-control" id="nrodocumento" name="nrodocumento" />
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class='row' style="margin-left:25px; margin-right:25px;" id="datosFacturacion"> 
-            	<div class="form-group col-md-12" style="display:block">
-                	<label class="control-label" for="codigobarra" style="text-align:left">Observaciones</label>
-                    <div class="input-group col-md-12">
-	                    <textarea rows="3" class="form-control" name="observaciones" id="observaciones">
+                <div class="col-md-3" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="cantidad" name="cantidad" value="1"/>
                         
-                        </textarea>
-                    </div>
-                </div>
-
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+                <div class="col-md-3" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="caida" name="caida" value="invertida"/>
+                        
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+                <div class="col-md-3" style="margin-bottom:7px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="mando" name="mando" value="izquierda"/>
+                        
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
             </div>
+            
+            
             
 
             
@@ -380,20 +373,10 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                         <button type="button" class="btn btn-primary" id="cotizar" style="margin-left:0px;"><span class="glyphicon glyphicon-usd"></span> Cotizar</button>
                     </li>
                     <li>
-                        <button type="button" class="btn btn-warning" id="agregarpresupuesto" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-plus"></span> Agregar Al Presupuesto</button>
+                        <button type="button" class="btn btn-warning" id="agregarpresupuesto" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-plus"></span> Agregar Al Carrito</button>
                     </li>
-                    <li>
-                        <button type="button" class="btn btn-success" id="presupuesto" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-shopping-cart"></span> Crear Presupuesto</button>
-                    </li>
-                    <?php
-                        if ($_SESSION['idroll_predio'] == 1) {
-                    ?>
-                    <li>
-                        <button type="button" class="btn btn-primary" id="orden" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-floppy-disk"></span> Crear Orden</button>
-                    </li>
-                    <?php
-                    }
-                    ?>
+
+
                     <li style="font-weight:bold; color:#F00; font-size:1.6em; margin-right:10%;" class="pull-right">
                     	Precio: <span class="glyphicon glyphicon-usd"></span><span style="font-weight:bold; color:#F00; font-size:1.6em;" id="total"></span>
                     </li>
@@ -409,6 +392,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                 <thead>
                     <tr>
                         <th class="text-center">Id</th>
+                        <th class="text-center">Cant</th>
                         <th style="width:260px;" class="text-center">Sistema</th>
                         <th class="text-center">Tela</th>
                         <th class="text-center">Tela-Adicional</th>
@@ -416,6 +400,8 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                         <th class="text-center">Ancho</th>
                         <th class="text-center">Residuo</th>
                         <th class="text-center">Total</th>
+                        <th class="text-center">Caida</th>
+                        <th class="text-center">Mando</th>
                         <th style="width:120px;" class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -424,7 +410,7 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                 </tbody>
                 <tfoot>
                     <tr style="background-color:#CCC; font-weight:bold; font-size:18px;">
-                        <td colspan="8" align="right">
+                        <td colspan="11" align="right">
                             Total $
                         </td>
                         <td>
@@ -436,6 +422,96 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
             </div>
          </div>   
 
+
+            
+            <input type="hidden" name="accion" id="accion" value="cotizar"/>
+            <input type="hidden" name="totalgral" id="totalgral" value="0" />
+            <input type="hidden" name="usuario" id="usuario" value="<?php echo $_SESSION['nombre_predio']; ?>" />
+            <input type="hidden" id="refroles" name="refroles" value="<?php echo $_SESSION['idroll_predio']; ?>">
+            
+            <div style="height:70px;">
+            </div>
+    	</div>
+        
+        
+    </div>
+    
+
+
+    <div class="boxInfoLargo tile-stats tile-white stat-tile">
+        <div id="headBoxInfo">
+            <p style="color: #fff; font-size:18px; height:16px;">Datos Facturacion</p>
+        </div>
+        <div class="cuerpoBox">
+            <div class='row datosFacturacion' style="margin-left:25px; margin-right:25px;"> 
+                <div class="form-group col-md-6" style="display:block">
+                    <label class="control-label" for="codigobarra" style="text-align:left">Seleccione el Cliente</label>
+                    <div class="input-group col-md-12">
+                        <select data-placeholder="selecione el Cliente..." id="refclientes" name="refclientes" class="chosen-select" tabindex="2" style="width:100%;">
+                            
+                            <?php echo $lstClientes; ?>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group col-md-6" style="display:block">
+                    <label class="control-label" for="codigobarra" style="text-align:left">Seleccione el Tipo Pago</label>
+                    <div class="input-group col-md-12">
+                        <select data-placeholder="selecione el Tipo de Pago..." id="reftipopago" name="reftipopago" class="chosen-select" tabindex="2" style="width:100%;">
+                            
+                            <?php echo $lstTipoPago; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class='row datosFacturacion' style="margin-left:25px; margin-right:25px;"> 
+                <div class="form-group col-md-6" style="display:block">
+                    <label class="control-label" for="codigobarra" style="text-align:left">Solicitante <span style="color:#F00;">*</span></label>
+                    <div class="input-group col-md-12">
+                        <input type="text" class="form-control" id="solicitante" name="solicitante" />
+                    </div>
+                </div>
+                
+                <div class="form-group col-md-6" style="display:block">
+                    <label class="control-label" for="codigobarra" style="text-align:left">Nro Documento <span style="color:#F00;">*</span></label>
+                    <div class="input-group col-md-12">
+                        <input type="text" class="form-control" id="nrodocumento" name="nrodocumento" />
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class='row datosFacturacion' style="margin-left:25px; margin-right:25px;"> 
+                <div class="form-group col-md-12" style="display:block">
+                    <label class="control-label" for="codigobarra" style="text-align:left">Observaciones</label>
+                    <div class="input-group col-md-12">
+                        <textarea rows="3" class="form-control" name="observaciones" id="observaciones">
+                        
+                        </textarea>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <ul class="list-inline" style="margin-top:15px;">
+                        <?php
+                            if ($_SESSION['idroll_predio'] == 1) {
+                        ?>
+                        <li>
+                            <button type="button" data-toggle="modal" data-target="#myModal3" class="btn btn-success" id="agregarCliente"><span class="glyphicon glyphicon-plus"></span> Agregar Cliente</button>
+                        </li>
+                        <?php
+                            }
+                        ?>
+                        <li>
+                            <button type="button" class="btn btn-primary" id="presupuesto" style="margin-left:0px; display:none;"><span class="glyphicon glyphicon-shopping-cart"></span> Crear Presupuesto</button>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+
             
             
             <div class='row' style="margin-left:25px; margin-right:25px;">
@@ -446,20 +522,9 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
                 
                 </div>
             </div>
-            <input type="hidden" name="accion" id="accion" value="cotizar"/>
-            <input type="hidden" name="totalgral" id="totalgral" value="0" />
-            <input type="hidden" name="usuario" id="usuario" value="<?php echo $_SESSION['nombre_predio']; ?>" />
-            <input type="hidden" id="refroles" name="refroles" value="<?php echo $_SESSION['idroll_predio']; ?>">
-            </form>
-            <div style="height:70px;">
-            </div>
-    	</div>
-        
-        
+        </div>
     </div>
-    
-
-   
+    </form>
 </div>
 
 
@@ -467,22 +532,28 @@ $cadTelas	=	$serviciosFunciones->devolverSelectBox($resTelas,array(1,8),' - ');
 
 
 <!-- Modal -->
-<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="myModal3" tabindex="1" style="z-index:500000;" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+      <form class="form-inline formulario" role="form">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Pagos</h4>
+        <h4 class="modal-title" id="myModalLabel">Crear Cliente</h4>
       </div>
-      <div class="modal-body userasignates">
-        
+      <div class="modal-body">
+        <?php echo $formularioClientes; ?>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="cargarCliente">Agregar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
+      </form>
     </div>
   </div>
 </div>
+
+
+
 
 
 <script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
@@ -493,7 +564,9 @@ $(document).ready(function(){
 	
 	$('#ancho').number( true, 2,'.','' );
 	$('#alto').number( true, 2,'.','' );
-
+	$('#cantidad').number( true, 0,'.','' );
+	
+	$('#colapsarMenu').click();
 	
 	$('#doble').click(function() {
 		$('.adicional').show();
@@ -506,6 +579,66 @@ $(document).ready(function(){
 		$('.adicional option[value=""]').attr("selected",true);
         $('#agregarpresupuesto').hide();
 	});
+
+
+    //al enviar el formulario
+    $('#cargarCliente').click(function(){
+        
+            //información del formulario
+            var formData = new FormData($(".formulario")[1]);
+            var message = "";
+            //hacemos la petición ajax  
+            $.ajax({
+                url: '../../ajax/ajax.php',  
+                type: 'POST',
+                // Form data
+                //datos del formulario
+                data: formData,
+                //necesario para subir archivos via ajax
+                cache: false,
+                contentType: false,
+                processData: false,
+                //mientras enviamos el archivo
+                beforeSend: function(){
+                    $("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
+                },
+                //una vez finalizado correctamente
+                success: function(data){
+                    
+                    if (!isNaN(data)) {
+                        $(".alert").removeClass("alert-danger");
+                        $(".alert").removeClass("alert-info");
+                        $(".alert").addClass("alert-success");
+                        $(".alert").html('<strong>Ok!</strong> Se cargo exitosamente el <strong>Cliente</strong>. ');
+                        $(".alert").delay(3000).queue(function(){
+                            /*aca lo que quiero hacer 
+                              después de los 2 segundos de retraso*/
+                            $(this).dequeue(); //continúo con el siguiente ítem en la cola
+                            
+                        });
+                        $("#load").html('');
+                        //url = "index.php";
+                        //$(location).attr('href',url);
+                        //alert('<option value="' + data.toString() + '">' + $('#reftipocontactos option:selected').text() + ', ' + $('#nombre1').val() + '</option>');
+                        $('#refclientes').prepend('<option value="' + data.toString() + '">' + $('#nombrecompleto').val() + ' - ' + $('#dni').val() + '</option>');
+                        $('#refclientes').trigger("chosen:updated");
+                        
+                        
+                    } else {
+                        $(".alert").removeClass("alert-danger");
+                        $(".alert").addClass("alert-danger");
+                        $(".alert").html('<strong>Error!</strong> '+data);
+                        $("#load").html('');
+                    }
+                },
+                //si ha ocurrido un error
+                error: function(){
+                    $(".alert").html('<strong>Error!</strong> Actualice la pagina');
+                    $("#load").html('');
+                }
+            });
+        
+    });
 	
 	
 	
@@ -652,16 +785,6 @@ $(document).ready(function(){
 		
 	});
 	
-	
-	function SumarTabla() {
-		var suma = 0;
-		$('.detalle tr').each(function(){
-			
-			suma += parseFloat($(this).find('td').eq(6).text()||0,10); //numero de la celda 3
-		})
-		return suma.toFixed(2);
-
-	  }
 	  
 	//elimina una fila
 	  $(document).on("click",".eliminarfila",function(){
@@ -670,6 +793,7 @@ $(document).ready(function(){
 		$(padre).remove();
 		
 		$('#totales').val(SumarTabla());
+        existeCarrito();
 		
 	  });
 	
@@ -780,10 +904,10 @@ $(document).ready(function(){
 						$("#load").html('');
 						$('#orden').show();
 						$('#agregarpresupuesto').show();
-						$('#presupuesto').show();
-						$('#datosFacturacion').show();
-                        $('#total').html(data);
-                        $('#totalgral').val(data);
+
+						
+                        $('#total').html(data * parseInt($('#cantidad').val()));
+                        $('#totalgral').val(data * parseInt($('#cantidad').val()));
 						
 					} else {
 						$(".alert").removeClass("alert-danger");
@@ -793,8 +917,8 @@ $(document).ready(function(){
 						$('#total').html('');
 						$('#orden').hide();
 						$('#agregarpresupuesto').hide();
-						$('#presupuesto').hide();
-						$('#datosFacturacion').hide();
+
+						
                         $('#totalgral').val(0);
 						
 	
@@ -833,6 +957,10 @@ $(document).ready(function(){
 
     var input1  = '';
     var input2  = '';
+	
+	var inputCant = '';
+	var inputCaida = '';
+	var inputMando = '';
 
     var cadAgrega = '';
     
@@ -841,6 +969,8 @@ $(document).ready(function(){
         i = i + 1;
         valSistema = 1;
         lblSistema = '';
+
+        $('#agregarpresupuesto').hide();
 
         valTela = $('#reftelas').val();
         lblTela = $('#reftelas option:selected').html();
@@ -867,32 +997,50 @@ $(document).ready(function(){
         select4 = '<select id="residuo" name="residuo" style="background-color:transparent; border:none;cursor:default;text-align: center;"><option value="'+valResiduo+'">'+lblResiduo+'</option></select>';
         
 
-        input1  = '<input type="text" readonly name="altopre" id="altopre" value="' + $('#alto').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
-        input2  = '<input type="text" readonly name="anchopre" id="anchopre" value="' + $('#ancho').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+        input1  = '<input type="text" class="inputChico" readonly name="altopre" id="altopre" value="' + $('#alto').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+        input2  = '<input type="text" class="inputChico" readonly name="anchopre" id="anchopre" value="' + $('#ancho').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+		
+		inputCant = '<input type="text" class="inputChico" readonly name="cantpre" id="cantpre" value="' + $('#cantidad').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+		inputCaida = '<input type="text" class="inputMedio" readonly name="caidapre" id="caidapre" value="' + $('#caida').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
+	    inputMando = '<input type="text" class="inputMedio" readonly name="mandopre" id="mandopre" value="' + $('#mando').val() + '" style="background-color:transparent; border:none;cursor:default;text-align: center;" />';
 
-        cadAgrega = '<tr id="tr_'+i+'"> <td id="td_id">'+i+'</td><td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td>'+select4+'</td><td id="totalparcial" style="text-align:right;">'+$('#total').text()+'</td><td style="text-align:center;"><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
+        cadAgrega = '<tr id="tr_'+i+'"> <td id="td_id">'+i+'</td><td>'+inputCant+'</td><td>'+select1+'</td><td>'+select2+'</td><td>'+select3+'</td><td>'+input1+'</td><td>'+input2+'</td><td>'+select4+'</td><td id="totalparcial" style="text-align:right;">'+$('#total').text()+'</td><td>'+inputCaida+'</td><td>'+inputMando+'</td><td style="text-align:center;"><button type="button" class="btn btn-danger eliminarfila" id="1" style="margin-left:0px;">Eliminar</button></td></tr>';
         $('.detalle').append(cadAgrega);
         $('#totales').val(SumarTabla());
         $('#total').html('');
 
-    });
+        existeCarrito();
 
+    });
+    
+
+    function existeCarrito() {
+        var valor = SumarTabla();
+
+        if (valor > 0) {
+            $('.datosFacturacion').show();
+            $('#presupuesto').show();
+        } else {
+            $('.datosFacturacion').show();
+            $('#presupuesto').show();
+        }
+    }
     
 	function SumarTabla() {
         var suma = 0;
         var sumadesc = 0;
         $('.detalle tr').each(function(){
             
-            suma += parseFloat($(this).find('td').eq(7).text()||0,10); //numero de la celda 3
+            suma += parseFloat($(this).find('td').eq(8).text()||0,10); //numero de la celda 3
         })
         
         return suma.toFixed(2);
 
-      }
+    }
       
 
 
-	$('#datosFacturacion').hide();
+	$('.datosFacturacion').hide();
 
 
     // Actualiza de manera masiva todos los archivos cargados en la tercera pestaña.
@@ -912,7 +1060,11 @@ $(document).ready(function(){
                 ALTO            = $(this).find("input[id*='altopre']").val(),
                 ANCHO           = $(this).find("input[id*='anchopre']").val(),
                 TOTALPARCIAL    = $(this).find("td[id='totalparcial']").text(),
-                TELAOPCIONAL    = $(this).find("select[id*='telaopcional']").val();
+                CANTIDAD		= $(this).find("input[id*='cantpre']").val(),
+				CAIDA			= $(this).find("input[id*='caidapre']").val(),
+				MANDO			= $(this).find("input[id*='mandopre']").val(),
+				TELAOPCIONAL    = $(this).find("select[id*='telaopcional']").val();
+				
 				
 				Total			= parseFloat($('#totales').val());
 
@@ -927,6 +1079,10 @@ $(document).ready(function(){
                 item ['telaopcional']   = TELAOPCIONAL;
                 item ['alto']   = ALTO;
                 item ['ancho']   = ANCHO;
+				item ['cantidad']   = CANTIDAD;
+				item ['caida']   = CAIDA;
+				item ['mando']   = MANDO;
+                item ['refclientes']   = $('#refclientes').val();
                 item ['totalparcial']   = TOTALPARCIAL;
                 item ['usuacrea']   = '<?php echo $_SESSION['nombre_predio']; ?>';
                 item ['refusuarios']   = <?php echo $_SESSION['idusua_predio']; ?>;

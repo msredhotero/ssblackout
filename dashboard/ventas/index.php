@@ -111,7 +111,13 @@ if ($_SESSION['refroll_predio'] != 1) {
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="../../css/chosen.css">
 	<style type="text/css">
-		
+		.modal-lg {
+			width: 95%;
+		}
+
+		#headBoxInfo {
+			background-color: #FF463A;
+		}
   
 		
 	</style>
@@ -160,13 +166,13 @@ if ($_SESSION['refroll_predio'] != 1) {
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Detalle de la Venta</h4>
       </div>
-      <div class="modal-body detalle">
+      <div class="modal-body detalleVentas">
         
       </div>
       <div class="modal-footer">
@@ -219,6 +225,29 @@ $(document).ready(function(){
 		  }
 	} );
 	
+	$('#example').on("click",'.vardetalles', function(){
+		usersid =  $(this).attr("id");
+
+		traerDetalleVentaPorVenta(usersid);
+
+	});//fin del boton detalle de ventas
+	
+	function traerDetalleVentaPorVenta(idVenta) {
+		$.ajax({
+			data:  {id: idVenta, 
+					accion: 'traerDetalleVentaPorVenta'},
+			url:   '../../ajax/ajax.php',
+			type:  'post',
+			beforeSend: function () {
+
+			},
+			success:  function (response) {
+				
+				$('.detalleVentas').html(response);
+					
+			}
+		});
+	}
 	
 	$("#example").on("click",'.varver', function(){
 		  usersid =  $(this).attr("id");

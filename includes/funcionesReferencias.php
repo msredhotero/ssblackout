@@ -168,7 +168,7 @@ function modificarCabecerapresupuestoEstado($id) {
 
 
 function eliminarCabecerapresupuesto($id) {
-$sql = "delete from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
+$sql = "update dbcabecerapresupuesto set refestados = 5 where idcabecerapresupuesto =".$id;	
 $res = $this->query($sql,0);
 return $res;
 } 
@@ -275,6 +275,30 @@ function insertarVentaPorPresupuesto($idCabecera) {
 	
 }
 
+function modificarCantidadCortinas($idVenta) {
+	$sqlCantidad = "select
+					sum(p.cantidad)
+					from	dbpresupuestos p
+					inner
+					join	dbcabecerapresupuesto cp
+					on		cp.idcabecerapresupuesto = p.refcabecerapresupuesto
+					inner
+					join	dbventas v
+					on		v.refpresupuesto = cp.idcabecerapresupuesto
+					where	v.idventa=".$idVenta;	
+					
+	$res = $this->query($sqlCantidad,0);
+	
+	if (mysql_num_rows($res)>0) {
+		$cantidad = mysql_result($res,0,0);
+	} else {
+		$cantidad = 1;	
+	}
+	
+	$sql = "update dbventas set cantidadtotal = ".$cantidad." where idventa = ".$idVenta;
+	$res = $this->query($sql,0);	
+}
+
 
 function insertarDetallesOrdenPorPresupuesto($idCabecera, $idVenta) {
 	
@@ -283,8 +307,8 @@ function insertarDetallesOrdenPorPresupuesto($idCabecera, $idVenta) {
 
 		while ($row = mysql_fetch_array($resPresupuestos)) {
 			$numero = $this->generarNroOrden();
-			$res = $this->insertarOrdenes($numero,$idVenta,date('Y-m-d'),'',$row['usuacrea'],$row['usuamodi'],$row['refestados'],$row['refsistemas'],$row['reftelas'],$row['refresiduos'],$row['roller'],$row['tramado'],$row['ancho'],$row['alto'],$row['reftelaopcional'],$row['esdobleaux'],$row['monto']);
-			$this->insertarTareasSistemasPorOrden($res, $row['refsistemas']);
+			$res = $this->insertarOrdenes($numero,$idVenta,date('Y-m-d'),'',$row['usuacrea'],$row['usuamodi'],$row['refestados'],$row['refsistemas'],$row['reftelas'],$row['refresiduos'],$row['roller'],$row['tramado'],$row['ancho'],$row['alto'],$row['reftelaopcional'],$row['esdobleaux'],$row['monto'],$row['cantidad'],$row['caida'],$row['mando']);
+			//$this->insertarTareasSistemasPorOrden($res, $row['refsistemas']);
 		}		
 		
 		
@@ -373,18 +397,18 @@ return $res;
 
 /* PARA Presupuestos */
 
-function insertarPresupuestos($fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto) {
-$sql = "insert into dbpresupuestos(idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto)
-values ('','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",".$montofinal.",".$refcabecerapresupuesto.")";
+function insertarPresupuestos($fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto,$cantidad,$caida,$mando, $refclientes) {
+$sql = "insert into dbpresupuestos(idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto,cantidad,caida,mando,refclientes)
+values ('','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",".$montofinal.",".$refcabecerapresupuesto.",".$cantidad.",'".utf8_decode($caida)."','".utf8_decode($mando)."',".$refclientes.")";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarPresupuestos($id,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto) {
+function modificarPresupuestos($id,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto,$cantidad,$caida,$mando) {
 $sql = "update dbpresupuestos
 set
-fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble.",montofinal = ".$montofinal.",refcabecerapresupuesto = ".$refcabecerapresupuesto."
+fechacrea = '".utf8_decode($fechacrea)."',fechamodi = '".utf8_decode($fechamodi)."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".$reftelaopcional.",esdoble = ".$esdoble.",montofinal = ".$montofinal.",refcabecerapresupuesto = ".$refcabecerapresupuesto.",cantidad = ".$cantidad.",caida = '".utf8_decode($caida)."',mando = '".utf8_decode($mando)."'
 where idpresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -428,7 +452,10 @@ $sql = "select
 			ven.reftelaopcional,
 			ven.usuacrea,
 			ven.usuamodi,
-			ven.esdoble as esdobleaux
+			ven.esdoble as esdobleaux,
+			ven.cantidad,
+            ven.caida,
+            ven.mando
 			
 		from
 			dbcabecerapresupuesto o
@@ -1816,18 +1843,18 @@ function generarNroOrden() {
 
 
 
-function insertarOrdenes($numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble, $monto) {
-$sql = "insert into dbordenes(idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble, monto)
-values ('','".utf8_decode($numero)."',".$refventas.",'".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".($reftelaopcional == '' ? 0 : $reftelaopcional).",".$esdoble.",".$monto.")";
+function insertarOrdenes($numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble, $monto, $cantidad, $caida, $mando) {
+$sql = "insert into dbordenes(idorden,numero,refventas,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble, monto, cantidad, caida, mando)
+values ('','".utf8_decode($numero)."',".$refventas.",'".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".($reftelaopcional == '' ? 0 : $reftelaopcional).",".$esdoble.",".$monto.",".$cantidad.",'".utf8_decode($caida)."','".utf8_decode($mando)."')";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble, $monto) {
+function modificarOrdenes($id,$numero,$refventas,$fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble, $monto, $cantidad, $caida, $mando) {
 $sql = "update dbordenes
 set
-numero = '".utf8_decode($numero)."',refventas = ".$refventas.",fechamodi = '".date('Y-m-d')."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".($reftelaopcional == '' ? 0 : $reftelaopcional).",esdoble = ".$esdoble.", monto = ".$monto."
+numero = '".utf8_decode($numero)."',refventas = ".$refventas.",fechamodi = '".date('Y-m-d')."',usuamodi = '".utf8_decode($usuamodi)."',refestados = ".$refestados.",refsistemas = ".$refsistemas.",reftelas = ".$reftelas.",refresiduos = ".$refresiduos.",roller = '".utf8_decode($roller)."',tramado = '".utf8_decode($tramado)."',ancho = ".$ancho.",alto = ".$alto.",reftelaopcional = ".($reftelaopcional == '' ? 0 : $reftelaopcional).",esdoble = ".$esdoble.", monto = ".$monto.", cantidad = ".$cantidad.",caida = '".utf8_decode($caida)."',mando = '".utf8_decode($mando)."'
 where idorden =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -1924,12 +1951,15 @@ $sql = "select
 			tel.tela,
 			o.roller,
 			o.tramado,
+			o.cantidad,
 			o.ancho,
 			o.alto,
 			(case when o.esdoble = 1 then 'Si' else 'No' end) as esdoble,
 			(select tela from dbtelas where idtela = o.reftelaopcional) as segundatela,
 			est.estado,
 			o.monto as ordenmontomonto,
+			o.caida,
+			o.mando,
 			o.fechamodi,
 			o.usuamodi,
 			res.roller as residuoroller,

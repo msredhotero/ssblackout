@@ -433,13 +433,16 @@ function traerDetalleVentaPorVenta($serviciosReferencias, $serviciosFunciones) {
 					<th>Tela</th>
 					<th>Roller</th>
 					<th>Tramado</th>
+					<th>Cant.</th>
 					<th>Ancho</th>
 					<th>Alto</th>
 					<th>Es Doble</th>
 					<th>Tela Sec.</th>
 					<th>Estado</th>
-					<th>Monto</th>";
-	$lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($idVenta),15);
+					<th>Monto</th>
+					<th>Caida</th>
+					<th>Mando</th>";
+	$lstCargados 	= $serviciosFunciones->camposTablaViewSinAction($cabeceras,$serviciosReferencias->traerOrdenesPorVenta($idVenta),18);
 
 	echo $lstCargados;
 }
@@ -457,6 +460,8 @@ function generarOrdenPorPresupuesto($serviciosReferencias) {
 	
 	if ($refEstado == 1) {
 		$idVenta	=	$serviciosReferencias->insertarVentaPorPresupuesto($refCabecera);
+		
+		$modificarCantiadCortinas = $serviciosReferencias->modificarCantidadCortinas($idVenta);
 		
 		$res 		=   $serviciosReferencias->insertarDetallesOrdenPorPresupuesto($refCabecera, $idVenta);
 		
