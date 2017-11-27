@@ -397,9 +397,9 @@ return $res;
 
 /* PARA Presupuestos */
 
-function insertarPresupuestos($fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto,$cantidad,$caida,$mando, $refclientes) {
-$sql = "insert into dbpresupuestos(idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto,cantidad,caida,mando,refclientes)
-values ('','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",".$montofinal.",".$refcabecerapresupuesto.",".$cantidad.",'".utf8_decode($caida)."','".utf8_decode($mando)."',".$refclientes.")";
+function insertarPresupuestos($fechacrea,$fechamodi,$usuacrea,$usuamodi,$refestados,$refsistemas,$reftelas,$refresiduos,$roller,$tramado,$ancho,$alto,$reftelaopcional,$esdoble,$montofinal,$refcabecerapresupuesto,$cantidad,$caida,$mando) {
+$sql = "insert into dbpresupuestos(idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto,cantidad,caida,mando)
+values ('','".utf8_decode($fechacrea)."','".utf8_decode($fechamodi)."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."',".$refestados.",".$refsistemas.",".$reftelas.",".$refresiduos.",'".utf8_decode($roller)."','".utf8_decode($tramado)."',".$ancho.",".$alto.",".$reftelaopcional.",".$esdoble.",".$montofinal.",".$refcabecerapresupuesto.",".$cantidad.",'".utf8_decode($caida)."','".utf8_decode($mando)."')";
 $res = $this->query($sql,1);
 return $res;
 }
@@ -1145,7 +1145,9 @@ return $res;
 
 
 function traerVentasPorId($id) {
-$sql = "select idventa,numero,fecha,adelanto,total,refclientes,reftipopago,cancelada,fecha from dbventas where idventa =".$id;
+$sql = "select v.idventa,v.numero,v.fecha,v.adelanto,v.total,v.refclientes,v.reftipopago,v.cancelada,v.fecha, c.nombrecompleto, v.cantidadtotal from dbventas v 
+		inner join dbclientes c on c.idcliente = v.refclientes
+		where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
 }

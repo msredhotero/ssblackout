@@ -120,6 +120,10 @@ if ($_SESSION['refroll_predio'] != 1) {
 		#headBoxInfo {
 			background-color: #4B9962;
 		}
+
+		.modal-lg {
+			width: 95%;
+		}
   
 		
 	</style>

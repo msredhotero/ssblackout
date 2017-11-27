@@ -400,6 +400,9 @@ function traerDetallePresupuestoPorCabecera($serviciosReferencias) {
 				<th>Alto</th>
 				<th>Es Doble</th>
 				<th>2da Tela</th>
+				<th>Cantidad</th>
+				<th>Caida</th>
+				<th>Mando</th>
 			</thead>
 			<tbody>";
 	while ($row = mysql_fetch_array($res))	{
@@ -413,6 +416,9 @@ function traerDetallePresupuestoPorCabecera($serviciosReferencias) {
 					<td>".$row['alto']."</td>
 					<td>".$row['esdoble']."</td>
 					<td>".$row['segundatela']."</td>
+					<td>".$row['cantidad']."</td>
+					<td>".$row['caida']."</td>
+					<td>".$row['mando']."</td>
 				</tr>";
 	}
 
