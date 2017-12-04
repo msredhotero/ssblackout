@@ -23,7 +23,7 @@ $json = json_decode($json);
 
 //die(var_dump(count($json)));
 
-$refCabeceraPresupuesto = $serviciosReferencias->insertarCabecerapresupuesto($json[0]->refusuarios, $json[0]->refclientes, date('Y-m-d'), $json[0]->total,0,$json[0]->solicitante,$json[0]->nrodocumento,$json[0]->observaciones, 1);
+$refCabeceraPresupuesto = $serviciosReferencias->insertarCabecerapresupuesto($json[0]->refusuarios, $json[0]->refclientes, date('Y-m-d'), $json[0]->total,0,$json[0]->solicitante,$json[0]->nrodocumento,$json[0]->observaciones, 1,$json[0]->fechaentrega);
 
 $monto = 0;
 for ($i=0; $i < count($json); $i++) {

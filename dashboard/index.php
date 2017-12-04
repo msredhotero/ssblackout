@@ -98,7 +98,8 @@ $cabeceras2 		= "	<th>Numero</th>
 					<th>Total</th>
 					<th>Cliente</th>
                     <th>Cancelada</th>
-                    <th>Usuario</th>";				
+                    <th>Usuario</th>
+                    <th>Fec. Entrega</th>";				
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
 
 $lstVentas	= $serviciosFunciones->camposTablaView($cabeceras2, $serviciosReferencias->traerVentasPorDia(date('Y-m-d')),95);

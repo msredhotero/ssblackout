@@ -60,6 +60,7 @@ $cabeceras 		= "	<th>Nro Venta</th>
 					<th>Adelento</th>
 					<th>Total</th>
 					<th>Fecha</th>
+					<th>Fecha Entrega</th>
 					<th>Tipo Pago</th>
 					<th>Cancelado</th>";
 

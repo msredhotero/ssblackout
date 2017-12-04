@@ -86,7 +86,7 @@ class Servicios {
 				$idresultados = "resultados";
 				break;
 			case 95: //ventas
-				$cantidad = 7;
+				$cantidad = 8;
 				$classMod = 'varmodificar';
 				$classEditar = 'varpdf';
 				$iconoEditar = 'glyphicon glyphicon-barcode';
@@ -797,7 +797,7 @@ class Servicios {
 								if (strpos($row[1],"date") !== false) {
 									$label = ucwords($label);
 									$campo = strtolower($row[0]);
-									
+									/*
 									$form	=	$form.'
 									
 									<div class="form-group col-md-6" style="display:'.$lblOculta.'">
@@ -810,8 +810,8 @@ class Servicios {
 									</div>
 									
 									';
+									*/
 									
-									/*
 									$form	=	$form.'
 									
 									<div class="form-group col-md-6">
@@ -823,7 +823,7 @@ class Servicios {
 									</div>
 									
 									';
-									*/
+									
 								} else {
 									
 									if (strpos($row[1],"time") !== false) {

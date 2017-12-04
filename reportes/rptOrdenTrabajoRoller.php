@@ -81,7 +81,7 @@ $pdf->SetXY(132,8);
 $pdf->Cell(25,5,$fecha,1,0,'C',false);
 
 $pdf->SetXY(157,8);
-$pdf->Cell(25,5,$cantidadtotal,1,0,'L',false);
+$pdf->Cell(25,5,$cantidadtotal,1,0,'R',false);
 
 $pdf->SetXY(182,8);
 $pdf->Cell(25,5,'$ '.$total,1,0,'R',false);
@@ -127,7 +127,7 @@ while ($row = mysql_fetch_array($resOrden)) {
 
 $pdf->SetFont('Arial','',13);
 
-$nombreTurno = "rptOrdenDeTrabajo-".date('Y-m-d').".pdf";
+$nombreTurno = "rptOrdenDeTrabajoRoller-".date('Y-m-d').".pdf";
 
 $pdf->Output($nombreTurno,'I');
 

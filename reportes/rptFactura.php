@@ -172,7 +172,7 @@ $headerFacturacion = array("Detalle", "Cantidad", "Precio","SubTotal");
 
 $pdf->AddPage();
 
-$pdf->Image('../imagenes/login-1.png',2,2,40);
+$pdf->Image('../imagenes/LUXURY_HIGH.JPG',2,2,40);
 
 $pdf->SetFont('Arial','',14);
 $pdf->SetXY(42,3);
@@ -218,6 +218,9 @@ $pdf->Cell(50,5,'Fecha: '.mysql_result($resFactura,0,'fecha'),1,0,'L',false);
 
 $pdf->SetXY(158,11);
 $pdf->Cell(50,5,'NºFactura: '.mysql_result($resFactura,0,'numero'),1,0,'L',false);
+
+$pdf->SetXY(158,18);
+$pdf->Cell(50,5,'Fec. Entrega: '.mysql_result($resFactura,0,'fechaentrega'),1,0,'L',false);
 
 $pdf->SetFont('Arial','',10);
 

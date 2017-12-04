@@ -142,18 +142,18 @@ function cotizar($sistema, $tela, $residuo, $ancho, $alto, $esRevendedor) {
 /* PARA Cabecerapresupuesto */
 
 
-function insertarCabecerapresupuesto($refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocumento,$observaciones,$refestados) {
-$sql = "insert into dbcabecerapresupuesto(idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocumento,observaciones,refestados)
-values ('',".$refusuarios.",".$refclientes.",'".utf8_decode($fecha)."',".$monto.",".$adelanto.",'".utf8_decode($solicitante)."','".utf8_decode($nrodocumento)."','".utf8_decode($observaciones)."',".$refestados.")";
+function insertarCabecerapresupuesto($refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocumento,$observaciones,$refestados, $fechaentrega) {
+$sql = "insert into dbcabecerapresupuesto(idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocumento,observaciones,refestados,fechaentrega)
+values ('',".$refusuarios.",".$refclientes.",'".utf8_decode($fecha)."',".$monto.",".$adelanto.",'".utf8_decode($solicitante)."','".utf8_decode($nrodocumento)."','".utf8_decode($observaciones)."',".$refestados.",'".$fechaentrega."')";
 $res = $this->query($sql,1);
 return $res;
 }
 
 
-function modificarCabecerapresupuesto($id,$refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocumento,$observaciones,$refestados) {
+function modificarCabecerapresupuesto($id,$refusuarios,$refclientes,$fecha,$monto,$adelanto,$solicitante,$nrodocumento,$observaciones,$refestados,$fechaentrega) {
 $sql = "update dbcabecerapresupuesto
 set
-refusuarios = ".$refusuarios.",refclientes = ".$refclientes.",fecha = '".utf8_decode($fecha)."',monto = ".$monto.",adelanto = ".$adelanto.",solicitante = '".utf8_decode($solicitante)."',nrodocumento = '".utf8_decode($nrodocumento)."',observaciones = '".utf8_decode($observaciones)."',refestados = ".$refestados."
+refusuarios = ".$refusuarios.",refclientes = ".$refclientes.",fecha = '".utf8_decode($fecha)."',monto = ".$monto.",adelanto = ".$adelanto.",solicitante = '".utf8_decode($solicitante)."',nrodocumento = '".utf8_decode($nrodocumento)."',observaciones = '".utf8_decode($observaciones)."',refestados = ".$refestados.",fechaentrega = '".$fechaentrega."'
 where idcabecerapresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -189,7 +189,8 @@ function traerCabecerapresupuesto() {
 		    est.estado,
 		    c.refusuarios,
 		    c.refclientes,
-		    c.refestados
+		    c.refestados,
+		    c.fechaentrega
 		FROM
 		    dbcabecerapresupuesto c
 		        INNER JOIN
@@ -220,7 +221,8 @@ function traerCabecerapresupuestoPorUsuario($idUsuario) {
 		    est.estado,
 		    c.refusuarios,
 		    c.refclientes,
-		    c.refestados
+		    c.refestados,
+		    c.fechaentrega
 		FROM
 		    dbcabecerapresupuesto c
 		        INNER JOIN
@@ -238,7 +240,7 @@ function traerCabecerapresupuestoPorUsuario($idUsuario) {
 
 
 function traerCabecerapresupuestoPorId($id) {
-$sql = "select idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocumento,observaciones,refestados from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
+$sql = "select idcabecerapresupuesto,refusuarios,refclientes,fecha,monto,adelanto,solicitante,nrodocumento,observaciones,refestados,fechaentrega from dbcabecerapresupuesto where idcabecerapresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
 } 
@@ -256,7 +258,8 @@ function insertarVentaPorPresupuesto($idCabecera) {
 			reftipopago,
 			observacion,
 			cancelada,
-			refpresupuesto)
+			refpresupuesto,
+			fechaentrega)
 			SELECT '',
 				'".$numero."',
 				'".date('Y-m-d')."',
@@ -266,7 +269,8 @@ function insertarVentaPorPresupuesto($idCabecera) {
 				1,
 				observaciones,
 				0,
-				idcabecerapresupuesto
+				idcabecerapresupuesto,
+				fechaentrega
 			FROM dbcabecerapresupuesto
 			where idcabecerapresupuesto =".$idCabecera;	
 			
@@ -455,7 +459,8 @@ $sql = "select
 			ven.esdoble as esdobleaux,
 			ven.cantidad,
             ven.caida,
-            ven.mando
+            ven.mando,
+            o.fechaentrega
 			
 		from
 			dbcabecerapresupuesto o
@@ -482,7 +487,7 @@ $sql = "select
 
 
 function traerPresupuestosPorId($id) {
-$sql = "select idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto from dbpresupuestos where idpresupuesto =".$id;
+$sql = "select idpresupuesto,fechacrea,fechamodi,usuacrea,usuamodi,refestados,refsistemas,reftelas,refresiduos,roller,tramado,ancho,alto,reftelaopcional,esdoble,montofinal,refcabecerapresupuesto,fechaentrega from dbpresupuestos where idpresupuesto =".$id;
 $res = $this->query($sql,0);
 return $res;
 }
@@ -1084,18 +1089,18 @@ function generarNroVenta() {
 }
 
 
-function insertarVentas($numero,$fecha,$adelanto,$total,$refclientes,$reftipopago,$observacion,$cancelada,$refpresupuesto) {
-$sql = "insert into dbventas(idventa,numero,fecha,adelanto,total,refclientes,reftipopago,observacion,cancelada,refpresupuesto)
-values ('','".utf8_decode($numero)."','".utf8_decode($fecha)."',".$adelanto.",".$total.",".$refclientes.",".$reftipopago.",'".utf8_decode($observacion)."',0,".$refpresupuesto.")";
+function insertarVentas($numero,$fecha,$adelanto,$total,$refclientes,$reftipopago,$observacion,$cancelada,$refpresupuesto,$fechaentrega) {
+$sql = "insert into dbventas(idventa,numero,fecha,adelanto,total,refclientes,reftipopago,observacion,cancelada,refpresupuesto,fechaentrega)
+values ('','".utf8_decode($numero)."','".utf8_decode($fecha)."',".$adelanto.",".$total.",".$refclientes.",".$reftipopago.",'".utf8_decode($observacion)."',0,".$refpresupuesto.",'".$fechaentrega."')";
 $res = $this->query($sql,1);
 return $res;
 } 
 
 
-function modificarVentas($id,$numero,$adelanto,$total,$refclientes,$reftipopago,$cancelada) {
+function modificarVentas($id,$numero,$adelanto,$total,$refclientes,$reftipopago,$cancelada,$fechaentrega) {
 $sql = "update dbventas
 set
-numero = '".utf8_decode($numero)."',adelanto = ".($adelanto == '' ? 0 : $adelanto).",total = ".$total.",refclientes = ".$refclientes.",reftipopago = ".$reftipopago.",cancelada = ".$cancelada."
+numero = '".utf8_decode($numero)."',adelanto = ".($adelanto == '' ? 0 : $adelanto).",total = ".$total.",refclientes = ".$refclientes.",reftipopago = ".$reftipopago.",cancelada = ".$cancelada.",fechaentrega = '".$fechaentrega."'
 where idventa =".$id;
 $res = $this->query($sql,0);
 return $res;
@@ -1131,6 +1136,7 @@ cli.nombrecompleto,
 v.adelanto,
 v.total,
 v.fecha,
+v.fechaentrega,
 tip.descripcion,
 (case when v.cancelada = 1 then 'Si' else 'No' end) as cancelada,
 v.refclientes,
@@ -1145,7 +1151,7 @@ return $res;
 
 
 function traerVentasPorId($id) {
-$sql = "select v.idventa,v.numero,v.fecha,v.adelanto,v.total,v.refclientes,v.reftipopago,v.cancelada,v.fecha, c.nombrecompleto, v.cantidadtotal from dbventas v 
+$sql = "select v.idventa,v.numero,v.fecha,v.adelanto,v.total,v.refclientes,v.reftipopago,v.cancelada,v.fecha, c.nombrecompleto, v.cantidadtotal, v.fechaentrega from dbventas v 
 		inner join dbclientes c on c.idcliente = v.refclientes
 		where idventa =".$id;
 $res = $this->query($sql,0);
@@ -1162,6 +1168,7 @@ v.total,
 cli.nombrecompleto,
 (case when v.cancelada = 1 then 'Si' else 'No' end) as cancelado,
 coalesce(u.nombrecompleto, ord.usuacrea) as usuacrea,
+v.fechaentrega,
 v.reftipopago,
 v.refclientes
 from dbventas v

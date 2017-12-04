@@ -1469,6 +1469,8 @@ function modificarVentas($serviciosReferencias) {
 	$total = $_POST['total'];
 	$refclientes = $_POST['refclientes'];
 	$reftipopago = $_POST['reftipopago'];
+	$fechaentrega = $_POST['fechaentrega'];
+
 	if (isset($_POST['cancelada'])) {
 		$cancelada = 1;
 		$serviciosReferencias->eliminarVentas($id);
@@ -1477,7 +1479,7 @@ function modificarVentas($serviciosReferencias) {
 		$cancelada = 0;
 	}
 	
-	$res = $serviciosReferencias->modificarVentas($id,$numero,$adelanto,$total,$refclientes,$reftipopago,$cancelada);
+	$res = $serviciosReferencias->modificarVentas($id,$numero,$adelanto,$total,$refclientes,$reftipopago,$cancelada,$fechaentrega);
 	
 	if ($res == true) {
 		echo '';

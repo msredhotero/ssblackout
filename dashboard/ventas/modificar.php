@@ -57,8 +57,8 @@ $tituloWeb = "Gestión: Sistema Cortinas Roller";
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbventas";
 
-$lblCambio	 	= array("reftipopago","refclientes");
-$lblreemplazo	= array("Tipo Pago","Cliente");
+$lblCambio	 	= array("reftipopago","refclientes","fechaentrega","cantidadtotal");
+$lblreemplazo	= array("Tipo Pago","Cliente","Fecha Entrega","Cant. Total");
 
 
 $resTipoPago 	= $serviciosReferencias->traerTipopago();
@@ -134,7 +134,7 @@ if ($_SESSION['idroll_predio'] != 1) {
 	<!--<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>-->
     <!-- Latest compiled and minified JavaScript -->
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
-
+    <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
 	<style type="text/css">
 		
   
@@ -245,6 +245,8 @@ if ($_SESSION['idroll_predio'] != 1) {
 </div>
 <script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
 <script src="../../bootstrap/js/dataTables.bootstrap.js"></script>
+<script src="../../js/bootstrap-datetimepicker.min.js"></script>
+<script src="../../js/bootstrap-datetimepicker.es.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function(){
@@ -265,6 +267,14 @@ $(document).ready(function(){
 	$('#tela').prop('readonly', true);
 	
 	$('#numero').prop('readonly', true);
+
+	$('#fecha').prop('readonly', true);
+
+	$('#fecha').prop('disabled', 'disabled');
+
+	$('#cantidadtotal').prop('readonly', true);
+
+	
 	
 	$('.volver').click(function(event){
 		 
@@ -462,8 +472,47 @@ $(document).ready(function(){
 	 
 	});
 
+
+
 });
 </script>
+
+<script>
+  $(function() {
+	  $.datepicker.regional['es'] = {
+ closeText: 'Cerrar',
+ prevText: '<Ant',
+ nextText: 'Sig>',
+ currentText: 'Hoy',
+ monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+ monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+ dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+ dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+ dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+ weekHeader: 'Sm',
+ dateFormat: 'dd/mm/yy',
+ firstDay: 1,
+ isRTL: false,
+ showMonthAfterYear: false,
+ yearSuffix: ''
+ };
+ $.datepicker.setDefaults($.datepicker.regional['es']);
+ 
+    $( "#fechaentrega" ).datepicker();
+
+    $( "#fechaentrega" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+
+    $( "#fechaentrega" ).datepicker("setDate", "<?php echo mysql_result($resResultado,0,'fechaentrega'); ?>");
+
+    $( "#fecha" ).datepicker();
+
+    $( "#fecha" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+
+    $( "#fecha" ).datepicker("setDate", "<?php echo mysql_result($resResultado,0,'fecha'); ?>");
+	
+
+  });
+  </script>
 <?php } ?>
 </body>
 </html>

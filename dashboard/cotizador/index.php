@@ -186,6 +186,7 @@ $formularioClientes     = $serviciosFunciones->camposTabla('insertarClientes' ,$
     
    <script src="../../js/jquery.number.min.js"></script>
    <link href="../../css/perfect-scrollbar.css" rel="stylesheet">
+   <link rel="stylesheet" type="text/css" href="../../css/jquery.datetimepicker.css"/>
       <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
       <script src="../../js/jquery.mousewheel.js"></script>
       <script src="../../js/perfect-scrollbar.js"></script>
@@ -474,10 +475,17 @@ $formularioClientes     = $serviciosFunciones->camposTabla('insertarClientes' ,$
                     </div>
                 </div>
                 
-                <div class="form-group col-md-6" style="display:block">
+                <div class="form-group col-md-3" style="display:block">
                     <label class="control-label" for="codigobarra" style="text-align:left">Nro Documento <span style="color:#F00;">*</span></label>
                     <div class="input-group col-md-12">
                         <input type="text" class="form-control" id="nrodocumento" name="nrodocumento" />
+                    </div>
+                </div>
+
+                <div class="form-group col-md-3" style="display:block">
+                    <label class="control-label" for="codigobarra" style="text-align:left">Fecha Entrega <span style="color:#F00;">*</span></label>
+                    <div class="input-group col-md-12">
+                        <input type="text" class="form-control" id="fechaentrega" name="fechaentrega" />
                     </div>
                 </div>
             </div>
@@ -558,6 +566,7 @@ $formularioClientes     = $serviciosFunciones->camposTabla('insertarClientes' ,$
 
 <script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
 <script src="../../bootstrap/js/dataTables.bootstrap.js"></script>
+<script src="../../js/jquery.datetimepicker.full.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function(){
@@ -1090,6 +1099,7 @@ $(document).ready(function(){
 				item ['nrodocumento']   = $('#nrodocumento').val();
 				item ['observaciones']   = $('#observaciones').val();
 				item ['refclientes']   = $('#refclientes').val();
+                item ['fechaentrega']   = $('#fechaentrega').val();
 				item ['total']   = Total;
                 //una vez agregados los datos al array "item" declarado anteriormente hacemos un .push() para agregarlos a nuestro array principal "DATA".
                 DATA.push(item);
@@ -1120,7 +1130,7 @@ $(document).ready(function(){
   
     $('#presupuesto').click(function() {
         
-        if (($('#solicitante').val() != '') && ($('#nrodocumento').val() != '') && ($('.detalle').html().trim() != '')) {
+        if (($('#solicitante').val() != '') && ($('#nrodocumento').val() != '') && ($('#fechaentrega').val() != '') && ($('.detalle').html().trim() != '')) {
             grabaTodoTabla('table-6');    
         } else {
             alert('Error: Faltan los datos del Solicitante o el Nro Documento o No cargo ningun Presupuesto');
@@ -1128,6 +1138,12 @@ $(document).ready(function(){
         
     });
     
+    $('#fechaentrega').datetimepicker({
+    dayOfWeekStart : 1,
+    format: 'Y-m-d'
+    });
+    $.datetimepicker.setLocale('es');
+    $('#fechaentrega').datetimepicker();
 
 });
 </script>
