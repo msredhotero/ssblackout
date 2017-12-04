@@ -1981,7 +1981,8 @@ $sql = "select
 			o.reftelas,
 			o.refresiduos,
 			o.reftelaopcional,
-			ven.total
+			ven.total,
+			ro.diametro
 			
 		from
 			dbordenes o

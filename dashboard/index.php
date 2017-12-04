@@ -652,6 +652,35 @@ $(document).ready(function(){
 		  traerDetalleVentaPorCliente($(this).attr("id"));
 	});//fin del boton modificar
 
+	$(document).on('click', '.rptOrdenTotal', function(e){
+		  usersid =  $(this).attr("id");
+		  
+		  if (!isNaN(usersid)) {
+			
+			window.open("../reportes/rptOrdenTrabajo.php?id=" + usersid,'_blank');	
+
+			window.open("../reportes/rptOrdenTrabajoRoller.php?id=" + usersid,'_blank');
+
+			window.open("../reportes/rptOrdenTrabajoTelas.php?id=" + usersid,'_blank');
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton Ordenes de trabajo
+
+
+	$(document).on('click', '.rptImprimirEtiquetas', function(e){
+		  usersid =  $(this).attr("id");
+		  
+		  if (!isNaN(usersid)) {
+
+			window.open("../reportes/rptOrdenTrabajoImpresoraRoller.php?id=" + usersid,'_blank');
+
+			window.open("../reportes/rptOrdenTrabajoImpresoraTelas.php?id=" + usersid,'_blank');
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton Ordenes de trabajo
+
 
 });
 </script>

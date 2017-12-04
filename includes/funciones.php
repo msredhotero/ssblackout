@@ -51,6 +51,9 @@ class Servicios {
 		$classEditar2 = '';
 		$iconoEditar2 = '';
 		$lblEditar2	  = '';
+
+		$classEditar3 = '';
+		
 		switch ($cantidad) {
 			case 99:
 				$cantidad = 8;
@@ -96,6 +99,9 @@ class Servicios {
 				$lblVer	  = 'Detalle';
 				$classEditar2 = 'varver';
 				$iconoEditar2 = 'glyphicon glyphicon-zoom-in';
+				$classEditar3 = 'varver';
+				$iconoEditar3 = 'glyphicon glyphicon-print';
+				
 				$lblEditar2	  = 'Ver';
 				$classEli = 'varborrar';
 				$idresultados = "resultados";
@@ -218,7 +224,16 @@ class Servicios {
 											<a href="javascript:void(0)" class="'.$classEditar2.'" id="'.$row[0].'" ><span class="'.$iconoEditar2.'"></span> '.$lblEditar2.'</a>
 											</li>';	
 				}
-										
+				
+				if ($classEditar3 != '') {
+					$cadRows = $cadRows.'<li>
+											<a href="javascript:void(0)" class="rptOrdenTotal" id="'.$row[0].'" ><span class="'.$iconoEditar3.'"></span> Ordenes de Trabajo</a>
+											</li>
+										 <li>
+											<a href="javascript:void(0)" class="rptImprimirEtiquetas" id="'.$row[0].'" ><span class="'.$iconoEditar3.'"></span> Imprimir Etiquetas</a>
+											</li>';	
+				}
+
 				$cadRows = $cadRows.'		<li>
 											<a href="javascript:void(0)" class="'.$classEli.'" id="'.$row[0].'"><span class="glyphicon glyphicon-remove"></span> Borrar</a>
 											</li>

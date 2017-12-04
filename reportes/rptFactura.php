@@ -100,7 +100,7 @@ function ingresosFacturacion($header, $data, &$TotalIngresos)
 		$total = $total + $row['total'];
 		$totalcant = $totalcant + 1;
 		
-        $this->Cell($w[0],5,$row['sistema'].' - '.$row['tela'].' - '.$row['tramado'].' - '.$row['alto'].'x'.$row['ancho'].' cm','LR',0,'L',$fill);
+        $this->Cell($w[0],5,$row['sistema'].' - '.$row['tela'].' - '.$row['tramado'].' - '.$row['alto'].'x'.$row['ancho'].' mtrs','LR',0,'L',$fill);
 		$this->Cell($w[1],5,number_format(1,0,',','.'),'LR',0,'C',$fill);
 		$this->Cell($w[2],5,number_format($row['total'],2,',','.'),'LR',0,'R',$fill);
 		$this->Cell($w[3],5,number_format($row['total'],2,',','.'),'LR',0,'R',$fill);

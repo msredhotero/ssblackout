@@ -147,7 +147,7 @@ if ($_SESSION['refroll_predio'] != 1) {
     
     <div class="boxInfoLargo">
         <div id="headBoxInfo">
-        	<p style="color: #fff; font-size:18px; height:16px;"><?php echo $plural; ?> Cargados</p>
+        	<p style="color: #fff; font-size:18px; height:36px;"><?php echo $plural; ?> Cargados</p>
         	
         </div>
     	<div class="cuerpoBox">
@@ -253,24 +253,11 @@ $(document).ready(function(){
 	$("#example").on("click",'.varver', function(){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
-
-			$.ajax({
-					data:  {id: usersid, accion: 'traerResponsablesPorOrden'},
-					url:   '../../ajax/ajax.php',
-					type:  'post',
-					beforeSend: function () {
-							
-					},
-					success:  function (response) {
-							$('.userasignates').html(response);
-							
-					}
-			});
 			
-			//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
-			//$(location).attr('href',url);
+			url = "ver.php?id=" + usersid;
+			$(location).attr('href',url);
 		  } else {
-			alert("Error redo action.");	
+			alert("Error, vuelva a realizar la acción.");	
 		  }
 	});//fin del boton eliminar
 	
@@ -338,9 +325,50 @@ $(document).ready(function(){
 	 		}); //fin del dialogo para eliminar
 			
 
+	$(document).on('click', '.varpdf', function(e){
+		  usersid =  $(this).attr("id");
+		  
+		  if (!isNaN(usersid)) {
+			
+			url = "../../reportes/rptFactura.php?id=" + usersid;
+			$(location).attr('href',url);
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton modificar
+
 	
 
+	
 
+	$(document).on('click', '.rptOrdenTotal', function(e){
+		  usersid =  $(this).attr("id");
+		  
+		  if (!isNaN(usersid)) {
+			
+			window.open("../../reportes/rptOrdenTrabajo.php?id=" + usersid,'_blank');	
+
+			window.open("../../reportes/rptOrdenTrabajoRoller.php?id=" + usersid,'_blank');
+
+			window.open("../../reportes/rptOrdenTrabajoTelas.php?id=" + usersid,'_blank');
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton Ordenes de trabajo
+
+
+	$(document).on('click', '.rptImprimirEtiquetas', function(e){
+		  usersid =  $(this).attr("id");
+		  
+		  if (!isNaN(usersid)) {
+
+			window.open("../../reportes/rptOrdenTrabajoImpresoraRoller.php?id=" + usersid,'_blank');
+
+			window.open("../../reportes/rptOrdenTrabajoImpresoraTelas.php?id=" + usersid,'_blank');
+		  } else {
+			alert("Error, vuelva a realizar la acción.");	
+		  }
+	});//fin del boton Ordenes de trabajo
 
 });
 </script>
